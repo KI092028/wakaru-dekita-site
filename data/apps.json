@@ -1,0 +1,76 @@
+{
+  "apps": [
+    {
+      "id": "addition",
+      "name": "たし算練習",
+      "category": "basic",
+      "description": "基本のたし算を楽しく練習しよう！",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=addition",
+      "difficulty": "初級",
+      "grade": "1-2年生"
+    },
+    {
+      "id": "subtraction",
+      "name": "ひき算チャレンジ",
+      "category": "basic",
+      "description": "ひき算の問題に挑戦！",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=subtraction",
+      "difficulty": "初級",
+      "grade": "1-2年生"
+    },
+    {
+      "id": "multiplication",
+      "name": "かけ算九九",
+      "category": "multiplication",
+      "description": "九九を覚えよう！",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=multiplication",
+      "difficulty": "中級",
+      "grade": "2-3年生"
+    },
+    {
+      "id": "division",
+      "name": "わり算パズル",
+      "category": "division",
+      "description": "わり算をパズルで学ぼう！",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=division",
+      "difficulty": "上級",
+      "grade": "3-4年生"
+    },
+    {
+      "id": "geometry",
+      "name": "図形探検",
+      "category": "geometry",
+      "description": "図形の名前と性質を学ぼう！",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=geometry",
+      "difficulty": "中級",
+      "grade": "2-3年生"
+    }
+  ],
+  "categories": [
+    {
+      "id": "basic",
+      "name": "基本計算",
+      "description": "たし算・ひき算の基礎"
+    },
+    {
+      "id": "multiplication",
+      "name": "かけ算",
+      "description": "九九とかけ算"
+    },
+    {
+      "id": "division",
+      "name": "わり算",
+      "description": "わり算の基礎"
+    },
+    {
+      "id": "geometry",
+      "name": "図形",
+      "description": "図形の学習"
+    }
+  ]
+}

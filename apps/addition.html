@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たしざん れんしゅう</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            max-height: 95vh;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,182,193,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        
+        .title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score-item {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .problem-area {
+            background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+            border-radius: 15px;
+            padding: 30px 20px;
+            margin: 15px 0;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .problem {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 2px;
+        }
+        
+        .input-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .equals {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2d3436;
+        }
+        
+        .answer-input {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            border: 4px solid #74b9ff;
+            border-radius: 15px;
+            padding: 15px 20px;
+            width: 140px;
+            background: white;
+            color: #2d3436;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #0984e3;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(9, 132, 227, 0.3);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(232, 67, 147, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(232, 67, 147, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .correct {
+            color: #00b894;
+            animation: bounce 0.6s ease;
+        }
+        
+        .incorrect {
+            color: #e17055;
+            animation: shake 0.6s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            80% { transform: translateY(-10px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .next-btn {
+            background: linear-gradient(45deg, #a29bfe, #6c5ce7);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            color: #ffd700;
+            font-size: 1.2rem;
+            animation: twinkle 2s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+                max-width: 100%;
+            }
+            
+            .title {
+                font-size: 1.6rem;
+            }
+            
+            .problem {
+                font-size: 3.5rem;
+            }
+            
+            .answer-input {
+                font-size: 2.8rem;
+                width: 120px;
+                padding: 12px 15px;
+            }
+            
+            .equals {
+                font-size: 2.8rem;
+            }
+            
+            .score-item {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .title {
+                font-size: 1.4rem;
+            }
+            
+            .problem {
+                font-size: 3rem;
+            }
+            
+            .answer-input {
+                font-size: 2.5rem;
+                width: 100px;
+            }
+            
+            .equals {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="stars" id="stars"></div>
+        
+        <h1 class="title">🌟 たしざん れんしゅう 🌟</h1>
+        
+        <div class="score">
+            <div class="score-item">
+                せいかい: <span id="correct-count">0</span>
+            </div>
+            <div class="score-item">
+                もんだい: <span id="total-count">0</span>
+            </div>
+        </div>
+        
+        <div class="problem-area">
+            <div class="problem" id="problem">5 + 3</div>
+            <div class="input-area">
+                <span class="equals">=</span>
+                <input type="text" class="answer-input" id="answer" placeholder="?" maxlength="3" autocomplete="off">
+            </div>
+            <button class="submit-btn" id="submit-btn" onclick="checkAnswer()">こたえる！</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        let currentProblem = {};
+        let correctCount = 0;
+        let totalCount = 0;
+        let isAnswered = false;
+
+        const encouragements = [
+            "🎉 すごい！せいかい！",
+            "✨ やったね！",
+            "🌟 かんぺき！",
+            "🎊 おめでとう！",
+            "💫 すばらしい！",
+            "🏆 よくできました！"
+        ];
+
+        const tryAgainMessages = [
+            "😊 もういちど がんばって！",
+            "🤔 ちがうよ。もういちど！",
+            "💪 あとすこし！がんばって！",
+            "🌈 だいじょうぶ！もういちど！"
+        ];
+
+        // 全角数字を半角数字に変換する関数
+        function convertToHalfWidth(str) {
+            return str.replace(/[０-９]/g, function(s) {
+                return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+            });
+        }
+
+        // 数字以外の文字を除去する関数
+        function extractNumbers(str) {
+            return str.replace(/[^0-9]/g, '');
+        }
+
+        function generateProblem() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            currentProblem = {
+                num1: num1,
+                num2: num2,
+                answer: num1 + num2
+            };
+            
+            document.getElementById('problem').textContent = `${num1} + ${num2}`;
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answer').focus();
+            isAnswered = false;
+            
+            // Remove any existing next button
+            const existingNextBtn = document.querySelector('.next-btn');
+            if (existingNextBtn) {
+                existingNextBtn.remove();
+            }
+        }
+
+        function checkAnswer() {
+            if (isAnswered) return;
+            
+            let userInput = document.getElementById('answer').value;
+            
+            // 全角数字を半角数字に変換
+            userInput = convertToHalfWidth(userInput);
+            
+            // 数字以外の文字を除去
+            userInput = extractNumbers(userInput);
+            
+            const userAnswer = parseInt(userInput);
+            const feedback = document.getElementById('feedback');
+            
+            if (isNaN(userAnswer) || userInput === '') {
+                feedback.textContent = "すうじを いれてね！";
+                feedback.className = 'feedback incorrect';
+                return;
+            }
+            
+            totalCount++;
+            document.getElementById('total-count').textContent = totalCount;
+            
+            if (userAnswer === currentProblem.answer) {
+                correctCount++;
+                document.getElementById('correct-count').textContent = correctCount;
+                
+                const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+                feedback.textContent = randomEncouragement;
+                feedback.className = 'feedback correct';
+                
+                createStars();
+                
+                // Add next button
+                const nextBtn = document.createElement('button');
+                nextBtn.textContent = 'つぎのもんだい';
+                nextBtn.className = 'next-btn';
+                nextBtn.onclick = generateProblem;
+                feedback.appendChild(nextBtn);
+                
+                isAnswered = true;
+            } else {
+                const randomTryAgain = tryAgainMessages[Math.floor(Math.random() * tryAgainMessages.length)];
+                feedback.textContent = randomTryAgain;
+                feedback.className = 'feedback incorrect';
+                
+                // Clear the input for retry
+                setTimeout(() => {
+                    document.getElementById('answer').value = '';
+                    document.getElementById('answer').focus();
+                }, 1000);
+            }
+        }
+
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            
+            for (let i = 0; i < 8; i++) {
+                const star = document.createElement('div');
+                star.textContent = '⭐';
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+                
+                // Remove star after animation
+                setTimeout(() => {
+                    if (star.parentNode) {
+                        star.parentNode.removeChild(star);
+                    }
+                }, 3000);
+            }
+        }
+
+        // 入力欄のイベントリスナー
+        document.getElementById('answer').addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            // 全角数字を半角数字に変換
+            value = convertToHalfWidth(value);
+            
+            // 数字以外の文字を除去
+            value = extractNumbers(value);
+            
+            // 最大3桁まで制限
+            if (value.length > 3) {
+                value = value.substring(0, 3);
+            }
+            
+            e.target.value = value;
+        });
+
+        // Allow Enter key to submit answer
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // Initialize first problem
+        generateProblem();
+    </script>
+</body>
+</html>

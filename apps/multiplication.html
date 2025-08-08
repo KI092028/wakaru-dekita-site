@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かけ算まとまりゲーム</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .title {
+            color: #4a5568;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .grid-container {
+            position: relative;
+            display: inline-block;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 15px;
+            border: 3px solid #e2e8f0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+            background: #cbd5e0;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            user-select: none;
+            position: relative;
+        }
+
+        .cell::before {
+            content: '●';
+            color: #2d3748;
+            font-size: 20px;
+            display: block;
+        }
+
+        .cell.empty::before {
+            content: '';
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .cell.selected {
+            background: #4299e1;
+            color: white;
+            border-color: #2b6cb0;
+            transform: scale(1.1);
+        }
+
+        .cell.grouped {
+            border-width: 3px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
+        }
+
+        .result {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2f855a;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .color-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .color-btn.active {
+            border-color: #2d3748;
+            transform: scale(1.1);
+        }
+
+        .instructions {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            color: #c53030;
+            font-size: 14px;
+            max-width: 500px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .cell {
+                width: 35px;
+                height: 35px;
+                font-size: 12px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .game-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">🧮 かけ算まとまりゲーム</h1>
+        <p class="subtitle">マス目をドラッグして「まとまり」を作ろう！</p>
+    </div>
+
+    <div class="game-container">
+        <div class="instructions">
+            💡 マス目をドラッグして長方形の「まとまり」を作ろう！ダブルクリックで黒丸を消したり戻したりできるよ！
+        </div>
+
+        <div class="color-palette">
+            <div class="color-btn active" style="background: #4299e1;" data-color="#4299e1"></div>
+            <div class="color-btn" style="background: #48bb78;" data-color="#48bb78"></div>
+            <div class="color-btn" style="background: #ed8936;" data-color="#ed8936"></div>
+            <div class="color-btn" style="background: #9f7aea;" data-color="#9f7aea"></div>
+            <div class="color-btn" style="background: #f56565;" data-color="#f56565"></div>
+            <div class="color-btn" style="background: #38b2ac;" data-color="#38b2ac"></div>
+        </div>
+
+        <div class="grid-container">
+            <div class="grid" id="grid"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="createGroup()">✨ まとまりを作る</button>
+            <button class="btn btn-danger" onclick="clearSelection()">🗑️ 選択をクリア</button>
+            <button class="btn btn-primary" onclick="resetGrid()">🔄 リセット</button>
+        </div>
+
+        <div class="result" id="result">
+            マス目を選んで「まとまり」を作ってみよう！
+        </div>
+    </div>
+
+    <script>
+        let selectedCells = [];
+        let groups = [];
+        let currentColor = '#4299e1';
+        let isSelecting = false;
+        let startCell = null;
+
+        // グリッドを初期化
+        function initGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 30; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.index = i;
+                cell.dataset.row = Math.floor(i / 6);
+                cell.dataset.col = i % 6;
+                
+                // 右上の2×3マス（行0-1、列4-5）を空白にする
+                const row = Math.floor(i / 6);
+                const col = i % 6;
+                if (row < 2 && col >= 4) {
+                    cell.classList.add('empty');
+                }
+                
+                // マウスイベント
+                cell.addEventListener('mousedown', startSelection);
+                cell.addEventListener('mouseenter', continueSelection);
+                cell.addEventListener('mouseup', endSelection);
+                
+                // ダブルクリックイベント
+                cell.addEventListener('dblclick', toggleDot);
+                
+                // タッチイベント（スマホ対応）
+                cell.addEventListener('touchstart', handleTouchStart);
+                cell.addEventListener('touchmove', handleTouchMove);
+                cell.addEventListener('touchend', handleTouchEnd);
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        // マウス選択開始
+        function startSelection(e) {
+            e.preventDefault();
+            isSelecting = true;
+            startCell = e.target;
+            clearSelection();
+            selectCell(e.target);
+        }
+
+        // マウス選択継続
+        function continueSelection(e) {
+            if (!isSelecting || !startCell) return;
+            
+            clearSelection();
+            selectRectangle(startCell, e.target);
+        }
+
+        // マウス選択終了
+        function endSelection(e) {
+            isSelecting = false;
+            startCell = null;
+        }
+
+        // ダブルクリックで黒丸の表示/非表示を切り替え
+        function toggleDot(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const cell = e.target;
+            cell.classList.toggle('empty');
+        }
+
+        // タッチイベント処理
+        function handleTouchStart(e) {
+            e.preventDefault();
+            startSelection(e);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element && element.classList.contains('cell')) {
+                continueSelection({target: element});
+            }
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            endSelection(e);
+        }
+
+        // 長方形選択
+        function selectRectangle(start, end) {
+            const startRow = parseInt(start.dataset.row);
+            const startCol = parseInt(start.dataset.col);
+            const endRow = parseInt(end.dataset.row);
+            const endCol = parseInt(end.dataset.col);
+
+            const minRow = Math.min(startRow, endRow);
+            const maxRow = Math.max(startRow, endRow);
+            const minCol = Math.min(startCol, endCol);
+            const maxCol = Math.max(startCol, endCol);
+
+            for (let row = minRow; row <= maxRow; row++) {
+                for (let col = minCol; col <= maxCol; col++) {
+                    const index = row * 6 + col;
+                    const cell = document.querySelector(`[data-index="${index}"]`);
+                    if (cell) {
+                        selectCell(cell);
+                    }
+                }
+            }
+        }
+
+        // セル選択
+        function selectCell(cell) {
+            if (!selectedCells.includes(cell)) {
+                selectedCells.push(cell);
+                cell.classList.add('selected');
+            }
+        }
+
+        // 選択クリア
+        function clearSelection() {
+            selectedCells.forEach(cell => {
+                cell.classList.remove('selected');
+            });
+            selectedCells = [];
+            updateResult('マス目を選んで「まとまり」を作ってみよう！');
+        }
+
+        // グループ作成
+        function createGroup() {
+            if (selectedCells.length === 0) {
+                updateResult('まず、マス目を選んでね！');
+                return;
+            }
+
+            // 長方形かチェック
+            const rectangle = getRectangleInfo(selectedCells);
+            if (!rectangle) {
+                updateResult('長方形になるように選んでね！');
+                return;
+            }
+
+            // グループを作成
+            const group = {
+                cells: [...selectedCells],
+                color: currentColor,
+                width: rectangle.width,
+                height: rectangle.height
+            };
+
+            groups.push(group);
+
+            // セルに色を適用
+            selectedCells.forEach(cell => {
+                cell.style.background = currentColor;
+                cell.style.color = 'white';
+                cell.classList.add('grouped');
+                cell.classList.remove('selected');
+            });
+
+            // 結果表示
+            updateResult(`🎉 まとまりができたよ！`);
+
+            selectedCells = [];
+        }
+
+        // 長方形情報を取得
+        function getRectangleInfo(cells) {
+            if (cells.length === 0) return null;
+
+            const rows = cells.map(cell => parseInt(cell.dataset.row));
+            const cols = cells.map(cell => parseInt(cell.dataset.col));
+
+            const minRow = Math.min(...rows);
+            const maxRow = Math.max(...rows);
+            const minCol = Math.min(...cols);
+            const maxCol = Math.max(...cols);
+
+            const width = maxCol - minCol + 1;
+            const height = maxRow - minRow + 1;
+
+            // 選択されたセル数が長方形の面積と一致するかチェック
+            if (cells.length !== width * height) {
+                return null;
+            }
+
+            // すべてのセルが長方形内にあるかチェック
+            for (let row = minRow; row <= maxRow; row++) {
+                for (let col = minCol; col <= maxCol; col++) {
+                    const expectedIndex = row * 6 + col;
+                    const expectedCell = document.querySelector(`[data-index="${expectedIndex}"]`);
+                    if (!cells.includes(expectedCell)) {
+                        return null;
+                    }
+                }
+            }
+
+            return { width, height };
+        }
+
+        // 結果更新
+        function updateResult(message) {
+            document.getElementById('result').textContent = message;
+        }
+
+        // グリッドリセット
+        function resetGrid() {
+            groups = [];
+            selectedCells = [];
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                cell.style.background = 'white';
+                cell.style.color = '#2d3748';
+                cell.classList.remove('selected', 'grouped');
+                cell.textContent = '';
+                
+                // 右上の2×3マス（行0-1、列4-5）を空白に戻す
+                const row = Math.floor(index / 6);
+                const col = index % 6;
+                if (row < 2 && col >= 4) {
+                    cell.classList.add('empty');
+                } else {
+                    cell.classList.remove('empty');
+                }
+            });
+            updateResult('マス目を選んで「まとまり」を作ってみよう！');
+        }
+
+        // 色選択
+        function setupColorPalette() {
+            const colorBtns = document.querySelectorAll('.color-btn');
+            colorBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    colorBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentColor = btn.dataset.color;
+                });
+            });
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            initGrid();
+            setupColorPalette();
+            
+            // マウスアップイベントをドキュメント全体に追加
+            document.addEventListener('mouseup', () => {
+                isSelecting = false;
+                startCell = null;
+            });
+        });
+    </script>
+</body>
+</html>
