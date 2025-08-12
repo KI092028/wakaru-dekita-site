@@ -167,6 +167,14 @@ async function initializeApp() {
   // データを読み込み
   await loadAppData();
   
+  // 現在のページを判定
+  const isDetailPage = window.location.pathname.includes('app-detail.html');
+  
+  if (isDetailPage) {
+    console.log('詳細ページのため、main.jsの初期化をスキップします');
+    return;
+  }
+  
   // appContainer要素を待機
   try {
     const container = await waitForElement('#appContainer');
@@ -195,6 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // フォールバック用のloadイベント
 window.addEventListener('load', () => {
   console.log('window.loadイベントが発火しました');
+  
+  // 詳細ページの場合はスキップ
+  const isDetailPage = window.location.pathname.includes('app-detail.html');
+  if (isDetailPage) {
+    console.log('詳細ページのため、main.jsのloadイベントをスキップします');
+    return;
+  }
+  
   const container = document.getElementById('appContainer');
   if (container && container.children.length === 0) {
     console.log('loadイベントでレンダリングを実行');
@@ -205,5 +221,10 @@ window.addEventListener('load', () => {
 // 即座に実行（DOMが既に準備できている場合）
 if (isDOMReady()) {
   console.log('DOMが既に準備できているため、即座に初期化を実行');
-  initializeApp();
+  
+  // 詳細ページの場合はスキップ
+  const isDetailPage = window.location.pathname.includes('app-detail.html');
+  if (!isDetailPage) {
+    initializeApp();
+  }
 }

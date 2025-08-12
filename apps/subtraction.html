@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ひき算の筆算れんしゅう</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --main-blue: #007BFF;
+      --main-green: #28A745;
+      --main-yellow: #FFC107;
+      --main-red: #DC3545;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+    
+    .header {
+      background: var(--main-blue);
+      color: white;
+      padding: 1rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .calculation-area {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      margin: 2rem auto;
+      max-width: 400px;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      max-width: 300px;
+      margin: 0 auto;
+      background: #333;
+      padding: 3px;
+      border-radius: 10px;
+    }
+    
+    .grid-cell {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      border-radius: 5px;
+    }
+    
+    .grid-cell.number {
+      background: #f0f8ff;
+      border-color: var(--main-blue);
+    }
+    
+    .grid-cell.minus {
+      background: #ffe6e6;
+      border-color: var(--main-red);
+      color: var(--main-red);
+    }
+    
+    .grid-cell.input {
+      background: #f0fff0;
+      border: 3px solid var(--main-green);
+      padding: 0;
+    }
+    
+    .grid-cell.input input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      outline: none;
+    }
+    
+    .grid-cell.input:focus-within {
+      border-color: var(--main-yellow);
+      box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+    }
+    
+    .grid-cell.empty {
+      background: #f8f9fa;
+      border-color: #e9ecef;
+    }
+    
+    .btn-large {
+      font-size: 1.2rem;
+      padding: 0.8rem 2rem;
+      margin: 0.5rem;
+      border-radius: 15px;
+      font-weight: bold;
+    }
+    
+    .feedback {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 15px;
+    }
+    
+    .feedback.correct {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid var(--main-green);
+    }
+    
+    .feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid var(--main-red);
+    }
+    
+    .score-display {
+      background: var(--main-yellow);
+      color: #333;
+      padding: 1rem;
+      border-radius: 15px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    
+    .emoji {
+      font-size: 2rem;
+      margin: 0 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧮 ひき算の筆算れんしゅう 🧮</h1>
+    <p>筆算で引き算をマスターしよう！</p>
+  </div>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <!-- スコア表示 -->
+        <div class="score-display">
+          <span class="emoji">⭐</span>
+          正解数: <span id="correctCount">0</span> / 問題数: <span id="totalCount">0</span>
+          <span class="emoji">⭐</span>
+        </div>
+
+        <!-- 計算エリア -->
+        <div class="calculation-area">
+          <div class="grid-container" id="calculationGrid">
+            <!-- 3x3のマス目が動的に生成される -->
+          </div>
+        </div>
+
+        <!-- フィードバック -->
+        <div id="feedback" class="feedback" style="display: none;"></div>
+
+        <!-- ボタン -->
+        <div class="text-center">
+          <button class="btn btn-success btn-large" onclick="checkAnswer()">
+            <span class="emoji">✓</span> こたえあわせ
+          </button>
+
+          <button class="btn btn-primary btn-large" onclick="nextProblem()">
+            <span class="emoji">➡️</span> つぎの問題
+          </button>
+          <button class="btn btn-secondary btn-large" onclick="goToMenu()">
+            <span class="emoji">🏠</span> メニューにもどる
+          </button>
+        </div>
+
+        <!-- 難易度選択 -->
+        <div class="text-center mt-4">
+          <h5>むずかしさを選んでね</h5>
+          <button class="btn btn-outline-primary" onclick="setDifficulty('easy')">かんたん (2桁)</button>
+          <button class="btn btn-outline-warning" onclick="setDifficulty('medium')">ふつう (3桁)</button>
+          <button class="btn btn-outline-danger" onclick="setDifficulty('hard')">むずかしい (3桁大きい数)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let currentMinuend = 0;
+    let currentSubtrahend = 0;
+    let correctAnswer = 0;
+    let correctCount = 0;
+    let totalCount = 0;
+    let difficulty = 'easy';
+    let maxDigits = 2;
+
+    // 全角数字を半角に変換
+    function toHalfWidth(str) {
+      return str.replace(/[０-９]/g, function(s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+      });
+    }
+
+    // 3x3グリッドを作成
+    function createGrid() {
+      const grid = document.getElementById('calculationGrid');
+      grid.innerHTML = '';
+      
+      // 9個のセルを作成
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell empty';
+        cell.id = `cell-${i}`;
+        grid.appendChild(cell);
+      }
+    }
+
+    // 数字を右詰めで配置する位置を計算
+    function getPositions(digits, maxDigits) {
+      const positions = [];
+      const startPos = 3 - maxDigits; // 右詰めの開始位置
+      
+      for (let i = 0; i < digits.length; i++) {
+        positions.push(startPos + i);
+      }
+      return positions;
+    }
+
+    // 計算表示を更新
+    function updateDisplay() {
+      createGrid();
+      
+      const minuendStr = currentMinuend.toString();
+      const subtrahendStr = currentSubtrahend.toString();
+      
+      // 被減数を上段右詰めで配置
+      const minuendPositions = getPositions(minuendStr.split(''), maxDigits);
+      minuendStr.split('').forEach((digit, index) => {
+        const cell = document.getElementById(`cell-${minuendPositions[index]}`);
+        cell.textContent = digit;
+        cell.className = 'grid-cell number';
+      });
+      
+      // マイナス記号を中段左端に配置
+      const minusCell = document.getElementById('cell-3');
+      minusCell.textContent = '－';
+      minusCell.className = 'grid-cell minus';
+      
+      // 減数を中段右詰めで配置（一桁の場合は一の位に配置）
+      const subtrahendDigits = subtrahendStr.split('');
+      const subtrahendStartPos = 3 - subtrahendDigits.length; // 右詰めの開始位置を計算
+      subtrahendDigits.forEach((digit, index) => {
+        const cellIndex = 3 + subtrahendStartPos + index;
+        const cell = document.getElementById(`cell-${cellIndex}`);
+        cell.textContent = digit;
+        cell.className = 'grid-cell number';
+      });
+      
+      // 答え入力欄を各位に対応して配置
+      for (let i = 0; i < maxDigits; i++) {
+        const cell = document.getElementById(`cell-${6 + (3 - maxDigits) + i}`);
+        cell.className = 'grid-cell input';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.id = `answer-${i}`;
+        input.addEventListener('input', handleDigitInput);
+        input.addEventListener('keydown', handleKeyDown);
+        cell.appendChild(input);
+      }
+    }
+
+    // 数字入力の処理
+    function handleDigitInput(event) {
+      const input = event.target;
+      let value = toHalfWidth(input.value);
+      
+      // 数字以外を除去
+      value = value.replace(/[^0-9]/g, '');
+      
+      if (value.length > 1) {
+        value = value.slice(-1);
+      }
+      
+      input.value = value;
+      
+      // 次の入力欄に移動
+      if (value && input.nextElementSibling) {
+        input.nextElementSibling.focus();
+      }
+    }
+
+    // キーボード操作の処理
+    function handleKeyDown(event) {
+      const input = event.target;
+      
+      if (event.key === 'Backspace' && !input.value && input.previousElementSibling) {
+        input.previousElementSibling.focus();
+      } else if (event.key === 'ArrowLeft' && input.previousElementSibling) {
+        input.previousElementSibling.focus();
+      } else if (event.key === 'ArrowRight' && input.nextElementSibling) {
+        input.nextElementSibling.focus();
+      } else if (event.key === 'Enter') {
+        checkAnswer();
+      }
+    }
+
+    // 難易度設定
+    function setDifficulty(level) {
+      difficulty = level;
+      maxDigits = level === 'easy' ? 2 : 3;
+      nextProblem();
+      
+      // ボタンの見た目を更新
+      document.querySelectorAll('.btn-outline-primary, .btn-outline-warning, .btn-outline-danger').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    // 新しい問題を生成
+    function generateProblem() {
+      let minuend, subtrahend;
+      
+      switch(difficulty) {
+        case 'easy':
+          minuend = Math.floor(Math.random() * 90) + 10; // 10-99
+          subtrahend = Math.floor(Math.random() * (minuend - 1)) + 1;
+          maxDigits = 2;
+          break;
+        case 'medium':
+          minuend = Math.floor(Math.random() * 900) + 100; // 100-999
+          subtrahend = Math.floor(Math.random() * (minuend - 1)) + 1;
+          maxDigits = 3;
+          break;
+        case 'hard':
+          minuend = Math.floor(Math.random() * 900) + 500; // 500-999
+          subtrahend = Math.floor(Math.random() * (minuend - 100)) + 100;
+          maxDigits = 3;
+          break;
+      }
+      
+      currentMinuend = minuend;
+      currentSubtrahend = subtrahend;
+      correctAnswer = minuend - subtrahend;
+      
+      updateDisplay();
+      document.getElementById('feedback').style.display = 'none';
+    }
+
+    // 答えをチェック
+    function checkAnswer() {
+      let userAnswerStr = '';
+      let hasInput = false;
+      
+      // 各位の入力を取得（左から右へ）
+      for (let i = 0; i < maxDigits; i++) {
+        const input = document.getElementById(`answer-${i}`);
+        if (input) {
+          const value = input.value || '0';
+          userAnswerStr += value;
+          if (value !== '0' && value !== '') {
+            hasInput = true;
+          }
+        }
+      }
+      
+      const userAnswer = parseInt(userAnswerStr);
+      const feedbackElement = document.getElementById('feedback');
+      
+      if (!hasInput) {
+        feedbackElement.innerHTML = '<span class="emoji">❓</span> 数字を入力してね！';
+        feedbackElement.className = 'feedback incorrect';
+        feedbackElement.style.display = 'block';
+        return;
+      }
+      
+      totalCount++;
+      
+      if (userAnswer === correctAnswer) {
+        correctCount++;
+        feedbackElement.innerHTML = '<span class="emoji">🎉</span> よくできました！ <span class="emoji">👏</span>';
+        feedbackElement.className = 'feedback correct';
+      } else {
+        feedbackElement.innerHTML = `<span class="emoji">💪</span> もう一度やってみよう！正解は ${correctAnswer} です <span class="emoji">📝</span>`;
+        feedbackElement.className = 'feedback incorrect';
+      }
+      
+      feedbackElement.style.display = 'block';
+      updateScore();
+    }
+
+    // 次の問題
+    function nextProblem() {
+      generateProblem();
+    }
+
+    // スコア更新
+    function updateScore() {
+      document.getElementById('correctCount').textContent = correctCount;
+      document.getElementById('totalCount').textContent = totalCount;
+    }
+
+    // メニューに戻る
+    function goToMenu() {
+      if (confirm('メニューに戻りますか？')) {
+        window.history.back();
+      }
+    }
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      generateProblem();
+      // デフォルトで「かんたん」を選択状態に
+      document.querySelector('.btn-outline-primary').classList.add('active');
+    });
+  </script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96bf37c6f7df0087',t:'MTc1NDY1ODI0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
+
+

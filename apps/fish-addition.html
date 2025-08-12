@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>魚釣り足し算ゲーム</title>
+  <meta name="description" content="つりばで さかなを つって たしざん！ せいかいで バブル、まちがいは およいでヒント。レベルつき、モバイル対応。" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#a1ffef;--bg2:#84fab0;--deep:#0c3b3b}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
+    .app{width:100%;max-width:960px;background:#e8fbff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden;border:4px solid #b4f3ff}
+    .title{text-align:center;font-size:1.6rem;color:#0e7c86;font-weight:800}
+    .equation{text-align:center;font-size:2rem;font-weight:800;color:var(--deep)}
+    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+    .pill{background:linear-gradient(45deg,#00c6ff,#0072ff);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
+    .pond{position:relative;border-radius:16px;overflow:hidden;height:300px;background:linear-gradient(180deg,#8bd7ff,#4fc3f7)}
+    .hook{position:absolute;left:50%;top:0;width:2px;height:160px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.6)}
+    .bucket{position:absolute;right:10px;bottom:10px;width:120px;height:80px;background:#fff;border:3px solid #7ec9d9;border-radius:12px}
+    .fish{position:absolute;font-size:34px;cursor:pointer;user-select:none;transition:transform .15s ease}
+    .fish.jump{animation:jump .7s ease}
+    @keyframes jump{50%{transform:translateY(-40px) rotate(-10deg)}to{transform:translate(280px,-10px)}}
+    .bubbles{position:absolute;inset:0;pointer-events:none}
+    .bubble{position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.7);animation:rise .9s ease-out forwards}
+    @keyframes rise{to{transform:translateY(-120px) scale(.6);opacity:0}}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
+    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
+    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
+    .correct{color:#2ecc71}.incorrect{color:#e17055}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="魚釣り足し算ゲーム">
+    <div class="title">🐟 魚釣り たしざん</div>
+    <div class="equation" id="equation">4 + 3 = ?</div>
+    <div class="hud">
+      <div class="pill" id="qinfo">もんだい: 1 / 10</div>
+      <div class="pill" id="score">スコア: 0</div>
+      <div class="pill" id="level">レベル: 1</div>
+      <div class="pill" id="repeat">リピート: OFF</div>
+    </div>
+    <div class="pond" id="pond">
+      <div class="hook" id="hook"></div>
+      <div class="bucket" id="bucket"></div>
+      <div class="bubbles" id="bubbles"></div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="checkBtn">こたえる！</button>
+      <button class="btn secondary" id="nextBtn">つぎへ</button>
+      <button class="btn secondary" id="restartBtn">リスタート</button>
+      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    let idx=0,total=10,score=0,repeat=false,lvl=1;
+    let a=4,b=3,ans=7,caught=0; let audioCtx=null;
+    const pond=document.getElementById('pond'); const bubbles=document.getElementById('bubbles'); const feedback=document.getElementById('feedback');
+    init();
+    function init(){ bind(); start(); const warm=()=>{ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } window.removeEventListener('pointerdown',warm)}; window.addEventListener('pointerdown',warm,{once:true}); }
+    function bind(){ document.getElementById('checkBtn').addEventListener('click', check); document.getElementById('nextBtn').addEventListener('click', nextQ); document.getElementById('restartBtn').addEventListener('click', start); document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;}); }
+    function start(){ idx=0; score=0; lvl=1; nextQ(true); }
+    function nextQ(reset){ if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return;} generate(); render(); idx++; updateHUD(); }
+    function generate(){ a=rand(1,9); b=rand(1, Math.min(15-a,9)); ans=a+b; caught=0; document.getElementById('equation').textContent=`${a} + ${b} = ?`; }
+    function render(){ pond.querySelectorAll('.fish').forEach(n=>n.remove()); bubbles.innerHTML=''; feedback.textContent='';
+      const fishes=a+b; for(let i=0;i<fishes;i++){ const f=document.createElement('div'); f.className='fish'; f.textContent='🐟'; f.style.left=rand(10, pond.clientWidth-60)+'px'; f.style.top=rand(120, pond.clientHeight-40)+'px'; f.addEventListener('click',()=>catchFish(f)); pond.appendChild(f);} }
+    function catchFish(f){ if(caught>=ans) { swimAway(f); return; } caught++; f.classList.add('jump'); play(600,.07,'sine',.05); setTimeout(()=>{ f.remove(); makeBubble(); },300); }
+    function swimAway(f){ f.style.transform='translateX(-40px)'; feedback.className='feedback incorrect'; feedback.textContent='ヒント: ぜんぶで '+ans+' びき だよ'; play(220,.12,'sawtooth',.03); }
+    function makeBubble(){ const x=pond.clientWidth-80, y=pond.clientHeight-40; const b=document.createElement('div'); b.className='bubble'; b.style.left=x+'px'; b.style.top=y+'px'; bubbles.appendChild(b); setTimeout(()=>b.remove(),900); }
+    function check(){ if(caught===ans){ score++; feedback.className='feedback correct'; feedback.textContent='🎈 せいかい！'; [700,880,1000].forEach((f,i)=>setTimeout(()=>play(f,.08,'triangle',.06),i*90)); setTimeout(()=>nextQ(),900);} else { feedback.className='feedback incorrect'; feedback.textContent='まだ たりない よ'; }
+      updateHUD(); }
+    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; document.getElementById('level').textContent=`レベル: ${1 + Math.floor(score/3)}`; }
+    function play(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  </script>
+</body>
+</html>
+
+

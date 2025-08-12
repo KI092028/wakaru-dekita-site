@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>混合演算お菓子パーティー</title>
+  <meta name="description" content="クッキーで たしざん・ひきざん！ せいかいで パーティーハット、まちがいは かけらヒント。くりかえし練習。" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#ffe29f;--bg2:#ffa99f}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
+    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px}
+    .title{text-align:center;font-size:1.6rem;color:#e76f51;font-weight:800}
+    .equation{text-align:center;font-size:2rem;font-weight:800}
+    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
+    .table{position:relative;border:4px solid #f4a261;border-radius:16px;padding:12px;background:#fff6e9;min-height:220px}
+    .cookies{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+    .cookie{width:36px;height:36px;border-radius:50%;background:#d7a86e;position:relative}
+    .cookie::after{content:'';position:absolute;inset:8px;border-radius:50%;background:#f8e2c2}
+    .choice{background:linear-gradient(45deg,#2a9d8f,#00b894);border:none;color:#fff;font-weight:800;font-size:1.4rem;padding:10px 0;border-radius:14px}
+    .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:480px;margin:8px auto 0}
+    .hat{position:absolute;font-size:22px;animation:fly .8s ease-out forwards}
+    @keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(20deg);opacity:0}}
+    .crumb{animation:crumb .5s ease; color:#8d6e63}
+    @keyframes crumb{to{transform:translateY(8px);opacity:.4}}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="混合演算お菓子パーティー">
+    <div class="title">🍪 お菓子 パーティー（+ / -）</div>
+    <div class="equation" id="equation">6 + 2 = ?</div>
+    <div class="hud"><div class="pill" id="qinfo">もんだい: 1 / 10</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="repeat">リピート: OFF</div></div>
+    <div class="table"><div class="cookies" id="cookies"></div><div id="fx"></div></div>
+    <div class="choices" id="choices"></div>
+    <div class="controls" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+      <button class="choice" id="nextBtn">つぎへ</button>
+      <button class="choice" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="feedback" id="feedback" style="text-align:center;min-height:36px;font-weight:800"></div>
+  </div>
+
+  <script>
+    let idx=0,total=10,score=0,repeat=false; let a=6,b=2,op='+',ans=8;
+    const cookiesEl=document.getElementById('cookies'); const choicesEl=document.getElementById('choices'); const fx=document.getElementById('fx'); const fb=document.getElementById('feedback');
+    init(); function init(){ bind(); nextQ(true);} function bind(){ document.getElementById('nextBtn').addEventListener('click', nextQ); document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;}); }
+    function nextQ(reset){ if(!reset && idx>=total){ fb.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(()=>{ idx=0; score=0; nextQ(true); },900);} return;} gen(); render(); idx++; document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+    function gen(){ const isAdd=Math.random()<0.5; if(isAdd){ op='+'; a=rand(1,10); b=rand(1,10); while(a+b>19){ a=rand(1,10); b=rand(1,10);} ans=a+b; } else { op='-'; a=rand(2,10); b=rand(1,a-1); ans=a-b; } document.getElementById('equation').textContent=`${a} ${op} ${b} = ?`; }
+    function render(){ cookiesEl.innerHTML=''; choicesEl.innerHTML=''; fb.textContent=''; for(let i=0;i<(op==='+'?a+b:a);i++){ const c=document.createElement('div'); c.className='cookie'; cookiesEl.appendChild(c);} if(op==='-'){ // 消す演出
+        const idxs=shuffle([...Array(a).keys()]).slice(0,b); setTimeout(()=>idxs.forEach(i=>{ const el=cookiesEl.children[i]; if(el){ el.classList.add('crumb'); setTimeout(()=>el.remove(),350);} }),400); }
+      const opts=new Set([ans]); while(opts.size<3){ const n=ans+rand(-3,3); if(n>0&&n<20) opts.add(n);} [...opts].sort(()=>Math.random()-0.5).forEach(n=>{ const btn=document.createElement('button'); btn.className='choice'; btn.textContent=n; btn.addEventListener('click',()=>choose(n)); choicesEl.appendChild(btn); }); }
+    function choose(n){ if(n===ans){ score++; fb.textContent='🥳 せいかい！'; hats(); } else { fb.textContent='ヒント: こぼれた かけら を みてみよう'; }
+      document.getElementById('score').textContent=`スコア: ${score}`; }
+    function hats(){ const w=fx.parentElement.clientWidth,h=fx.parentElement.clientHeight; for(let i=0;i<12;i++){ const s=document.createElement('div'); s.className='hat'; s.textContent='🎉'; s.style.left=(w/2)+'px'; s.style.top=(h/2)+'px'; s.style.setProperty('--dx',(Math.random()*w-w/2)+'px'); s.style.setProperty('--dy',(Math.random()*h-h/2)+'px'); fx.appendChild(s); setTimeout(()=>s.remove(),800);} }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; } function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  </script>
+</body>
+</html>
+
+

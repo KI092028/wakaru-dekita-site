@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ロボット足し算ビルダー</title>
+  <meta name="description" content="パーツをドラッグして ロボットを くみたてよう。たしざんに あう かずだけ パーツを いれるよ。せいかいで ダンス！" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#1f1c2c;--bg2:#928dab;--green:#2ecc71;--pink:#ff6b6b}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px;color:#fff}
+    .app{width:100%;max-width:980px;background:#101826;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.4);padding:14px;overflow:hidden}
+    .title{text-align:center;font-size:1.6rem;color:#ffd166;font-weight:800}
+    .equation{text-align:center;font-size:2rem;font-weight:800;margin:6px 0}
+    .hud{display:flex;gap:8px;justify-content:center;margin:6px 0;flex-wrap:wrap}
+    .pill{background:#223047;padding:6px 12px;border-radius:999px;font-weight:800}
+    .scene{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+    .bench{background:#0e1520;border:3px solid #2b3a55;border-radius:14px;padding:10px;min-height:280px}
+    .robot{position:relative;background:#0e1520;border:3px solid #2b3a55;border-radius:14px;padding:10px;min-height:280px;display:grid;grid-template-rows:1fr 1fr 1fr;gap:8px}
+    .zone{border:2px dashed #3e4c6a;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center}
+    .part{width:64px;height:64px;border-radius:10px;background:#50c9c3;cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:#0e1520;margin:6px}
+    .head{background:#a29bfe}.arm{background:#74b9ff}.leg{background:#55efc4}
+    .dance{animation:dance .7s ease}
+    @keyframes dance{25%{transform:translateY(-8px)}50%{transform:translateY(0)}75%{transform:translateY(-5px)}}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
+    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
+    .feedback{text-align:center;min-height:36px;font-size:1.1rem;font-weight:800;margin-top:6px}
+    .correct{color:#2ecc71}.incorrect{color:#ff7675}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="ロボット足し算ビルダー">
+    <div class="title">🤖 ロボット たしざん ビルダー</div>
+    <div class="equation" id="equation">2 + 3 = ?（あしの かず）</div>
+    <div class="hud"><div class="pill" id="qinfo">もんだい: 1 / 10</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="repeat">リピート: OFF</div></div>
+    <div class="scene">
+      <div class="bench" id="bench"></div>
+      <div class="robot">
+        <div class="zone" id="zone-head" data-need="1" data-type="head">あたま ×1</div>
+        <div class="zone" id="zone-arm" data-need="2" data-type="arm">うで ×2</div>
+        <div class="zone" id="zone-leg" data-need="5" data-type="leg">あし ×?</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="checkBtn">こたえる！</button>
+      <button class="btn secondary" id="nextBtn">つぎへ</button>
+      <button class="btn secondary" id="restartBtn">リスタート</button>
+      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    let idx=0,total=10,score=0,repeat=false; let a=2,b=3,ans=5;
+    const bench=document.getElementById('bench'); const fb=document.getElementById('feedback');
+    init();
+    function init(){ bind(); start(); }
+    function bind(){ document.getElementById('checkBtn').addEventListener('click',check); document.getElementById('nextBtn').addEventListener('click',nextQ); document.getElementById('restartBtn').addEventListener('click',start); document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;}); }
+    function start(){ idx=0; score=0; nextQ(true); }
+    function nextQ(reset){ if(!reset && idx>=total){ fb.className='feedback correct'; fb.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; } gen(); render(); idx++; updateHUD(); }
+    function gen(){ a=rand(1,4); b=rand(1,6-a); ans=a+b; document.getElementById('equation').textContent=`${a} + ${b} = ?（あしの かず）`; document.getElementById('zone-leg').dataset.need=ans; }
+    function render(){ bench.innerHTML=''; fb.textContent=''; makeParts('head',1); makeParts('arm',2); makeParts('leg',ans+rand(0,2)); enableDrop(); }
+    function makeParts(type,count){ for(let i=0;i<count;i++){ const p=document.createElement('div'); p.className=`part ${type}`; p.textContent= type==='head'?'H': type==='arm'?'A':'L'; p.draggable=true; p.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', type); setTimeout(()=>p.classList.add('hide'),0); }); p.addEventListener('dragend',()=>p.classList.remove('hide')); bench.appendChild(p);} }
+    function enableDrop(){ document.querySelectorAll('.zone').forEach(z=>{ z.addEventListener('dragover',e=>e.preventDefault()); z.addEventListener('drop',e=>{ e.preventDefault(); const type=e.dataTransfer.getData('text/plain'); if(type!==z.dataset.type){ fb.className='feedback incorrect'; fb.textContent='タイプが ちがうよ'; return;} const p=document.querySelector(`.part.${type}.hide`) || document.querySelector(`.part.${type}`); if(p){ z.appendChild(p); p.classList.remove('hide'); p.style.margin='4px'; }
+    }); }); }
+    function countInZone(id,type){ return document.querySelectorAll(`#${id} .part.${type}`).length; }
+    function check(){ const ok = countInZone('zone-head','head')>=1 && countInZone('zone-arm','arm')>=2 && countInZone('zone-leg','leg')===ans; if(ok){ score++; fb.className='feedback correct'; fb.textContent='🤖 ダンス！ せいかい！'; document.querySelectorAll('.part').forEach(p=>p.classList.add('dance')); setTimeout(()=>nextQ(),900);} else { fb.className='feedback incorrect'; fb.textContent='パーツの かず を みなおそう！'; }
+      updateHUD(); }
+    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  </script>
+</body>
+</html>
+
+

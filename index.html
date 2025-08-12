@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールを提供します。">
-  <title>子供達の「わかる！」「できた！」を増やす、お役立ちサイト</title>
+  <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールで、足し算や図形を楽しく学べます。保護者・教師におすすめ！無料で利用できる子供向け学習ツールです。">
+  <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ, 子供向け算数, 小学生算数アプリおすすめ">
+  <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
+  <meta name="robots" content="index, follow">
+  <title>小学校算数アプリおすすめ | 子供達の「わかる！」「できた！」を増やす、お役立ちサイト</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
@@ -53,6 +56,10 @@
       font-size: 0.9rem;
       margin: 2px;
     }
+    /* 学年カード */
+    .grade-card {
+      cursor: pointer;
+    }
     
     /* 文字サイズを大きく */
     .navbar-brand {
@@ -90,7 +97,7 @@
   <!-- ヘッダー -->
   <nav class="navbar navbar-expand-lg">
     <div class="container">
-      <a class="navbar-brand" href="#">子供達の「わかる！」「できた！」を増やす、お役立ちサイト</a>
+      <a class="navbar-brand" href="index.html">子供達の「わかる！」「できた！」を増やす、お役立ちサイト</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -110,18 +117,27 @@
   <!-- メインメニュー -->
   <main class="container my-5">
     <!-- 授業から探すセクション -->
-    <section class="text-center mb-5">
-      <h2 class="mb-4">授業から探す</h2>
+    <section id="subjectSection" class="text-center mb-5">
+      <h2 class="mb-4">授業から探す（げんざい、更新中！）</h2>
       <div class="row g-3" id="subjectContainer">
         <!-- 教科カードが表示される -->
       </div>
+    </section>
+
+    <!-- 学年選択セクション（算数選択時に表示） -->
+    <section id="gradeSection" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 id="gradeSectionTitle">学年を選んでね</h3>
+        <button class="btn btn-outline-primary" onclick="showSubjects()">授業選択に戻る</button>
+      </div>
+      <div class="row g-3" id="gradeContainer"></div>
     </section>
 
     <!-- アプリ一覧セクション -->
     <section id="appSection" style="display: none;">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 id="sectionTitle">アプリ一覧</h3>
-        <button class="btn btn-outline-primary" onclick="showSubjects()">授業選択に戻る</button>
+        <button class="btn btn-outline-primary" onclick="goBackFromApps()">戻る</button>
       </div>
       <div class="row g-4" id="appContainer">
         <!-- アプリカードが表示される -->
@@ -132,7 +148,7 @@
   <!-- フッター -->
   <footer class="footer">
     <div class="container">
-      <span class="footer-text">&copy; 2024 子供達の「わかる！」「できた！」を増やす、お役立ちサイト | <a href="#" style="color: #fff;">プライバシーポリシー</a> | <a href="#" style="color: #fff;">お問い合わせ</a></span>
+      <span class="footer-text">&copy; 2024 子供達の「わかる！」「できた！」を増やす、お役立ちサイト | <a href="privacy.html" style="color: #fff;">プライバシーポリシー</a> | <a href="mailto:contact@wakaru-dekita.com" style="color: #fff;">お問い合わせ</a></span>
     </div>
   </footer>
 
@@ -166,8 +182,12 @@
       }
     ];
 
-    // アプリデータを格納する変数
+    // アプリデータと状態
     let apps = [];
+    let currentSubject = null;
+    let currentGrade = null;
+    const SCHOOL_YEARS = [1, 2, 3, 4, 5, 6];
+    const getYearLabel = (n) => `${n}年生`;
 
     // 教科カードを生成する関数
     function createSubjectCard(subject) {
@@ -196,12 +216,9 @@
             <div class="card-body">
               <h5 class="card-title">${app.name}</h5>
               <p class="card-text">${app.description}</p>
-              <div class="mb-2">
-                ${tagBadges}
-              </div>
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
                 <span class="badge bg-success">${app.difficulty}</span>
-                <img src="${app.screenshot}" alt="${app.name}のスクリーンショット" class="img-fluid mb-2" style="max-height: 100px; object-fit: cover;">
+                ${tagBadges}
               </div>
               <a href="${app.link}" class="btn btn-success mt-3 w-100">はじめる</a>
             </div>
@@ -213,12 +230,43 @@
     // 教科一覧を表示
     function showSubjects() {
       document.getElementById('subjectContainer').innerHTML = subjects.map(createSubjectCard).join('');
-      document.querySelector('section').style.display = 'block';
-      document.getElementById('appSection').style.display = 'none';
+      // 表示切り替え（明示的に）
+      const subj = document.getElementById('subjectSection');
+      const grade = document.getElementById('gradeSection');
+      const app = document.getElementById('appSection');
+      if (subj) subj.style.display = 'block';
+      if (grade) grade.style.display = 'none';
+      if (app) app.style.display = 'none';
+      currentSubject = null;
+      currentGrade = null;
     }
+
+    // 算数カテゴリのアプリだけ取得
+    function getMathApps() {
+      const mathCategories = ["basic", "multiplication", "division", "geometry"];
+      return apps.filter(app => mathCategories.includes((app.category || '').toLowerCase()));
+    }
+
+    // 学年カードを生成
+    function createGradeCard(grade) {
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="card subject-card grade-card h-100 text-center p-4" onclick="showAppsByGrade('${grade}')">
+            <div class="subject-icon">🎒</div>
+            <h4 class="card-title">${grade}</h4>
+          </div>
+        </div>
+      `;
+    }
+
+    // 学年選択は廃止
+    function showGradeSelection() { showApps('算数'); }
 
     // 特定教科のアプリを表示
     function showApps(subjectName) {
+      currentSubject = subjectName;
+      // すべての科目で直接アプリ一覧へ
+
       // カテゴリーに基づいてアプリをフィルタリング
       const filteredApps = apps.filter(app => {
         // カテゴリー名を小文字に変換して比較
@@ -240,8 +288,50 @@
       // フィルタリングされたアプリを表示
       document.getElementById('appContainer').innerHTML = filteredApps.map(createAppCard).join('');
       document.getElementById('sectionTitle').textContent = `${subjectName}のアプリ`;
-      document.querySelector('section').style.display = 'none';
+      const subj = document.getElementById('subjectSection');
+      if (subj) subj.style.display = 'none';
+      document.getElementById('gradeSection').style.display = 'none';
       document.getElementById('appSection').style.display = 'block';
+    }
+
+    // 学年表記（例: "1-2年生" や "3年生"）から数値レンジを抽出
+    function parseGradeRange(label) {
+      if (!label) return null;
+      const mRange = label.match(/(\d+)\s*-\s*(\d+)\s*年?/);
+      if (mRange) {
+        const a = parseInt(mRange[1], 10);
+        const b = parseInt(mRange[2], 10);
+        return { min: Math.min(a, b), max: Math.max(a, b) };
+      }
+      const mSingle = label.match(/(\d+)\s*年?/);
+      if (mSingle) {
+        const n = parseInt(mSingle[1], 10);
+        return { min: n, max: n };
+      }
+      return null;
+    }
+
+    function appMatchesYear(app, yearNum) {
+      const range = parseGradeRange(app.grade || '');
+      if (!range) return false;
+      return yearNum >= range.min && yearNum <= range.max;
+    }
+
+    // 学年で算数アプリを表示
+    function showAppsByGrade(grade) {
+      currentGrade = grade;
+      const yearNum = parseInt((grade.match(/\d+/) || ['0'])[0], 10);
+      const filteredApps = getMathApps().filter(app => appMatchesYear(app, yearNum));
+      document.getElementById('appContainer').innerHTML = filteredApps.map(createAppCard).join('');
+      document.getElementById('sectionTitle').textContent = `算数（${getYearLabel(yearNum)}）のアプリ`;
+      document.querySelector('section').style.display = 'none';
+      document.getElementById('gradeSection').style.display = 'none';
+      document.getElementById('appSection').style.display = 'block';
+    }
+
+    // アプリ一覧の戻るボタン挙動
+    function goBackFromApps() {
+      showSubjects();
     }
 
     // 検索機能
@@ -256,7 +346,7 @@
           app.name.toLowerCase().includes(searchTerm) ||
           app.description.toLowerCase().includes(searchTerm) ||
           app.category.toLowerCase().includes(searchTerm) ||
-          app.grade.toLowerCase().includes(searchTerm) ||
+          (app.grade || '').toLowerCase().includes(searchTerm) ||
           app.difficulty.toLowerCase().includes(searchTerm)
         );
         
@@ -298,7 +388,10 @@
     }
 
     // 初期化
+    let __initialized = false;
     async function initialize() {
+      if (__initialized) return; // 重複初期化防止
+      __initialized = true;
       try {
         console.log('初期化開始');
         const loaded = await loadAppData();

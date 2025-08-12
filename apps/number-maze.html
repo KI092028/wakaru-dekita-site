@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数字迷路問題解決ゲーム</title>
+  <meta name="description" content="1→10の順に道をつなげてゴール！タップで経路を作り、正解で光る。ランダム迷路、10問、スコア＆リピート、モバイル対応。" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#a1c4fd;--bg2:#c2ffd8;--deep:#2d3436;--good:#2ecc71;--bad:#ff7675;--grid:#ffffff}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
+    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
+    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
+    .mission{text-align:center;font-size:1.8rem;font-weight:800;color:var(--deep)}
+    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
+    .board{position:relative;margin-top:10px;border:4px solid #b4d4ff;border-radius:16px;background:#eaf4ff}
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:10px}
+    .cell{background:var(--grid);border-radius:10px;height:70px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;color:var(--deep);cursor:pointer;user-select:none;position:relative}
+    .cell.selected{outline:4px solid rgba(116,185,255,.8)}
+    .cell.locked{background:#eaf7ff;color:#7f8c8d}
+    .canvas{position:absolute;inset:0;pointer-events:none}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
+    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
+    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
+    .correct{color:var(--good)}.incorrect{color:var(--bad)}
+    .vibrate{animation:vib .25s ease 2}
+    @keyframes vib{25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+    @media (max-width:560px){.cell{height:56px;font-size:1.3rem}}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="数字迷路問題解決ゲーム">
+    <div class="title">🔢 数字迷路 問題解決ゲーム</div>
+    <div class="mission" id="mission">2 から 8 まで、+1 で すすもう！</div>
+    <div class="hud">
+      <div class="pill" id="qinfo">もんだい: 1 / 10</div>
+      <div class="pill" id="score">スコア: 0</div>
+      <div class="pill" id="repeat">リピート: OFF</div>
+    </div>
+    <div class="board" id="board">
+      <canvas class="canvas" id="lines"></canvas>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="checkBtn">こたえる！</button>
+      <button class="btn secondary" id="nextBtn">つぎへ</button>
+      <button class="btn secondary" id="restartBtn">リスタート</button>
+      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    let idx=0,total=10,score=0,repeat=false;
+    let start=2,goal=8,seq=[]; // 正しい経路の数値配列
+    let path=[]; // ユーザー選択
+    const gridEl=document.getElementById('grid');
+    const lines=document.getElementById('lines');
+    const board=document.getElementById('board');
+    const mission=document.getElementById('mission');
+    const feedback=document.getElementById('feedback');
+
+    init();
+    function init(){
+      bindUI(); startSession(); window.addEventListener('resize', fitCanvas);
+    }
+    function bindUI(){
+      document.getElementById('checkBtn').addEventListener('click', check);
+      document.getElementById('nextBtn').addEventListener('click', nextQ);
+      document.getElementById('restartBtn').addEventListener('click', startSession);
+      document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
+    }
+    function startSession(){ idx=0; score=0; nextQ(true); }
+    function nextQ(reset){
+      if(!reset && idx>=total){
+        feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`;
+        if(repeat){ setTimeout(startSession,900); }
+        return;
+      }
+      generate(); render(); idx++; updateHUD();
+    }
+    function generate(){
+      start = rand(1,8); const len = rand(2, (10-start)); goal = start + len; // +1で進む
+      seq = []; for(let n=start; n<=goal; n++) seq.push(n);
+      mission.textContent = `${start} から ${goal} まで、+1 で すすもう！`;
+      path = [];
+    }
+    function render(){
+      gridEl.innerHTML=''; feedback.textContent='';
+      const nums = shuffle([...Array(10).keys()].map(n=>n+1));
+      nums.forEach(n=>{
+        const c=document.createElement('div'); c.className='cell'; c.textContent=n; c.dataset.n=n;
+        if(n===start||n===goal){ c.classList.add('locked'); }
+        c.addEventListener('click',()=>tap(c));
+        gridEl.appendChild(c);
+      });
+      fitCanvas(); drawPath();
+      // 初期にスタートを選択状態
+      const startCell=[...gridEl.children].find(x=>parseInt(x.dataset.n,10)===start); if(startCell){ startCell.classList.add('selected'); path=[start]; }
+    }
+    function tap(cell){
+      const n=parseInt(cell.dataset.n,10);
+      if(path.length===0){ if(n===start){ path=[start]; cell.classList.add('selected'); drawPath(); } return; }
+      const last=path[path.length-1];
+      if(n===last+1){ // 正しい一歩
+        if(!path.includes(n)) path.push(n); cell.classList.add('selected'); drawPath();
+      }else{ // ミス
+        board.classList.add('vibrate'); setTimeout(()=>board.classList.remove('vibrate'),250);
+        feedback.className='feedback incorrect'; feedback.textContent='💡 つぎは +1 の すうじ だよ！';
+      }
+    }
+    function check(){
+      // 完成: start..goal まで全て選べているか
+      const ok = seq.every(v=>path.includes(v)) && path[0]===start && path[path.length-1]===goal;
+      if(ok){ score++; feedback.className='feedback correct'; feedback.textContent='✨ せいかい！'; flashPath(); setTimeout(()=>nextQ(),800); }
+      else{ feedback.className='feedback incorrect'; feedback.textContent='まだ つながってない よ！'; }
+      updateHUD();
+    }
+    function flashPath(){
+      // ラインを強調
+      const ctx=lines.getContext('2d'); ctx.save(); ctx.lineWidth=10; ctx.strokeStyle='rgba(46,204,113,0.7)'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=14; drawPath(); ctx.restore();
+    }
+    function drawPath(){
+      const ctx=lines.getContext('2d'); ctx.clearRect(0,0,lines.width,lines.height);
+      if(path.length<2) return;
+      ctx.lineWidth=6; ctx.strokeStyle='rgba(116,185,255,0.9)'; ctx.lineCap='round'; ctx.beginPath();
+      for(let i=1;i<path.length;i++){
+        const aN=path[i-1], bN=path[i];
+        const aCell=[...gridEl.children].find(x=>parseInt(x.dataset.n,10)===aN);
+        const bCell=[...gridEl.children].find(x=>parseInt(x.dataset.n,10)===bN);
+        if(!aCell||!bCell) continue;
+        const aR=aCell.getBoundingClientRect(); const bR=bCell.getBoundingClientRect();
+        const br=board.getBoundingClientRect();
+        const ax=aR.left+aR.width/2 - br.left; const ay=aR.top+aR.height/2 - br.top;
+        const bx=bR.left+bR.width/2 - br.left; const by=bR.top+bR.height/2 - br.top;
+        if(i===1) ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+      }
+      ctx.stroke();
+    }
+    function fitCanvas(){ const r=board.getBoundingClientRect(); lines.width=r.width; lines.height=r.height; drawPath(); }
+    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  </script>
+</body>
+</html>
+
+

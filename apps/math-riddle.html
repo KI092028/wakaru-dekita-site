@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>簡単謎解き算数パズル</title>
+  <meta name="description" content="りんごなどのイラストで算数なぞなぞ！入力して回答、正解で食べるアニメ、間違いははえなおす。8問、音声ヒント対応。" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#cfd9df;--bg2:#e2ebf0;--deep:#2d3436}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
+    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
+    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
+    .riddle{text-align:center;font-size:1.8rem;font-weight:800;color:var(--deep)}
+    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
+    .canvas-wrap{background:#fff;border:4px solid #b4d4ff;border-radius:16px;padding:8px;margin-top:8px}
+    canvas{width:100%;height:240px;display:block}
+    .equation-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .answer-input{font-size:2rem;font-weight:800;width:120px;text-align:center;border:4px solid #74b9ff;border-radius:14px;padding:6px 10px;font-family:'Nunito',sans-serif}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
+    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
+    .correct{color:#2ecc71}.incorrect{color:#ff7675}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="簡単謎解き算数パズル">
+    <div class="title">🍎 簡単 謎解き 算数パズル</div>
+    <div class="hud">
+      <div class="pill" id="qinfo">もんだい: 1 / 8</div>
+      <div class="pill" id="score">スコア: 0</div>
+      <div class="pill" id="repeat">リピート: OFF</div>
+    </div>
+    <div class="riddle" id="riddle">りんごが 5 こ。2 こ たべたら、のこりは？</div>
+    <div class="canvas-wrap"><canvas id="fruit"></canvas></div>
+    <div class="equation-row">
+      <div class="equation" id="equation">=</div>
+      <input type="text" class="answer-input" id="answer" inputmode="numeric" pattern="[0-9]*" placeholder="?" aria-label="こたえ" maxlength="2" />
+    </div>
+    <div class="controls">
+      <button class="btn" id="checkBtn">こたえる！</button>
+      <button class="btn" id="nextBtn">つぎへ</button>
+      <button class="btn" id="restartBtn">リスタート</button>
+      <button class="btn" id="voiceBtn">ボイスヒント</button>
+      <button class="btn" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    let idx=0,total=8,score=0,repeat=false;
+    let problem=null; // {text, answer, type}
+    let audioCtx=null;
+    const cvs=document.getElementById('fruit'); const ctx=cvs.getContext('2d');
+    const feedback=document.getElementById('feedback');
+    const input=document.getElementById('answer');
+
+    init();
+    function init(){ bind(); start(); fit(); window.addEventListener('resize',fit); }
+    function bind(){
+      document.getElementById('checkBtn').addEventListener('click', check);
+      document.getElementById('nextBtn').addEventListener('click', nextQ);
+      document.getElementById('restartBtn').addEventListener('click', start);
+      document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
+      document.getElementById('voiceBtn').addEventListener('click', voice);
+      input.addEventListener('input', e=>{ let v=e.target.value; v=v.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)); v=v.replace(/[^0-9]/g,''); if(v.length>2)v=v.slice(0,2); e.target.value=v; });
+      input.addEventListener('keypress',e=>{ if(e.key==='Enter') check(); });
+    }
+    function start(){ idx=0; score=0; nextQ(true); }
+    function nextQ(reset){
+      if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; }
+      generate(); render(); idx++; updateHUD();
+    }
+    function generate(){
+      const a=rand(1,10), b=rand(1,10);
+      if(Math.random()<0.5){ problem={ text:`りんごが ${a} こ。${Math.min(b,a-1)} こ たべたら、のこりは？`, answer:a-Math.min(b,a-1), type:'eat', a, b:Math.min(b,a-1) } } else { problem={ text:`みかんが ${a} こ。さらに ${b} こ もらったら、ぜんぶで？`, answer:a+b, type:'add', a, b } }
+      document.getElementById('riddle').textContent=problem.text;
+    }
+    function render(){ input.value=''; feedback.textContent=''; drawFruit(); }
+    function check(){ const v=parseInt(input.value,10); if(Number.isNaN(v)){ feedback.className='feedback incorrect'; feedback.textContent='すうじを いれてね！'; return; } if(v===problem.answer){ score++; feedback.className='feedback correct'; feedback.textContent='🍎 せいかい！'; eat(); setTimeout(()=>nextQ(),900);} else { feedback.className='feedback incorrect'; feedback.textContent='ちがうよ！ もういちど。'; regrow(); } updateHUD(); }
+    function drawFruit(){ fit(); ctx.clearRect(0,0,cvs.width,cvs.height); const n = problem.type==='eat' ? problem.a : problem.a+problem.b; for(let i=0;i<n;i++){ const x=40+(i%10)*40; const y=40+Math.floor(i/10)*50; drawApple(x,y,1); } }
+    function eat(){ if(problem.type!=='eat') return; let eaten=0; const timer=setInterval(()=>{ if(eaten>=problem.b){ clearInterval(timer); return;} const i=problem.a-1-eaten; const x=40+(i%10)*40; const y=40+Math.floor(i/10)*50; drawApple(x,y,0); eaten++; },80); }
+    function regrow(){ drawFruit(); }
+    function drawApple(x,y,alive){ ctx.save(); if(!alive){ ctx.globalAlpha=.2; } ctx.beginPath(); ctx.arc(x,y,14,0,Math.PI*2); ctx.fillStyle='#ff6b6b'; ctx.fill(); ctx.fillStyle='#2ecc71'; ctx.fillRect(x-2,y-20,4,10); ctx.restore(); }
+    function voice(){ const t = document.getElementById('riddle').textContent; const u=new SpeechSynthesisUtterance(t); u.lang='ja-JP'; speechSynthesis.speak(u); }
+    function fit(){ const r=cvs.getBoundingClientRect(); const s=window.devicePixelRatio||1; const w=Math.floor(r.width*s), h=Math.floor(240*s); if(cvs.width!==w||cvs.height!==h){ cvs.width=w; cvs.height=h; } }
+    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+  </script>
+</body>
+</html>
+
+

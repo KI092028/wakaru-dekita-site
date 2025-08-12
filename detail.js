@@ -27,6 +27,9 @@ function renderAppDetail(app) {
     return;
   }
   
+  // SEO対策: 動的にメタタグとタイトルを更新
+  updatePageSEO(app);
+  
   // iframe srcをapps/フォルダ内のHTMLファイルに設定
   const iframeSrc = `apps/${app.id}.html`;
   
@@ -37,12 +40,9 @@ function renderAppDetail(app) {
           <h1 id="app-title" class="mb-3" style="color: var(--main-blue);">${app.name}</h1>
           <div class="mb-3">
             <span class="badge bg-success me-2">${app.difficulty || '初級'}</span>
-            <span class="badge bg-info">${app.grade || '1-2年生'}</span>
+            <span class="badge bg-info">${app.grade || ''}</span>
           </div>
         </header>
-        
-        <img src="${app.screenshot}" alt="${app.name}のスクリーンショット" 
-             class="app-detail-img" loading="lazy">
         
         <p class="mb-4 lead">${app.description}</p>
         
@@ -65,6 +65,31 @@ function renderAppDetail(app) {
       </div>
     </div>
   `;
+}
+
+// SEO対策: ページのメタタグとタイトルを動的に更新
+function updatePageSEO(app) {
+  // タイトルの更新
+  document.title = `${app.name} | 小学校算数アプリおすすめ | 子供達の「わかる！」「できた！」を増やす、お役立ちサイト`;
+  
+  // メタディスクリプションの更新
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    metaDesc.content = `${app.name}の詳細ページ。${app.description} 小学校算数アプリで子供の学習をサポートします。無料で利用できる子供向け学習ツールです。`;
+  }
+  
+  // メタキーワードの更新
+  const metaKeywords = document.querySelector('meta[name="keywords"]');
+  if (metaKeywords) {
+    const categoryKeywords = {
+      'basic': '足し算練習, 引き算練習, 基本計算',
+      'multiplication': 'かけ算九九, 九九練習',
+      'division': 'わり算練習, 割り算問題',
+      'geometry': '図形学習, 図形問題'
+    };
+    const categoryKeyword = categoryKeywords[app.category] || '小学校算数アプリ';
+    metaKeywords.content = `小学校算数アプリ, ${categoryKeyword}, 子供学習ツール, 無料算数ゲーム, 小学生おすすめアプリ`;
+  }
 }
 
 // ローディングインジケーターを非表示にする
