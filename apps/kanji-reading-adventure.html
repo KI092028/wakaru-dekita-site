@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>漢字読みクイズアドベンチャー（1年）</title>
+  <style>
+    :root { --blue:#2563eb; --green:#16a34a; --yellow:#f59e0b; --bg:#f8fafc; }
+    body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans JP', 'メイリオ', Meiryo, Arial, sans-serif; background: #ffffff; color:#111827; }
+    .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+    header h1 { margin:0 0 4px; color: var(--blue); font-size: 1.6rem; }
+    .meta { color:#64748b; margin-bottom: 10px; }
+    .map { position: relative; height: 120px; background: linear-gradient(90deg,#dbeafe,#fef9c3); border-radius: 12px; border:2px solid #c7d2fe; overflow:hidden; }
+    .path { position:absolute; left: 12px; right: 12px; top: 50%; height: 6px; background: #93c5fd; transform: translateY(-50%); border-radius: 6px; }
+    .flag { position:absolute; width: 28px; height: 28px; border-radius: 50%; background:#fde68a; border:2px solid #f59e0b; top: 50%; transform: translateY(-50%); }
+    .hero { position:absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; background:#86efac; border:2px solid #16a34a; border-radius: 50%; display:grid; place-items:center; font-weight:700; color:#065f46; transition:left .3s ease; }
+    .panel { background:#fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .big { font-size: clamp(84px, 18vw, 180px); line-height: 1; text-align: center; margin: 8px 0 12px; user-select: none; font-weight:900; color:#111827; -webkit-text-stroke:1px rgba(0,0,0,0.06); text-rendering: optimizeLegibility; }
+    .choices { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .choice { padding: 14px 16px; font-size: 1.35rem; border:2px solid #475569; border-radius: 12px; background:#ffffff; color:#111827; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+    .choice:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
+    .choice.correct { background:#166534; color:#ffffff; border-color:#14532d; }
+    .choice.wrong { background:#991b1b; color:#ffffff; border-color:#7f1d1d; }
+    .status { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom: 6px; }
+    .status .score-label { font-weight: 700; }
+    #score { font-size: 1.8rem; font-weight: 800; color:#0ea5e9; }
+    .feedback { min-height: 1.4em; font-size: 1.1rem; }
+    .stars { position: relative; height: 0; }
+    .star { position:absolute; width: 12px; height: 12px; background: radial-gradient(#fde68a,#f59e0b); border-radius:50%; animation: pop 600ms ease-out forwards; opacity:0; }
+    @keyframes pop { 0%{ transform: translate(0,0) scale(.4); opacity:0} 30%{opacity:1} 100%{ transform: translate(var(--dx), var(--dy)) scale(0); opacity:0 } }
+    .controls { display:flex; gap:8px; flex-wrap:wrap; }
+    button { font-size:1.1rem; padding:10px 14px; border-radius:10px; border:2px solid #2563eb; background:#2563eb; color:#fff; }
+    button.ghost { background:#fff; color:#2563eb; }
+    @media (max-width: 420px) { .choices { grid-template-columns: 1fr; } }
+  </style>
+  <script>
+    // ローマ字ヒント用（超簡易）
+    const toRomaji = (hira) => {
+      const map = { きゃ:'kya', きゅ:'kyu', きょ:'kyo', しゃ:'sha', しゅ:'shu', しょ:'sho', ちゃ:'cha', ちゅ:'chu', ちょ:'cho', ぎゃ:'gya', ぎゅ:'gyu', ぎょ:'gyo', じゃ:'ja', じゅ:'ju', じょ:'jo', びゃ:'bya', びゅ:'byu', びょ:'byo', ぴゃ:'pya', ぴゅ:'pyu', ぴょ:'pyo' };
+      let s = hira;
+      Object.keys(map).forEach(k=>{ s = s.replaceAll(k,map[k]); });
+      const tbl = {
+        あ:'a', い:'i', う:'u', え:'e', お:'o', か:'ka', き:'ki', く:'ku', け:'ke', こ:'ko', さ:'sa', し:'shi', す:'su', せ:'se', そ:'so',
+        た:'ta', ち:'chi', つ:'tsu', て:'te', と:'to', な:'na', に:'ni', ぬ:'nu', ね:'ne', の:'no', は:'ha', ひ:'hi', ふ:'fu', へ:'he', ほ:'ho',
+        ま:'ma', み:'mi', む:'mu', め:'me', も:'mo', や:'ya', ゆ:'yu', よ:'yo', ら:'ra', り:'ri', る:'ru', れ:'re', ろ:'ro', わ:'wa', を:'o', ん:'n',
+        が:'ga', ぎ:'gi', ぐ:'gu', げ:'ge', ご:'go', ざ:'za', じ:'ji', ず:'zu', ぜ:'ze', ぞ:'zo', だ:'da', づ:'zu', で:'de', ど:'do', ば:'ba', び:'bi', ぶ:'bu', べ:'be', ぼ:'bo', ぱ:'pa', ぴ:'pi', ぷ:'pu', ぺ:'pe', ぽ:'po'
+      };
+      return s.split('').map(ch => tbl[ch] || ch).join('');
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>漢字読みクイズアドベンチャー（1年）</h1>
+      <div class="meta">80字からランダム10問。せいかいでスター！ まちがいはローマ字ヒント。</div>
+    </header>
+
+    <div class="map" aria-hidden="true">
+      <div class="path"></div>
+      <div class="flag" style="left: calc(100% - 28px);"></div>
+      <div class="hero" id="hero" style="left: 8px;">🗺️</div>
+    </div>
+
+    <section class="panel" aria-live="polite">
+      <div class="status">
+        <div>のこり: <span id="remain">10</span></div>
+        <div><span class="score-label">スコア:</span> <span id="score">0</span></div>
+      </div>
+      <div class="big" id="kanji">一</div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="stars" id="stars"></div>
+      <div class="controls" style="margin-top:10px">
+        <button id="startBtn" class="ghost">はじめから</button>
+        <button id="nextBtn">つぎへ</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // 1年生80字（サイトのgrade1と整合。読みはひらがな）
+    const G1 = [
+      { kanji:'一', reading:'いち' },{ kanji:'右', reading:'みぎ' },{ kanji:'雨', reading:'あめ' },{ kanji:'円', reading:'えん' },{ kanji:'王', reading:'おう' },
+      { kanji:'音', reading:'おと' },{ kanji:'下', reading:'した' },{ kanji:'火', reading:'ひ' },{ kanji:'花', reading:'はな' },{ kanji:'貝', reading:'かい' },
+      { kanji:'学', reading:'まなぶ' },{ kanji:'気', reading:'き' },{ kanji:'九', reading:'きゅう' },{ kanji:'休', reading:'やすむ' },{ kanji:'玉', reading:'たま' },
+      { kanji:'金', reading:'かね' },{ kanji:'空', reading:'そら' },{ kanji:'月', reading:'つき' },{ kanji:'犬', reading:'いぬ' },{ kanji:'見', reading:'みる' },
+      { kanji:'五', reading:'ご' },{ kanji:'口', reading:'くち' },{ kanji:'校', reading:'こう' },{ kanji:'左', reading:'ひだり' },{ kanji:'三', reading:'さん' },
+      { kanji:'山', reading:'やま' },{ kanji:'子', reading:'こ' },{ kanji:'四', reading:'よん' },{ kanji:'糸', reading:'いと' },{ kanji:'字', reading:'じ' },
+      { kanji:'耳', reading:'みみ' },{ kanji:'七', reading:'なな' },{ kanji:'車', reading:'くるま' },{ kanji:'手', reading:'て' },{ kanji:'十', reading:'じゅう' },
+      { kanji:'出', reading:'でる' },{ kanji:'女', reading:'おんな' },{ kanji:'小', reading:'ちいさい' },{ kanji:'上', reading:'うえ' },{ kanji:'森', reading:'もり' },
+      { kanji:'人', reading:'ひと' },{ kanji:'水', reading:'みず' },{ kanji:'正', reading:'ただしい' },{ kanji:'生', reading:'いきる' },{ kanji:'青', reading:'あお' },
+      { kanji:'夕', reading:'ゆう' },{ kanji:'石', reading:'いし' },{ kanji:'赤', reading:'あか' },{ kanji:'千', reading:'せん' },{ kanji:'川', reading:'かわ' },
+      { kanji:'先', reading:'さき' },{ kanji:'早', reading:'はやい' },{ kanji:'草', reading:'くさ' },{ kanji:'足', reading:'あし' },{ kanji:'村', reading:'むら' },
+      { kanji:'大', reading:'おおきい' },{ kanji:'男', reading:'おとこ' },{ kanji:'竹', reading:'たけ' },{ kanji:'中', reading:'なか' },{ kanji:'虫', reading:'むし' },
+      { kanji:'町', reading:'まち' },{ kanji:'天', reading:'てん' },{ kanji:'田', reading:'た' },{ kanji:'土', reading:'つち' },{ kanji:'二', reading:'に' },
+      { kanji:'日', reading:'ひ' },{ kanji:'入', reading:'はいる' },{ kanji:'年', reading:'とし' },{ kanji:'白', reading:'しろ' },{ kanji:'八', reading:'はち' },
+      { kanji:'百', reading:'ひゃく' },{ kanji:'文', reading:'ぶん' },{ kanji:'木', reading:'き' },{ kanji:'本', reading:'ほん' },{ kanji:'名', reading:'な' },
+      { kanji:'目', reading:'め' },{ kanji:'立', reading:'たつ' },{ kanji:'力', reading:'ちから' },{ kanji:'林', reading:'はやし' },{ kanji:'六', reading:'ろく' }
+    ];
+
+    // 状態
+    let pool = G1.slice();
+    let current = null;
+    let remain = 10;
+    let score = 0;
+    let answered = false;
+
+    // 効果音 & 発音
+    let audioCtx;
+    function beepOK(){
+      try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.setValueAtTime(880,audioCtx.currentTime); g.gain.setValueAtTime(0.0001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.2,audioCtx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.25); o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.28);}catch(e){}
+    }
+    function speak(text){
+      if(!('speechSynthesis' in window)) return; const u = new SpeechSynthesisUtterance(text); u.lang='ja-JP'; u.rate=0.9; speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }
+
+    // ユーティリティ
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+    function sampleWrong(n, except){ const c = pool.filter(x=>x.reading!==except); const r=[]; while(r.length<Math.min(n,c.length)){ const x=c[Math.floor(Math.random()*c.length)]; if(!r.includes(x)) r.push(x);} return r; }
+
+    // UI参照
+    const hero = document.getElementById('hero');
+    const remainEl = document.getElementById('remain');
+    const scoreEl = document.getElementById('score');
+    const kanjiEl = document.getElementById('kanji');
+    const choicesEl = document.getElementById('choices');
+    const feedbackEl = document.getElementById('feedback');
+    const starsEl = document.getElementById('stars');
+    const startBtn = document.getElementById('startBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateHero(){
+      const total = 10; const done = total - remain; const left = 8 + (done/total) * (960 - 16 - 34); // 960幅前提で相対的に
+      hero.style.left = Math.max(8, Math.min(left, window.innerWidth - 42)) + 'px';
+    }
+
+    function popStars(){
+      starsEl.innerHTML='';
+      for(let i=0;i<8;i++){
+        const s=document.createElement('div'); s.className='star';
+        const dx = (Math.random()*120-60)+'px';
+        const dy = (-Math.random()*100-20)+'px';
+        s.style.setProperty('--dx', dx); s.style.setProperty('--dy', dy);
+        s.style.left = (window.innerWidth/2)+'px';
+        s.style.top = '0px';
+        starsEl.appendChild(s);
+        requestAnimationFrame(()=>{ s.style.opacity='1'; });
+        setTimeout(()=> s.remove(), 700);
+      }
+    }
+
+    function pick(){ current = pool[Math.floor(Math.random()*pool.length)]; }
+
+    function renderQuestion(){
+      answered=false; nextBtn.disabled=true; feedbackEl.textContent='';
+      pick(); kanjiEl.textContent=current.kanji;
+      // 発音
+      speak(current.kanji);
+      // 選択肢
+      const wrong = sampleWrong(3, current.reading).map(x=>x.reading);
+      const opts = shuffle([current.reading, ...wrong]);
+      choicesEl.innerHTML='';
+      opts.forEach(r=>{
+        const b=document.createElement('button'); b.className='choice'; b.textContent=r; b.type='button';
+        b.addEventListener('click',()=>choose(b,r));
+        choicesEl.appendChild(b);
+      });
+    }
+
+    function choose(btn, selected){
+      if(answered) return; answered=true;
+      const ok = selected===current.reading;
+      if(ok){
+        score+=1; scoreEl.textContent=String(score); btn.classList.add('correct');
+        feedbackEl.textContent='せいかい！';
+        beepOK(); popStars();
+      }else{
+        btn.classList.add('wrong');
+        Array.from(choicesEl.children).forEach(c=>{ if(c.textContent===current.reading) c.classList.add('correct'); });
+        feedbackEl.textContent = 'ヒント: ' + toRomaji(current.reading);
+      }
+      nextBtn.disabled=false;
+    }
+
+    function next(){
+      if(remain<=0){ feedbackEl.textContent=`おわり！ スコア: ${score}/10`; nextBtn.disabled=true; return; }
+      renderQuestion(); updateHero();
+    }
+
+    function start(){ pool=G1.slice(); score=0; remain=10; answered=false; scoreEl.textContent='0'; remainEl.textContent=String(remain); updateHero(); renderQuestion(); }
+    startBtn.addEventListener('click', start);
+    nextBtn.addEventListener('click', ()=>{ remain-=1; remainEl.textContent=String(remain); next(); });
+
+    // 初期
+    start();
+  </script>
+</body>
+</html>
+
+

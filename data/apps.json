@@ -1,6 +1,36 @@
 {
   "apps": [
     {
+      "id": "kanji-practice",
+      "name": "漢字れんしゅう（読み・書き）",
+      "category": "国語",
+      "description": "学年をえらんで 漢字の よみ4択 と なぞり書き。1年はシンプル、6年は音訓や語でチャレンジ。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=kanji-practice",
+      "difficulty": "初級〜上級",
+      "grade": "1-6年生"
+    },
+    {
+      "id": "kanji-quiz-master",
+      "name": "学年別漢字読みクイズマスター",
+      "category": "国語",
+      "description": "学年をえらんで 4択クイズ。正解で紙吹雪！ まちがいは正解表示。弱点を優先して出題。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=kanji-quiz-master",
+      "difficulty": "初級〜中級",
+      "grade": "1-6年生"
+    },
+    {
+      "id": "kanji-reading-adventure",
+      "name": "漢字読みクイズアドベンチャー（1年）",
+      "category": "国語",
+      "description": "1年生の80字から ランダム10問。4択クイズ、せいかいでスター！ まちがいはローマ字ヒント。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=kanji-reading-adventure",
+      "difficulty": "初級",
+      "grade": "1年生"
+    },
+    {
       "id": "candy-subtract",
       "name": "キャンディー引き算チャレンジ",
       "category": "basic",
@@ -9,6 +39,46 @@
       "link": "app-detail.html?id=candy-subtract",
       "difficulty": "初級",
       "grade": ""
+    },
+    {
+      "id": "toy-measure-race",
+      "name": "おもちゃ測定レース",
+      "category": "geometry",
+      "description": "コースの ながさを はかって たしざん。はたが ゆれて ゴール！ タイマーつき。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=toy-measure-race",
+      "difficulty": "中級",
+      "grade": ""
+    },
+    {
+      "id": "decimal-shopping",
+      "name": "小数ショッピングシミュレーション",
+      "category": "basic",
+      "description": "ドラッグで かいもの。小数の たしざん・ひきざんを れんしゅう。レジ音で おいわい。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=decimal-shopping",
+      "difficulty": "中級",
+      "grade": "4-6年生"
+    },
+    {
+      "id": "fraction-pizza",
+      "name": "分数ピザパーティー",
+      "category": "basic",
+      "description": "ピザを きって あわせて 分数を けいさん。やくぶん・帯分数OK。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=fraction-pizza",
+      "difficulty": "中級",
+      "grade": "4-6年生"
+    },
+    {
+      "id": "mixed-chain",
+      "name": "混合計算チェーンアドベンチャー",
+      "category": "basic",
+      "description": "小数と分数を まぜた もんだい。()→×÷→+- の じゅんで とこう。エンドレス。",
+      "screenshot": "img/placeholder.svg",
+      "link": "app-detail.html?id=mixed-chain",
+      "difficulty": "上級",
+      "grade": "5-6年生"
     },
     {
       "id": "fish-addition",

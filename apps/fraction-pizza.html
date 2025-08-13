@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分数ピザパーティー</title>
+  <meta name="description" content="ピザを きって あわせて 分数のたし算・ひき算！ かんたん共通分母、約分、帯分数に対応。タッチ操作OK。" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg1:#ffe29f;--bg2:#ffa99f;--deep:#2d3436;--green:#2ecc71;--pink:#ff6b6b;--blue:#74b9ff}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
+    .app{width:100%;max-width:1060px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
+    .title{text-align:center;font-size:1.6rem;color:#d35400;font-weight:800}
+    .equation{text-align:center;font-size:2rem;font-weight:800;color:var(--deep)}
+    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
+    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
+    .kitchen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+    .board{background:#fffdf5;border:4px solid #ffd166;border-radius:16px;padding:8px;position:relative}
+    canvas{width:100%;height:240px;display:block}
+    .label{text-align:center;font-weight:800;margin-top:4px}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
+    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
+    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
+    .correct{color:#2ecc71}.incorrect{color:#e17055}
+    .answer-row{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:6px}
+    .mix{display:flex;gap:6px;align-items:center}
+    .in{width:64px;text-align:center;font-size:1.4rem;font-weight:800;border:3px solid #74b9ff;border-radius:10px;padding:6px 8px}
+    .slash{font-size:1.6rem;font-weight:800}
+    @media (max-width:900px){canvas{height:200px}}
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="分数ピザパーティー">
+    <div class="title">🍕 分数 ピザ パーティー（+ / -）</div>
+    <div class="equation" id="eq">1/2 + 1/3 = ?</div>
+    <div class="hud"><div class="pill" id="qinfo">ラウンド: 1 / 10</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="level">レベル: 1</div><div class="pill" id="repeat">リピート: OFF</div></div>
+    <div class="kitchen">
+      <div class="board"><canvas id="pizzaA"></canvas><div class="label" id="labelA">A</div></div>
+      <div class="board"><canvas id="pizzaB"></canvas><div class="label" id="labelB">B</div></div>
+      <div class="board"><canvas id="pizzaR"></canvas><div class="label">あつめた ピザ</div></div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="gatherBtn">スライスを あつめる</button>
+      <button class="btn" id="checkBtn">こたえる！</button>
+      <button class="btn secondary" id="nextBtn">つぎへ</button>
+      <button class="btn secondary" id="restartBtn">リスタート</button>
+      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
+    </div>
+    <div class="answer-row">
+      <div class="mix">
+        <input class="in" id="mixW" placeholder="帯" inputmode="numeric" pattern="[0-9]*" />
+        <span class="slash"></span>
+      </div>
+      <div class="mix">
+        <input class="in" id="mixN" placeholder="分子" inputmode="numeric" pattern="[0-9]*" />
+        <span class="slash">/</span>
+        <input class="in" id="mixD" placeholder="分母" inputmode="numeric" pattern="[0-9]*" />
+      </div>
+    </div>
+    <div class="feedback" id="fb"></div>
+  </div>
+
+  <script>
+    // 状態
+    let round=0,total=10,score=0,repeat=false;
+    let aN=1,aD=2,bN=1,bD=3,op='+'; // a/b op c/d
+    let lcm=6, sumN=0; // LCM表示用
+    let gathered=false;
+    let audioCtx=null;
+
+    const cvA=document.getElementById('pizzaA'); const cvB=document.getElementById('pizzaB'); const cvR=document.getElementById('pizzaR');
+    const fb=document.getElementById('fb');
+
+    init();
+    function init(){ bind(); start(); const warm=()=>{ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } window.removeEventListener('pointerdown',warm) }; window.addEventListener('pointerdown',warm,{once:true}); }
+    function bind(){ document.getElementById('gatherBtn').addEventListener('click', gather); document.getElementById('checkBtn').addEventListener('click', check); document.getElementById('nextBtn').addEventListener('click', next); document.getElementById('restartBtn').addEventListener('click', start); document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;}); ['mixW','mixN','mixD'].forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input',e=>{ let v=e.target.value; v=v.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)); v=v.replace(/[^0-9]/g,''); e.target.value=v.slice(0,3); }); el.addEventListener('keypress',e=>{ if(e.key==='Enter') check(); }); }); window.addEventListener('resize',()=>{ fitAll(); drawAll(); }); }
+    function start(){ round=0; score=0; next(true); }
+    function next(reset){ if(!reset && round>=total){ fb.className='feedback correct'; fb.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,1000);} return; } gen(); gathered=false; clearAns(); render(); round++; updateHUD(); }
+    function clearAns(){ ['mixW','mixN','mixD'].forEach(id=>document.getElementById(id).value=''); }
+    function updateHUD(){ document.getElementById('qinfo').textContent=`ラウンド: ${Math.min(round+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; document.getElementById('level').textContent=`レベル: ${1+Math.floor(score/3)}`; }
+
+    function gen(){ // 分母2-9
+      aD=rand(2,9); bD=rand(2,9); aN=rand(1,aD-1); bN=rand(1,bD-1);
+      op=Math.random()<0.65?'+':'-';
+      // ひき算は非負に
+      if(op==='-' && aN/aD < bN/bD){ const tn=aN, td=aD; aN=bN; aD=bD; bN=tn; bD=td; }
+      lcm=LCM(aD,bD);
+      sumN = op==='+' ? aN*(lcm/aD)+bN*(lcm/bD) : aN*(lcm/aD)-bN*(lcm/bD);
+      document.getElementById('eq').textContent=`${aN}/${aD} ${op} ${bN}/${bD} = ?`;
+    }
+
+    function render(){ fitAll(); drawAll(); fb.textContent=''; document.getElementById('labelA').textContent=`A: ${aN}/${aD}`; document.getElementById('labelB').textContent=`B: ${bN}/${bD}`; }
+    function fitAll(){ [cvA,cvB,cvR].forEach(cv=>{ const r=cv.getBoundingClientRect(); const s=window.devicePixelRatio||1; const w=Math.floor(r.width*s), h=Math.floor(240*s); if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; } }); }
+    function drawAll(){ drawPizza(cvA,aN,aD); drawPizza(cvB,bN,bD); drawPizza(cvR, gathered?sumN:0, lcm); }
+
+    function drawPizza(cv, num, den){ const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); const cx=cv.width/2, cy=cv.height/2, R=Math.min(cv.width,cv.height)*0.38; // base
+      ctx.fillStyle='#f5cd82'; ctx.beginPath(); ctx.arc(cx,cy,R+8,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#ffe5b4'; ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+      // slices
+      for(let i=0;i<den;i++){ const a0=-Math.PI/2 + i*(2*Math.PI/den); const a1=a0 + 2*Math.PI/den; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1); ctx.closePath(); ctx.fillStyle = i < num ? '#ff6b6b' : '#fff1c1'; ctx.fill(); ctx.strokeStyle='#d35400'; ctx.lineWidth=1; ctx.stroke(); }
+      // cheese dots
+      ctx.fillStyle='#d35400'; for(let i=0;i<den;i++){ const ang=-Math.PI/2 + (i+0.5)*(2*Math.PI/den); const rx=cx+Math.cos(ang)*R*0.6, ry=cy+Math.sin(ang)*R*0.6; ctx.beginPath(); ctx.arc(rx,ry,3,0,Math.PI*2); ctx.fill(); }
+    }
+
+    function gather(){ // 合体アニメ: A/B を LCMにして R へ
+      gathered=true; // 表示をLCMで
+      drawAll(); registerDing();
+    }
+
+    function check(){ const w=parseInt(v('mixW')||'0',10)||0; const n=parseInt(v('mixN')||'0',10)||0; const d=parseInt(v('mixD')||'0',10)||0; if(!d){ bad('すうじを いれてね'); return; }
+      // 帯分数→仮分数
+      let inN = w*d + n; let inD = d;
+      // 期待値（既にLCM基準 sumN/lcm）。約分して比較
+      const exp = reduce(sumN, lcm); const inR = reduce(inN, inD);
+      if(exp.n===inR.n && exp.d===inR.d){ score++; good('🧀 ピザが くっついた！ せいかい！'); nextDelay(); } else { const approx = (sumN/lcm).toFixed(2); bad(`💡 ヒント: しょうすうに すると ${approx}`); }
+      updateHUD(); }
+
+    function nextDelay(){ setTimeout(()=>next(),900); }
+
+    // helpers
+    function v(id){ return document.getElementById(id).value; }
+    function bad(msg){ fb.className='feedback incorrect'; fb.textContent=msg; beep(); }
+    function good(msg){ fb.className='feedback correct'; fb.textContent=msg; cash(); }
+    function reduce(n,d){ const g=GCD(n,d); return { n: Math.floor(n/g), d: Math.floor(d/g) }; }
+    function GCD(a,b){ while(b){ const t=a%b; a=b; b=t; } return a||1; }
+    function LCM(a,b){ return a*b/GCD(a,b); }
+    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function registerDing(){ play(880,.08,'triangle',.07); setTimeout(()=>play(1175,.1,'triangle',.07),90); }
+    function beep(){ play(220,.18,'sawtooth',.04); }
+    function play(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
+  </script>
+</body>
+</html>
+
+
