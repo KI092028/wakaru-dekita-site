@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>混合計算チェーンアドベンチャー</title>
   <meta name="description" content="小数と分数のミックス計算に挑戦！(2.5 + 1/4) × 3 などのチェーン問題。正解で道がひらく、まちがいで順序ヒント。エンドレス。" />
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     :root{--bg1:#c9ffbf;--bg2:#ffafbd;--deep:#2d3436;--good:#2ecc71;--bad:#ff7675;--path:#b2bec3}
@@ -15,7 +26,11 @@
     .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
     .equation-row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
     .equation{font-size:2rem;font-weight:800;color:var(--deep)}
-    .answer{font-size:1.6rem;font-weight:800;width:160px;text-align:center;border:4px solid #74b9ff;border-radius:12px;padding:6px 10px}
+    /* 変更: 入力→選択式に */
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+    .choice{padding:12px;font-size:1.2rem;border:2px solid #475569;border-radius:12px;background:#fff}
+    .choice.correct{background:#166534;color:#fff;border-color:#14532d}
+    .choice.wrong{background:#991b1b;color:#fff;border-color:#7f1d1d}
     .hud{display:flex;gap:8px;justify-content:center;margin:6px 0;flex-wrap:wrap}
     .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
     .map{margin-top:8px;border:4px solid #b4d4ff;border-radius:16px;background:#eef7ff;padding:12px}
@@ -37,7 +52,8 @@
 <body>
   <div class="app" role="application" aria-label="混合計算チェーンアドベンチャー">
     <div class="title">🗺️ 混合計算 チェーン アドベンチャー</div>
-    <div class="equation-row"><div class="equation" id="eq">(2.5 + 1/4) × 3 = ?</div><input id="ans" class="answer" placeholder="小数 or 分数" /></div>
+    <div class="equation-row"><div class="equation" id="eq">(2.5 + 1/4) × 3 = ?</div></div>
+    <div class="choices" id="choices"></div>
     <div class="hud"><div class="pill" id="progress">のこり: ∞</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="repeat">リピート: ON</div></div>
     <div class="map"><div class="grid" id="grid"></div></div>
     <div class="controls">
@@ -122,20 +138,46 @@
 
     function boom(){ const fx=document.getElementById('fx'); const w=gridEl.clientWidth, h=40; for(let i=0;i<12;i++){ const s=document.createElement('div'); s.className='star'; s.textContent='✨'; s.style.left=(w/2)+'px'; s.style.setProperty('--dx',(Math.random()*w - w/2)+'px'); s.style.setProperty('--dy',(-Math.random()*h - 20)+'px'); fx.appendChild(s); setTimeout(()=>s.remove(),800); } }
 
-    function check(){ const val=document.getElementById('ans').value.trim(); const x=parseAns(val); if(!x){ bad('すうじ/ぶんすう を いれてね'); return; } if(eqRat(x, result)){ score++; good('道が ひらけた！'); const opened=[...gridEl.querySelectorAll('.open')].length; openCells(opened+1); boom(); gen(); document.getElementById('ans').value=''; } else { bad('ヒント: () → ×÷ → +- の順だよ'); }
-      updateHUD(); }
+    function buildChoices(){
+      const opts=[];
+      // 正解
+      opts.push(result);
+      // ダミーを3つ生成（近い値、同分母/同分子、四捨五入）
+      const near = rat(result.n + (Math.random()<0.5?1:-1), result.d);
+      const sameDen = rat(Math.max(0,result.n-1), result.d);
+      const rounded = fromDec(toDec(result).toFixed(2));
+      [near,sameDen,rounded].forEach(o=>{ if(o) opts.push(o); });
+      // 4つに調整
+      while(opts.length>4) opts.pop();
+      const uniq = []; const key = (x)=>x.n+'/'+x.d;
+      for(const o of opts){ if(!uniq.some(u=>key(u)===key(o))) uniq.push(o); }
+      while(uniq.length<4){ uniq.push(rat(result.n+uniq.length, result.d)); }
+      const labels = uniq.map(x=>({x, label: formatRat(x)}));
+      const shuffled = labels.sort(()=>Math.random()-0.5);
+      const wrap=document.getElementById('choices'); wrap.innerHTML='';
+      shuffled.forEach(({x,label})=>{
+        const b=document.createElement('button'); b.className='choice'; b.textContent=label; b.type='button';
+        b.addEventListener('click',()=>{
+          const ok=eqRat(x,result);
+          if(ok){ score++; good('道が ひらけた！'); const opened=[...gridEl.querySelectorAll('.open')].length; openCells(opened+1); boom(); gen(); buildChoices(); }
+          else { bad('ヒント: () → ×÷ → +- の順だよ'); }
+          updateHUD();
+        });
+        wrap.appendChild(b);
+      });
+    }
+    function formatRat(x){ if(x.d===1) return String(x.n); return `${x.n}/${x.d}`; }
 
     function good(msg){ const fb=document.getElementById('fb'); fb.className='feedback correct'; fb.textContent=msg; }
     function bad(msg){ const fb=document.getElementById('fb'); fb.className='feedback incorrect'; fb.textContent=msg; }
     function updateHUD(){ document.getElementById('score').textContent=`スコア: ${score}`; document.getElementById('progress').textContent='のこり: ∞'; }
 
-    function next(){ gen(); document.getElementById('ans').value=''; }
+    function next(){ gen(); buildChoices(); }
 
-    document.getElementById('checkBtn').addEventListener('click', check);
+    document.getElementById('checkBtn').addEventListener('click', next);
     document.getElementById('nextBtn').addEventListener('click', next);
-    document.getElementById('ans').addEventListener('keypress', e=>{ if(e.key==='Enter') check(); });
 
-    gen();
+    gen(); buildChoices();
   </script>
 </body>
 </html>

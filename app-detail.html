@@ -8,6 +8,17 @@
   <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
   <meta name="robots" content="index, follow">
   <title>アプリ詳細 | 子供達の「わかる！」「できた！」を増やす、お役立ちサイト</title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
@@ -33,15 +44,37 @@
       border-radius: 8px;
       margin-bottom: 1rem;
     }
+    /* 縁無し・全画面表示 */
+    html, body { height: 100%; margin: 0; }
+    main.container { max-width: 100%; margin: 0; padding: 0; }
+    .app-container { position: static; margin: 0; }
     .app-iframe {
-      width: 100%;
-      min-height: 600px; /* 高さを600pxに増加 */
-      height: 80vh; /* ビューポートの80%の高さ */
-      border: 2px solid var(--main-green);
-      border-radius: 8px;
-      margin-top: 1rem;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100svh;
+      border: none;
+      border-radius: 0;
+      margin: 0;
       background: #fff;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: none;
+      z-index: 10;
+    }
+    /* サイトのヘッダー・フッターは隠す（戻るボタンを別途配置） */
+    .navbar, .footer { display: none !important; }
+    /* フローティング戻るボタン */
+    .float-back {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      z-index: 20;
+      background: rgba(17,24,39,0.6);
+      color: #fff !important;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
     }
     .back-link {
       color: var(--main-blue);
@@ -96,8 +129,11 @@
     </div>
   </nav>
 
-  <main class="container my-5">
-    <a href="index.html" class="back-link">← 一覧に戻る</a>
+  <!-- フローティング戻るボタン -->
+  <a href="index.html" class="float-back" aria-label="一覧に戻る">← 戻る</a>
+
+  <main class="container my-0">
+    <!-- 通常の戻るリンクは全画面時は非表示のため削除 -->
     <div id="appDetailContainer" class="row justify-content-center">
       <!-- アプリ詳細がここに表示される -->
     </div>

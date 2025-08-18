@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ブロック ひきざん（スタック）</title>
   <meta name="description" content="小学校1-3年生向けのひき算練習。カラフルなブロックが消えるアニメで 7 - 4 = ? を体感！数字ボタンで回答、正解でお花が咲きます。8問リピート、レベルとタイマー付き。" />
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -41,7 +52,13 @@
     .vanish { animation: vanish 0.6s ease forwards; }
     @keyframes vanish { 40% { transform: translateY(-8px) scale(1.05); opacity: 0.7; } 100% { transform: translateY(-24px) scale(0.2); opacity: 0; } }
 
-    .pad { margin-top: 10px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+     .pad { margin-top: 10px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+     /* 追加: ソフトキーボード */
+     .softpad { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; }
+     .key { background: #ffffff; color: #2d3436; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 900; font-size: 1.4rem; padding: 12px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
+     .key:active { transform: translateY(1px); }
+     .key.wide { grid-column: span 2; }
+     @media (max-width: 520px) { .softpad { grid-template-columns: repeat(3, 28vw); } }
     .num { background: linear-gradient(45deg, var(--blue), #6c5ce7); border: none; color: #fff; font-weight: 900; font-size: 1.3rem; padding: 12px 0; border-radius: 14px; box-shadow: 0 8px 18px rgba(108,92,231,0.3); transition: transform 0.12s ease, box-shadow 0.12s ease; }
     .num:active { transform: translateY(1px); }
     .num.selected { outline: 4px solid rgba(255,255,255,0.85); transform: translateY(-1px) scale(1.05); box-shadow: 0 12px 24px rgba(108,92,231,0.45); }
@@ -88,7 +105,20 @@
         <div class="blocks" id="blocks"></div>
         <div class="flowers" id="flowers"></div>
       </div>
-      <div class="pad" id="pad"></div>
+        <div class="pad" id="pad"></div>
+        <div class="softpad" id="softpad" aria-label="ソフトキーボード">
+          <button class="key">1</button>
+          <button class="key">2</button>
+          <button class="key">3</button>
+          <button class="key">4</button>
+          <button class="key">5</button>
+          <button class="key">6</button>
+          <button class="key">7</button>
+          <button class="key">8</button>
+          <button class="key">9</button>
+          <button class="key wide">0</button>
+          <button class="key" data-action="back">⌫</button>
+        </div>
     </div>
 
     <div class="controls">
@@ -164,6 +194,21 @@
         highlightPad();
       });
       answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+      // ソフトキーボード
+      const soft = document.getElementById('softpad');
+      soft.addEventListener('click', (e) => {
+        const btn = e.target.closest('.key'); if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        if (action === 'back') {
+          answerInput.value = answerInput.value.slice(0, -1);
+        } else {
+          const ch = btn.textContent.trim();
+          if (answerInput.value.length < 2) answerInput.value += ch;
+        }
+        const val = answerInput.value;
+        selected = val === '' ? null : parseInt(val, 10);
+        highlightPad();
+      });
     }
 
     function setLevel(lv) {

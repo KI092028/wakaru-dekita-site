@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>おもちゃ たしざん（トイボックス）</title>
   <meta name="description" content="小学校低学年向けのたし算ゲーム。ブロックやくるまをかぞえて、グループをたして答えよう！タップでカウント、花火とバッジでほめられるよ。" />
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -52,6 +63,12 @@
     .confetti { position: absolute; width: 10px; height: 14px; background: red; opacity: 0.9; transform: translateY(-20px) rotate(0deg); animation: fall 1.2s ease-out forwards; border-radius: 2px; }
     @keyframes fall { to { transform: translateY(120vh) rotate(720deg); opacity: 0.2; } }
 
+    /* ソフトキーボード */
+    .softpad { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; }
+    .key { background: #ffffff; color: #2d3436; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 900; font-size: 1.4rem; padding: 12px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
+    .key:active { transform: translateY(1px); }
+    .key.wide { grid-column: span 2; }
+    @media (max-width: 520px) { .softpad { grid-template-columns: repeat(3, 28vw); } }
     @media (max-width: 760px) { .equation { font-size: 1.9rem; } .num { font-size: 1.1rem; } canvas { height: 240px; } }
     @media (max-width: 520px) { .equation { font-size: 1.7rem; } .num { font-size: 1rem; } canvas { height: 220px; } }
   </style>
@@ -85,6 +102,20 @@
       <button class="btn toggle" id="repeatBtn" aria-pressed="false">リピート: OFF</button>
       <button class="btn secondary" id="restartBtn">セッション リスタート</button>
     </div>
+      <!-- ソフトキーボード -->
+      <div class="softpad" id="softpad" aria-label="ソフトキーボード">
+        <button class="key">1</button>
+        <button class="key">2</button>
+        <button class="key">3</button>
+        <button class="key">4</button>
+        <button class="key">5</button>
+        <button class="key">6</button>
+        <button class="key">7</button>
+        <button class="key">8</button>
+        <button class="key">9</button>
+        <button class="key wide">0</button>
+        <button class="key" data-action="back">⌫</button>
+      </div>
 
     <div class="feedback" id="feedback" aria-live="polite"></div>
     <div class="badges" id="badges" aria-label="バッジ"></div>
@@ -176,6 +207,23 @@
         selectedAnswer = v === '' ? null : parseInt(v, 10);
       });
       answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+
+      // ソフトキーボード
+      const soft = document.getElementById('softpad');
+      soft.addEventListener('click', (e) => {
+        const btn = e.target.closest('.key'); if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        if (action === 'back') {
+          answerInput.value = answerInput.value.slice(0, -1);
+        } else {
+          const ch = btn.textContent.trim();
+          // 2桁まで
+          if (answerInput.value.length < 2) answerInput.value += ch;
+        }
+        // 入力反映
+        const val = answerInput.value;
+        selectedAnswer = val === '' ? null : parseInt(val, 10);
+      });
     }
 
     function startSession() {

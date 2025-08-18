@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>どうぶつ ひきざん（ズー・ゲーム）</title>
   <meta name="description" content="小学校低学年向けのひき算ゲーム。サルがにげるアニメで 8 - 3 = ? を楽しく学ぼう！タップしてこたえる、やさしいヒント、レベル（かんたん/ふつう）、プログレスバー、音つき。" />
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -190,6 +201,12 @@
       justify-content: center;
       gap: 10px;
     }
+    /* ソフトキーボード */
+    .softpad { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; }
+    .key { background: #ffffff; color: #2d3436; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 900; font-size: 1.4rem; padding: 12px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
+    .key:active { transform: translateY(1px); }
+    .key.wide { grid-column: span 2; }
+    @media (max-width: 520px) { .softpad { grid-template-columns: repeat(3, 28vw); } }
     .btn {
       background: linear-gradient(45deg, var(--pink), #e84393);
       color: #fff;
@@ -250,6 +267,19 @@
       <button class="btn" id="checkBtn">こたえる！</button>
       <button class="btn secondary" id="nextBtn">つぎのもんだい</button>
       <button class="btn secondary" id="restartBtn">さいしょから</button>
+    </div>
+    <div class="softpad" id="softpad" aria-label="ソフトキーボード">
+      <button class="key">1</button>
+      <button class="key">2</button>
+      <button class="key">3</button>
+      <button class="key">4</button>
+      <button class="key">5</button>
+      <button class="key">6</button>
+      <button class="key">7</button>
+      <button class="key">8</button>
+      <button class="key">9</button>
+      <button class="key wide">0</button>
+      <button class="key" data-action="back">⌫</button>
     </div>
 
     <div class="feedback" id="feedback" aria-live="polite"></div>
@@ -416,6 +446,25 @@
         }, 700);
       }
     }
+
+    // ソフトキーボード
+    (function(){
+      const soft = document.getElementById('softpad');
+      const buf = { v: '' };
+      soft.addEventListener('click', (e) => {
+        const btn = e.target.closest('.key'); if (!btn) return;
+        const action = btn.getAttribute('data-action');
+        if (action === 'back') { buf.v = buf.v.slice(0, -1); }
+        else if (buf.v.length < 2) { buf.v += btn.textContent.trim(); }
+        // 入力がある場合、残り匹数と比較
+        if (buf.v === '') return;
+        const tryVal = parseInt(buf.v, 10);
+        const remaining = animalsEl.querySelectorAll('.animal').length;
+        if (!Number.isNaN(tryVal)) {
+          if (tryVal === remaining) { checkAnswer(); buf.v=''; }
+        }
+      });
+    })();
 
     function starBurstFx() {
       const pos = animalsEl.getBoundingClientRect();

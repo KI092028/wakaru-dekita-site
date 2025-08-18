@@ -4,25 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>学年別漢字読みクイズマスター</title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <style>
     :root { --blue:#2563eb; --green:#16a34a; --red:#b91c1c; --gray:#111827; --border:#94a3b8; }
+    *, *::before, *::after { box-sizing: border-box; }
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','メイリオ',Meiryo,Arial,sans-serif; background:#ffffff; color:#111827; }
-    .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+    .container { max-width: 960px; margin: 0 auto; padding: clamp(12px, 3vw, 20px); }
     header h1 { margin:0 0 6px; color: var(--blue); font-size: 1.6rem; }
     .meta { color:#64748b; margin-bottom: 10px; }
-    .controls { display:grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items:center; background:#fff; border:2px solid #e2e8f0; border-radius:12px; padding:12px; }
+    .controls { display:grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items:center; background:#fff; border-radius:12px; padding:12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
     label { font-size: 1rem; }
     select, button, input[type="checkbox"] { font-size:1.05rem; }
     select { padding: 8px 12px; border:2px solid #cbd5e1; border-radius:8px; background:#fff; }
     .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
     .btn { padding:10px 14px; border-radius:10px; border:2px solid #2563eb; background:#2563eb; color:#fff; font-size:1.05rem; }
-    .panel { margin-top:12px; background:#fff; border:2px solid #e2e8f0; border-radius:12px; padding:16px; position:relative; overflow:hidden; }
+    .panel { margin-top:12px; background:#fff; border-radius:12px; padding:16px; position:relative; overflow:hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .status { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
     .status .score-label { font-weight:700; }
     #score { font-size:1.8rem; font-weight:800; color:#0ea5e9; }
     .big { font-size: clamp(84px, 18vw, 180px); line-height:1; text-align:center; margin: 8px 0 12px; user-select:none; font-weight:900; color:#111827; -webkit-text-stroke:1px rgba(0,0,0,0.06); text-rendering: optimizeLegibility; }
     .choices { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .choice { padding: 14px 16px; font-size: 1.35rem; border:2px solid #475569; border-radius: 12px; background:#ffffff; color:#111827; box-shadow:0 1px 0 rgba(0,0,0,0.04); }
+    .choice { padding: 14px 16px; font-size: 1.35rem; border:none; border-radius: 12px; background:#ffffff; color:#111827; box-shadow:0 1px 0 rgba(0,0,0,0.04), 0 0 0 1px #475569 inset; }
     .choice:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
     .choice.correct { background:#166534; color:#ffffff; border-color:#14532d; }
     .choice.wrong { background:#991b1b; color:#ffffff; border-color:#7f1d1d; }

@@ -4,8 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>漢字読みクイズアドベンチャー（1年）</title>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
+  
   <style>
     :root { --blue:#2563eb; --green:#16a34a; --yellow:#f59e0b; --bg:#f8fafc; }
+    *, *::before, *::after { box-sizing: border-box; }
     body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans JP', 'メイリオ', Meiryo, Arial, sans-serif; background: #ffffff; color:#111827; }
     .container { max-width: 960px; margin: 0 auto; padding: 16px; }
     header h1 { margin:0 0 4px; color: var(--blue); font-size: 1.6rem; }
@@ -14,10 +26,10 @@
     .path { position:absolute; left: 12px; right: 12px; top: 50%; height: 6px; background: #93c5fd; transform: translateY(-50%); border-radius: 6px; }
     .flag { position:absolute; width: 28px; height: 28px; border-radius: 50%; background:#fde68a; border:2px solid #f59e0b; top: 50%; transform: translateY(-50%); }
     .hero { position:absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; background:#86efac; border:2px solid #16a34a; border-radius: 50%; display:grid; place-items:center; font-weight:700; color:#065f46; transition:left .3s ease; }
-    .panel { background:#fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .panel { background:#fff; border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .big { font-size: clamp(84px, 18vw, 180px); line-height: 1; text-align: center; margin: 8px 0 12px; user-select: none; font-weight:900; color:#111827; -webkit-text-stroke:1px rgba(0,0,0,0.06); text-rendering: optimizeLegibility; }
     .choices { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .choice { padding: 14px 16px; font-size: 1.35rem; border:2px solid #475569; border-radius: 12px; background:#ffffff; color:#111827; box-shadow: 0 1px 0 rgba(0,0,0,0.04); }
+    .choice { padding: 14px 16px; font-size: 1.35rem; border: none; border-radius: 12px; background:#ffffff; color:#111827; box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 0 0 1px #475569 inset; }
     .choice:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
     .choice.correct { background:#166534; color:#ffffff; border-color:#14532d; }
     .choice.wrong { background:#991b1b; color:#ffffff; border-color:#7f1d1d; }
