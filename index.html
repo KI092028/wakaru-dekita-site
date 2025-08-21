@@ -565,16 +565,17 @@
             const tagBadges = tags.map(tag => 
                 `<span class="app-badge category">${tag}</span>`
             ).join('');
+            const href = `app-detail.html?id=${app.id}`;
             
             return `
-                <div class="app-card" role="article">
+                <div class="app-card" role="article" onclick="location.href='${href}'" tabindex="0" aria-label="${getAppField(app,'name')}を開く">
                     <h3 class="app-title">${getAppField(app,'name')}</h3>
                     <p class="app-description">${getAppField(app,'description')}</p>
                     <div class="app-badges">
                         <span class="app-badge difficulty">${getAppField(app,'difficulty') || app.difficulty}</span>
                         ${tagBadges}
                     </div>
-                    <a href="${app.link}" class="start-btn">${t('start')}</a>
+                    <a href="${href}" class="start-btn" target="_self" rel="noopener">${t('start')}</a>
                 </div>
             `;
         }

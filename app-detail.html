@@ -312,30 +312,45 @@
         }
 
         // 直接アプリを全画面で表示（apps/<id>.html を即時読み込み）
-        async function showAppFullscreen() {
+        function showAppFullscreen() {
             if (!appId) return;
             const path = `apps/${appId}.html`;
-            try {
-                const res = await fetch(path, { method: 'HEAD' });
-                if (!res.ok) { throw new Error('not found'); }
-            } catch (e) {
-                console.error(`アプリファイルが見つかりません: ${path}`);
-                // 見つからない場合はトップへ戻す
-                location.replace('index.html');
-                return;
-            }
             const iframe = document.createElement('iframe');
             iframe.src = path;
             iframe.className = 'app-iframe-full';
             iframe.title = 'app';
             iframe.setAttribute('allowfullscreen', '');
             document.body.appendChild(iframe);
+
+            // 簡易フォールバック: 一定時間ロードされない場合は案内を表示
+            const fallbackId = setTimeout(() => {
+                const note = document.createElement('div');
+                note.style.position = 'fixed';
+                note.style.bottom = '12px';
+                note.style.left = '12px';
+                note.style.right = '12px';
+                note.style.zIndex = '30';
+                note.style.background = 'rgba(17,24,39,0.85)';
+                note.style.color = '#fff';
+                note.style.padding = '10px 14px';
+                note.style.borderRadius = '12px';
+                note.textContent = '読み込みに時間がかかっています。開かない場合はここをタップしてください。';
+                const link = document.createElement('a');
+                link.href = path;
+                link.textContent = ' 直接開く';
+                link.style.color = '#a5d8ff';
+                link.style.marginLeft = '6px';
+                note.appendChild(link);
+                document.body.appendChild(note);
+            }, 4000);
+            iframe.addEventListener('load', () => clearTimeout(fallbackId));
         }
 
         // 初期化
         async function initialize() {
             if (!appId) {
                 console.error('アプリIDが指定されていません');
+                location.replace('index.html');
                 return;
             }
             // すぐに全画面で表示（ロード表示や開始ボタンは不要）
