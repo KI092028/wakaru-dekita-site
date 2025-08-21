@@ -34,6 +34,35 @@
             line-height: 1.6;
         }
 
+        /* Fullscreen app view */
+        html, body { height: 100%; }
+        .header, .footer { display: none !important; }
+        .app-iframe-full {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100svh;
+            border: none;
+            border-radius: 0;
+            margin: 0;
+            background: #fff;
+            box-shadow: none;
+            z-index: 10;
+        }
+        .float-back {
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top));
+            left: max(12px, env(safe-area-inset-left));
+            z-index: 20;
+            background: rgba(17,24,39,0.6);
+            color: #fff !important;
+            padding: 10px 14px;
+            border-radius: 999px;
+            text-decoration: none;
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
         /* Header */
         .header {
             background: linear-gradient(90deg, #4fc3f7 0%, #29b6f6 50%, #03a9f4 100%);
@@ -96,13 +125,7 @@
             padding: 2rem;
         }
 
-        .app-detail-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-bottom: 3rem;
-        }
+        .app-detail-container { display: none; }
 
         .app-detail-header {
             text-align: center;
@@ -148,79 +171,13 @@
             background: linear-gradient(90deg, #ff9800, #f57c00);
         }
 
-        .app-detail-img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        /* remove image area */
 
-        .app-iframe-container {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            border-radius: 15px;
-            overflow: hidden;
-            background: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
+        .app-iframe-container { display: none; }
 
-        .app-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 15px;
-        }
+        /* remove loading indicator */
 
-        .loading-indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            color: #546e7a;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e3f2fd;
-            border-top: 4px solid #4fc3f7;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .start-btn {
-            background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
-            color: white;
-            border: none;
-            padding: 1rem 3rem;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 2rem auto;
-            display: block;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-            text-decoration: none;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
-            color: white;
-            text-decoration: none;
-        }
+        /* remove start button */
 
         /* Footer */
         .footer {
@@ -316,35 +273,8 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content" role="main">
-        <div class="app-detail-container">
-            <div class="app-detail-header">
-                <h1 class="app-detail-title" id="app-title">
-                    アプリ詳細 / App Details
-                </h1>
-                <p class="app-detail-subtitle" id="app-description">
-                    アプリの詳細情報を表示中... / Loading app details...
-                </p>
-                <div class="app-detail-badges" id="app-badges">
-                    <!-- バッジがJavaScriptで生成される -->
-                </div>
-            </div>
-
-            <img class="app-detail-img" id="app-image" src="img/placeholder.svg" alt="アプリ画像" />
-
-            <div class="app-iframe-container" id="app-iframe-container">
-                <div class="loading-indicator">
-                    <div class="spinner" role="status" aria-label="読み込み中"></div>
-                    <div>読み込み中... / Loading...</div>
-                </div>
-            </div>
-
-            <button class="start-btn" id="start-btn" onclick="startApp()" style="display: none;">
-                アプリを開始 / Start App
-            </button>
-        </div>
-    </main>
+    <!-- Main Content: hidden, we go fullscreen iframe instead -->
+    <a href="index.html" class="float-back" aria-label="一覧に戻る">← 戻る</a>
 
     <!-- Footer -->
     <footer class="footer" role="contentinfo">
@@ -381,48 +311,25 @@
             }
         }
 
-        // アプリ詳細を表示
-        function displayAppDetails(app) {
-            if (!app) return;
-
-            document.getElementById('app-title').textContent = app.name;
-            document.getElementById('app-description').textContent = app.description;
-            
-            if (app.screenshot && app.screenshot !== 'img/placeholder.svg') {
-                document.getElementById('app-image').src = app.screenshot;
+        // 直接アプリを全画面で表示（apps/<id>.html を即時読み込み）
+        async function showAppFullscreen() {
+            if (!appId) return;
+            const path = `apps/${appId}.html`;
+            try {
+                const res = await fetch(path, { method: 'HEAD' });
+                if (!res.ok) { throw new Error('not found'); }
+            } catch (e) {
+                console.error(`アプリファイルが見つかりません: ${path}`);
+                // 見つからない場合はトップへ戻す
+                location.replace('index.html');
+                return;
             }
-
-            // バッジを生成
-            const badges = [];
-            if (app.difficulty) {
-                badges.push(`<span class="app-badge difficulty">${app.difficulty}</span>`);
-            }
-            if (app.category) {
-                badges.push(`<span class="app-badge category">${app.category}</span>`);
-            }
-            if (app.grade) {
-                badges.push(`<span class="app-badge">${app.grade}</span>`);
-            }
-
-            document.getElementById('app-badges').innerHTML = badges.join('');
-
-            // 開始ボタンを表示
-            document.getElementById('start-btn').style.display = 'block';
-        }
-
-        // アプリを開始
-        function startApp() {
-            if (!currentApp) return;
-
-            const iframeContainer = document.getElementById('app-iframe-container');
-            iframeContainer.innerHTML = `
-                <iframe 
-                    src="${currentApp.link}" 
-                    class="app-iframe" 
-                    title="${currentApp.name}"
-                    allowfullscreen
-                ></iframe>
-            `;
+            const iframe = document.createElement('iframe');
+            iframe.src = path;
+            iframe.className = 'app-iframe-full';
+            iframe.title = 'app';
+            iframe.setAttribute('allowfullscreen', '');
+            document.body.appendChild(iframe);
         }
 
         // 初期化
@@ -431,21 +338,8 @@
                 console.error('アプリIDが指定されていません');
                 return;
             }
-
-            const loaded = await loadAppData();
-            if (!loaded) {
-                console.error('アプリデータの読み込みに失敗しました');
-                return;
-            }
-
-            // 指定されたアプリを検索
-            currentApp = apps.find(app => app.id === appId);
-            if (!currentApp) {
-                console.error(`アプリID "${appId}" が見つかりません`);
-                return;
-            }
-
-            displayAppDetails(currentApp);
+            // すぐに全画面で表示（ロード表示や開始ボタンは不要）
+            showAppFullscreen();
         }
 
         // DOMContentLoadedイベントで初期化
