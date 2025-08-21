@@ -25,6 +25,23 @@
     .app{width:100%;max-width:1040px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
     .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
     .equation{text-align:center;font-size:2rem;font-weight:800;color:var(--deep)}
+    
+    .answer-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    
+    .answer-input {
+      font-size: 1.8rem;
+      font-weight: 800;
+      width: 140px;
+      text-align: center;
+      border: 4px solid var(--blue);
+      border-radius: 14px;
+      padding: 6px 10px;
+      font-family: 'Nunito', sans-serif;
+    }
     .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
     .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
     .store{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:8px}
@@ -50,6 +67,10 @@
   <div class="app" role="application" aria-label="小数ショッピングシミュレーション">
     <div class="title">🛒 小数ショッピング</div>
     <div class="equation" id="equation">3.50 + 2.75 = ?</div>
+    
+    <div class="answer-row">
+      <input type="text" class="answer-input" id="answerInput" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="?" aria-label="こたえ" maxlength="6" />
+    </div>
     <div class="hud">
       <div class="pill" id="qinfo">ラウンド: 1 / 10</div>
       <div class="pill" id="score">スコア: 0</div>
@@ -82,6 +103,7 @@
     let budget=20.00; // 予算
     let a=3.50,b=2.75,coupon=0.00,op='+'; // op: '+' or '-'
     let audioCtx=null;
+    let answerInput = document.getElementById('answerInput');
 
     const itemsEl=document.getElementById('items');
     const cartEl=document.getElementById('cartLines');
@@ -100,6 +122,7 @@
     init();
     function init(){
       bind();
+      setupInput();
       start();
       const warm = () => { if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } window.removeEventListener('pointerdown', warm); };
       window.addEventListener('pointerdown', warm, { once:true });
@@ -111,8 +134,32 @@
       document.getElementById('restartBtn').addEventListener('click', start);
       document.getElementById('repeatBtn').addEventListener('click', ()=>{ repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`; });
     }
+    
+    function setupInput() {
+      // 入力欄のサニタイズ（全角半角対応）
+      answerInput.addEventListener('input', (e) => {
+        let v = e.target.value;
+        // 全角→半角
+        v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        // 数字と小数点以外除去
+        v = v.replace(/[^0-9.]/g, '');
+        // 小数点は最初の1つだけ
+        const dots = v.split('.').length - 1;
+        if (dots > 1) {
+          const parts = v.split('.');
+          v = parts[0] + '.' + parts.slice(1).join('');
+        }
+        if (v.length > 6) v = v.slice(0,6);
+        e.target.value = v;
+      });
+      
+      // Enterキーでも回答
+      answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') check();
+      });
+    }
 
-    function start(){ idx=0; score=0; level=1; budget=20.00; nextRound(true); }
+    function start(){ idx=0; score=0; level=1; budget=20.00; nextRound(true); answerInput.value = ''; }
 
     function nextRound(reset){
       if(!reset && idx>=total){
@@ -124,6 +171,7 @@
       generateProblem();
       renderStore();
       renderCart([]);
+      answerInput.value = '';
       idx++;
       updateHUD();
     }
@@ -185,9 +233,24 @@
     function addToCart(line){ cartLines.push(line); renderCart(cartLines); playClick(); }
 
     function check(){
+      // 入力値のチェック
+      const inputVal = answerInput.value.trim();
+      if (inputVal === '') {
+        feedback.className='feedback incorrect';
+        feedback.textContent='すうじを いれてね！';
+        return;
+      }
+      
+      const inputNum = parseFloat(inputVal);
+      if (Number.isNaN(inputNum)) {
+        feedback.className='feedback incorrect';
+        feedback.textContent='すうじを いれてね！';
+        return;
+      }
+      
       const total = parseFloat(cartEl.dataset.total||'0');
       const expected = op==='+' ? rndMoney(a+b) : rndMoney(a-b);
-      if(eq(total, expected)){
+      if(eq(inputNum, expected)){
         score++; cashRegister();
         // 予算から消費（割引も反映）
         budget = rndMoney(Math.max(0, budget - expected));

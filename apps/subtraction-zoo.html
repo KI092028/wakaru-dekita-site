@@ -77,6 +77,23 @@
       letter-spacing: 2px;
       color: var(--deep);
     }
+    
+    .answer-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    
+    .answer-input {
+      font-size: 2rem;
+      font-weight: 800;
+      width: 120px;
+      text-align: center;
+      border: 4px solid var(--blue);
+      border-radius: 14px;
+      padding: 6px 10px;
+      font-family: 'Nunito', sans-serif;
+    }
     .level-select {
       display: flex;
       gap: 8px;
@@ -130,7 +147,6 @@
       position: relative;
       margin-top: 12px;
       background: linear-gradient(180deg, #fefefe, #f7fff7);
-      border: 4px solid #a3d9a5;
       border-radius: 18px;
       min-height: 280px;
       padding: 14px;
@@ -242,6 +258,10 @@
   <div class="app" role="application" aria-label="どうぶつひきざんゲーム">
     <div class="title">🦓 どうぶつ ひきざん 🐒</div>
     <div class="equation" id="equation">8 - 3 = ?</div>
+    
+    <div class="answer-row">
+      <input type="text" class="answer-input" id="answerInput" inputmode="numeric" pattern="[0-9]*" placeholder="?" aria-label="こたえ" maxlength="2" />
+    </div>
 
     <div class="level-select" role="group" aria-label="レベルせんたく">
       <button class="level-btn active" id="lv-easy">かんたん 1-5</button>
@@ -311,6 +331,7 @@
     const streakEl = document.getElementById('streak');
     const progressEl = document.getElementById('progress');
     const starBurst = document.getElementById('starBurst');
+    const answerInput = document.getElementById('answerInput');
 
     // 初期化
     init();
@@ -318,6 +339,7 @@
     function init() {
       setupAudioWarmup();
       setupButtons();
+      setupInput();
       resetSession(false);
       newProblem();
     }
@@ -328,6 +350,24 @@
       document.getElementById('checkBtn').addEventListener('click', checkAnswer);
       document.getElementById('nextBtn').addEventListener('click', newProblem);
       document.getElementById('restartBtn').addEventListener('click', () => resetSession(true));
+    }
+    
+    function setupInput() {
+      // 入力欄のサニタイズ（全角半角対応）
+      answerInput.addEventListener('input', (e) => {
+        let v = e.target.value;
+        // 全角→半角
+        v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        // 数字以外除去
+        v = v.replace(/[^0-9]/g, '');
+        if (v.length > 2) v = v.slice(0,2);
+        e.target.value = v;
+      });
+      
+      // Enterキーでも回答
+      answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+      });
     }
 
     function setupAudioWarmup() {
@@ -369,6 +409,7 @@
     function newProblem() {
       animalsEl.innerHTML = '';
       feedbackEl.textContent = '';
+      answerInput.value = '';
       const { min, max } = LEVELS[level];
       a = randInt(min, max);
       b = randInt(1, a); // 借りなし（a>=b）
@@ -421,8 +462,23 @@
 
     function checkAnswer() {
       if (!selecting) return;
-      const remaining = animalsEl.querySelectorAll('.animal').length;
-      if (remaining === ans) {
+      
+      // 入力値のチェック
+      const inputVal = answerInput.value.trim();
+      if (inputVal === '') {
+        feedbackEl.className = 'feedback incorrect';
+        feedbackEl.textContent = 'すうじを いれてね！';
+        return;
+      }
+      
+      const inputNum = parseInt(inputVal, 10);
+      if (Number.isNaN(inputNum)) {
+        feedbackEl.className = 'feedback incorrect';
+        feedbackEl.textContent = 'すうじを いれてね！';
+        return;
+      }
+      
+      if (inputNum === ans) {
         streak++;
         stars++;
         cycle = (cycle + 1) % 10;

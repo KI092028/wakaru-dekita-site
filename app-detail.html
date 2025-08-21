@@ -1,153 +1,460 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="小学校算数アプリの詳細ページ。子供が使いやすいインタラクティブなツールを紹介します。">
-  <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ">
-  <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
-  <meta name="robots" content="index, follow">
-  <title>アプリ詳細 | 子供達の「わかる！」「できた！」を増やす、お役立ちサイト</title>
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="小学校算数アプリの詳細ページ。子供が使いやすいインタラクティブなツールを紹介します。">
+    <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ">
+    <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
+    <meta name="robots" content="index, follow">
+    <title>アプリ詳細 | 学習ポータル</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --main-blue: #007BFF;
-      --main-green: #28A745;
-      --main-yellow: #FFC107;
-    }
-    .navbar, .footer {
-      background: var(--main-blue);
-    }
-    .navbar-brand, .nav-link, .footer-text {
-      color: #fff !important;
-    }
-    .footer {
-      padding: 1rem 0;
-      text-align: center;
-      margin-top: 2rem;
-    }
-    .app-detail-img {
-      max-width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    /* 縁無し・全画面表示 */
-    html, body { height: 100%; margin: 0; }
-    main.container { max-width: 100%; margin: 0; padding: 0; }
-    .app-container { position: static; margin: 0; }
-    .app-iframe {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100svh;
-      border: none;
-      border-radius: 0;
-      margin: 0;
-      background: #fff;
-      box-shadow: none;
-      z-index: 10;
-    }
-    /* サイトのヘッダー・フッターは隠す（戻るボタンを別途配置） */
-    .navbar, .footer { display: none !important; }
-    /* フローティング戻るボタン */
-    .float-back {
-      position: fixed;
-      top: max(12px, env(safe-area-inset-top));
-      left: max(12px, env(safe-area-inset-left));
-      z-index: 20;
-      background: rgba(17,24,39,0.6);
-      color: #fff !important;
-      padding: 10px 14px;
-      border-radius: 999px;
-      text-decoration: none;
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
-    }
-    .back-link {
-      color: var(--main-blue);
-      text-decoration: underline;
-      margin-bottom: 1rem;
-      display: inline-block;
-    }
-    .app-container {
-      position: relative;
-      margin: 20px 0;
-    }
-    .loading-indicator {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: var(--main-blue);
-      font-size: 1.2rem;
-      z-index: 1;
-    }
+      gtag('config', 'G-YSBGNQTYRZ');
+    </script>
     
-    /* レスポンシブ対応の改善 */
-    @media (max-width: 768px) {
-      .app-iframe {
-        min-height: 500px;
-        height: 70vh;
-      }
-    }
-    
-    @media (max-width: 576px) {
-      .app-iframe {
-        min-height: 400px;
-        height: 60vh;
-      }
-    }
-  </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fff3e0 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #4fc3f7 0%, #29b6f6 50%, #03a9f4 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(79, 195, 247, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            background: linear-gradient(90deg, #9e9e9e, #757575);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(158, 158, 158, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(158, 158, 158, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .app-detail-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        .app-detail-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .app-detail-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-detail-subtitle {
+            font-size: 1.2rem;
+            color: #546e7a;
+            margin-bottom: 1rem;
+        }
+
+        .app-detail-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .app-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #4fc3f7, #29b6f6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .app-badge.difficulty {
+            background: linear-gradient(90deg, #66bb6a, #4caf50);
+        }
+
+        .app-badge.category {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+        }
+
+        .app-detail-img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .app-iframe-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .app-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .loading-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: #546e7a;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #4fc3f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .start-btn {
+            background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 2rem auto;
+            display: block;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            text-decoration: none;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(90deg, #37474f 0%, #455a64 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .footer-text a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .app-detail-title {
+                font-size: 2rem;
+            }
+
+            .app-iframe-container {
+                height: 400px;
+            }
+
+            .app-detail-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles */
+        *:focus {
+            outline: 3px solid #4fc3f7;
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .app-detail-container {
+                border: 2px solid #000;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- ヘッダー -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">子供達の「わかる！」「できた！」を増やす、お役立ちサイト</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">ホーム</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">カテゴリ</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="メインナビゲーション">
+            <div class="logo" aria-label="学習ポータルロゴ">
+                🌟 学習ポータル
+            </div>
+            <div class="nav-controls">
+                <a href="index.html" class="back-btn">
+                    ← ホームに戻る / Back to Home
+                </a>
+            </div>
+        </nav>
+    </header>
 
-  <!-- フローティング戻るボタン -->
-  <a href="index.html" class="float-back" aria-label="一覧に戻る">← 戻る</a>
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <div class="app-detail-container">
+            <div class="app-detail-header">
+                <h1 class="app-detail-title" id="app-title">
+                    アプリ詳細 / App Details
+                </h1>
+                <p class="app-detail-subtitle" id="app-description">
+                    アプリの詳細情報を表示中... / Loading app details...
+                </p>
+                <div class="app-detail-badges" id="app-badges">
+                    <!-- バッジがJavaScriptで生成される -->
+                </div>
+            </div>
 
-  <main class="container my-0">
-    <!-- 通常の戻るリンクは全画面時は非表示のため削除 -->
-    <div id="appDetailContainer" class="row justify-content-center">
-      <!-- アプリ詳細がここに表示される -->
-    </div>
-  </main>
+            <img class="app-detail-img" id="app-image" src="img/placeholder.svg" alt="アプリ画像" />
 
-  <!-- フッター -->
-  <footer class="footer">
-    <div class="container">
-      <span class="footer-text">&copy; 2024 子供達の「わかる！」「できた！」を増やす、お役立ちサイト | <a href="privacy.html" style="color: #fff;">プライバシーポリシー</a> | <a href="mailto:contact@wakaru-dekita.com" style="color: #fff;">お問い合わせ</a></span>
-    </div>
-  </footer>
+            <div class="app-iframe-container" id="app-iframe-container">
+                <div class="loading-indicator">
+                    <div class="spinner" role="status" aria-label="読み込み中"></div>
+                    <div>読み込み中... / Loading...</div>
+                </div>
+            </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="main.js"></script>
-  <script src="detail.js"></script>
+            <button class="start-btn" id="start-btn" onclick="startApp()" style="display: none;">
+                アプリを開始 / Start App
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-text">
+            © 2024 学習ポータル - みんなで楽しく学ぼう！<br>
+            <span lang="en">Learning Portal - Let's Learn Together!</span><br>
+            <a href="privacy.html">プライバシーポリシー / Privacy Policy</a> | 
+            <a href="mailto:contact@wakaru-dekita.com">お問い合わせ / Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        // URLパラメータからアプリIDを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const appId = urlParams.get('id');
+
+        // アプリデータ
+        let apps = [];
+        let currentApp = null;
+
+        // アプリデータを読み込む
+        async function loadAppData() {
+            try {
+                const response = await fetch('data/apps.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                apps = data.apps;
+                return true;
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                return false;
+            }
+        }
+
+        // アプリ詳細を表示
+        function displayAppDetails(app) {
+            if (!app) return;
+
+            document.getElementById('app-title').textContent = app.name;
+            document.getElementById('app-description').textContent = app.description;
+            
+            if (app.screenshot && app.screenshot !== 'img/placeholder.svg') {
+                document.getElementById('app-image').src = app.screenshot;
+            }
+
+            // バッジを生成
+            const badges = [];
+            if (app.difficulty) {
+                badges.push(`<span class="app-badge difficulty">${app.difficulty}</span>`);
+            }
+            if (app.category) {
+                badges.push(`<span class="app-badge category">${app.category}</span>`);
+            }
+            if (app.grade) {
+                badges.push(`<span class="app-badge">${app.grade}</span>`);
+            }
+
+            document.getElementById('app-badges').innerHTML = badges.join('');
+
+            // 開始ボタンを表示
+            document.getElementById('start-btn').style.display = 'block';
+        }
+
+        // アプリを開始
+        function startApp() {
+            if (!currentApp) return;
+
+            const iframeContainer = document.getElementById('app-iframe-container');
+            iframeContainer.innerHTML = `
+                <iframe 
+                    src="${currentApp.link}" 
+                    class="app-iframe" 
+                    title="${currentApp.name}"
+                    allowfullscreen
+                ></iframe>
+            `;
+        }
+
+        // 初期化
+        async function initialize() {
+            if (!appId) {
+                console.error('アプリIDが指定されていません');
+                return;
+            }
+
+            const loaded = await loadAppData();
+            if (!loaded) {
+                console.error('アプリデータの読み込みに失敗しました');
+                return;
+            }
+
+            // 指定されたアプリを検索
+            currentApp = apps.find(app => app.id === appId);
+            if (!currentApp) {
+                console.error(`アプリID "${appId}" が見つかりません`);
+                return;
+            }
+
+            displayAppDetails(currentApp);
+        }
+
+        // DOMContentLoadedイベントで初期化
+        document.addEventListener('DOMContentLoaded', initialize);
+
+        // フォールバック: DOMContentLoadedが既に発生している場合
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            initialize();
+        }
+    </script>
 </body>
 </html>

@@ -190,6 +190,36 @@
             width: 100%;
             max-width: 500px;
         }
+        
+        .answer-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .answer-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .answer-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .answer-input {
+            font-size: 18px;
+            font-weight: 600;
+            width: 100px;
+            text-align: center;
+            border: 3px solid #4299e1;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: inherit;
+        }
 
         .color-palette {
             display: flex;
@@ -279,6 +309,14 @@
 
         <div class="result" id="result">
             マス目を選んで「まとまり」を作ってみよう！
+        </div>
+        
+        <div class="answer-section">
+            <div class="answer-row">
+                <span class="answer-label">答え:</span>
+                <input type="text" class="answer-input" id="answerInput" placeholder="?" maxlength="3" />
+                <button class="btn btn-success" onclick="checkAnswer()">こたえる！</button>
+            </div>
         </div>
     </div>
 
@@ -528,10 +566,60 @@
             });
         }
 
+        // 入力処理（全角半角対応）
+        function setupInput() {
+            const answerInput = document.getElementById('answerInput');
+            
+            answerInput.addEventListener('input', (e) => {
+                let v = e.target.value;
+                // 全角→半角
+                v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+                // 数字以外除去
+                v = v.replace(/[^0-9]/g, '');
+                if (v.length > 3) v = v.slice(0,3);
+                e.target.value = v;
+            });
+            
+            // Enterキーでも回答
+            answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkAnswer();
+            });
+        }
+        
+        // 回答チェック
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseInt(input.value, 10);
+            
+            if (Number.isNaN(userAnswer)) {
+                updateResult('すうじを いれてね！');
+                return;
+            }
+            
+            // 現在のまとまりの数を計算
+            const currentGroups = document.querySelectorAll('.grouped').length;
+            
+            if (userAnswer === currentGroups) {
+                updateResult('🎉 せいかい！ まとまりの数が あってるよ！');
+                input.style.borderColor = '#48bb78';
+                setTimeout(() => {
+                    input.style.borderColor = '#4299e1';
+                    input.value = '';
+                }, 2000);
+            } else {
+                updateResult(`ちがうよ！ まとまりの数は ${currentGroups} こ だよ。`);
+                input.style.borderColor = '#f56565';
+                setTimeout(() => {
+                    input.style.borderColor = '#4299e1';
+                }, 2000);
+            }
+        }
+        
         // 初期化
         document.addEventListener('DOMContentLoaded', () => {
             initGrid();
             setupColorPalette();
+            setupInput();
             
             // マウスアップイベントをドキュメント全体に追加
             document.addEventListener('mouseup', () => {

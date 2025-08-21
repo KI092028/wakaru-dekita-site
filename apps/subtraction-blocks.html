@@ -45,7 +45,7 @@
     .timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), #27ae60); transition: width 0.1s linear; }
 
     .stage { margin-top: 10px; }
-    .stack-wrap { background: linear-gradient(180deg, #fefefe, #f7fff7); border-radius: 18px; border: 4px solid #a3d9a5; padding: 12px; position: relative; min-height: 280px; }
+    .stack-wrap { background: linear-gradient(180deg, #fefefe, #f7fff7); border-radius: 18px; padding: 12px; position: relative; min-height: 280px; }
     .blocks { display: grid; grid-template-columns: repeat(10, minmax(24px, 1fr)); grid-auto-rows: 36px; gap: 8px; align-content: center; justify-items: center; }
     .block { width: 100%; max-width: 52px; height: 100%; border-radius: 10px; box-shadow: 0 3px 0 rgba(0,0,0,0.1); }
     .b1 { background: #ff7675; } .b2 { background: #74b9ff; } .b3 { background: #55efc4; } .b4 { background: #ffeaa7; } .b5 { background: #a29bfe; }
@@ -184,16 +184,23 @@
       rep.addEventListener('click', () => { repeatMode = !repeatMode; rep.textContent = `リピート: ${repeatMode ? 'ON' : 'OFF'}`; rep.setAttribute('aria-pressed', repeatMode); });
       window.addEventListener('resize', () => layoutBlocks(a));
       // 入力欄: 全角→半角、数字のみ、Enterで判定
+      // 入力欄のサニタイズ（全角半角対応）
       answerInput.addEventListener('input', (e) => {
         let v = e.target.value;
+        // 全角→半角
         v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        // 数字以外除去
         v = v.replace(/[^0-9]/g, '');
         if (v.length > 2) v = v.slice(0,2);
         e.target.value = v;
         selected = v === '' ? null : parseInt(v, 10);
         highlightPad();
       });
-      answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
+      
+      // Enterキーでも回答
+      answerInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+      });
       // ソフトキーボード
       const soft = document.getElementById('softpad');
       soft.addEventListener('click', (e) => {

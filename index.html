@@ -1,463 +1,722 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールで、足し算や図形を楽しく学べます。保護者・教師におすすめ！無料で利用できる子供向け学習ツールです。">
-  <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ, 子供向け算数, 小学生算数アプリおすすめ">
-  <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
-  <meta name="robots" content="index, follow">
-  <title>小学校算数アプリおすすめ | 子供達の「わかる！」「できた！」を増やす、お役立ちサイト</title>
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --main-blue: #007BFF;
-      --main-green: #28A745;
-      --main-yellow: #FFC107;
-    }
-    .navbar, .footer {
-      background: var(--main-blue);
-    }
-    .navbar-brand, .nav-link, .footer-text {
-      color: #fff !important;
-    }
-    .menu-card {
-      border: 2px solid var(--main-green);
-      transition: box-shadow 0.2s;
-    }
-    .menu-card:hover {
-      box-shadow: 0 0 10px var(--main-yellow);
-    }
-    .footer {
-      padding: 1rem 0;
-      text-align: center;
-      margin-top: 2rem;
-    }
-    .search-form {
-      margin-left: auto;
-    }
-    .subject-card {
-      border: 3px solid var(--main-blue);
-      border-radius: 15px;
-      transition: all 0.3s;
-      cursor: pointer;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    }
-    .subject-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0,123,255,0.3);
-      border-color: var(--main-green);
-    }
-    .subject-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-    }
-    .tag-badge {
-      font-size: 0.9rem;
-      margin: 2px;
-    }
-    /* 学年カード */
-    .grade-card {
-      cursor: pointer;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールで、足し算や図形を楽しく学べます。保護者・教師におすすめ！無料で利用できる子供向け学習ツールです。">
+    <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ, 子供向け算数, 小学生算数アプリおすすめ">
+    <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
+    <meta name="robots" content="index, follow">
+    <title>学習ポータル - Learning Portal</title>
     
-    /* 文字サイズを大きく */
-    .navbar-brand {
-      font-size: 1.4rem !important;
-    }
-    .card-title {
-      font-size: 1.4rem !important;
-    }
-    .card-text {
-      font-size: 1.1rem !important;
-    }
-    .btn {
-      font-size: 1.1rem !important;
-      padding: 0.6rem 1.2rem !important;
-    }
-    h2 {
-      font-size: 2.2rem !important;
-    }
-    h3 {
-      font-size: 1.8rem !important;
-    }
-    h4 {
-      font-size: 1.6rem !important;
-    }
-    .badge {
-      font-size: 1rem !important;
-      padding: 0.5rem 0.8rem !important;
-    }
-    .form-control {
-      font-size: 1.1rem !important;
-    }
-  </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YSBGNQTYRZ');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fff3e0 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #4fc3f7 0%, #29b6f6 50%, #03a9f4 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(79, 195, 247, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            width: 250px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .lang-select {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            background: white;
+            color: #2c3e50;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .lang-select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: #546e7a;
+            margin-bottom: 2rem;
+        }
+
+        /* Subject Cards */
+        .subjects-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .subject-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            border-color: #4fc3f7;
+        }
+
+        .subject-card.math {
+            background: linear-gradient(135deg, #ffecb3 0%, #fff176 100%);
+        }
+
+        .subject-card.science {
+            background: linear-gradient(135deg, #c8e6c9 0%, #81c784 100%);
+        }
+
+        .subject-card.language {
+            background: linear-gradient(135deg, #f8bbd9 0%, #f48fb1 100%);
+        }
+
+        .subject-card.social {
+            background: linear-gradient(135deg, #d1c4e9 0%, #b39ddb 100%);
+        }
+
+        .subject-emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .subject-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .subject-name-en {
+            font-size: 1rem;
+            color: #546e7a;
+            font-style: italic;
+        }
+
+        .subject-description {
+            font-size: 1rem;
+            color: #546e7a;
+            margin-top: 0.5rem;
+        }
+
+        /* App Container */
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            display: none;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .app-card:hover {
+            border-color: #4fc3f7;
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .app-description {
+            color: #546e7a;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .app-badges {
+            margin-bottom: 1rem;
+        }
+
+        .app-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #4fc3f7, #29b6f6);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
+        }
+
+        .app-badge.difficulty {
+            background: linear-gradient(90deg, #66bb6a, #4caf50);
+        }
+
+        .app-badge.category {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+        }
+
+        .start-btn {
+            background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            background: linear-gradient(90deg, #9e9e9e, #757575);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(158, 158, 158, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(158, 158, 158, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(90deg, #37474f 0%, #455a64 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .footer-text a {
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-input {
+                width: 200px;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles */
+        *:focus {
+            outline: 3px solid #4fc3f7;
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .subject-card {
+                border: 2px solid #000;
+            }
+            
+            .app-card {
+                border: 2px solid #000;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- ヘッダー -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">子供達の「わかる！」「できた！」を増やす、お役立ちサイト</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="#">ホーム</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">カテゴリ</a></li>
-        </ul>
-        <form class="d-flex search-form" role="search" aria-label="サイト内検索">
-          <input class="form-control me-2" type="search" id="searchInput" placeholder="アプリを検索" aria-label="検索">
-          <button class="btn btn-outline-light" id="searchBtn" type="submit">検索</button>
-        </form>
-        <div class="ms-2 d-flex align-items-center">
-          <select id="langSelect" class="form-select form-select-sm" style="width:auto">
-            <option value="ja">日本語</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- メインメニュー -->
-  <main class="container my-5">
-    <!-- 授業から探すセクション -->
-    <section id="subjectSection" class="text-center mb-5">
-      <h2 class="mb-4">授業から探す（げんざい、更新中！）</h2>
-      <div class="row g-3" id="subjectContainer">
-        <!-- 教科カードが表示される -->
-      </div>
-    </section>
-
-    <!-- 学年選択セクション（算数選択時に表示） -->
-    <section id="gradeSection" style="display: none;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 id="gradeSectionTitle">学年を選んでね</h3>
-        <button class="btn btn-outline-primary" onclick="showSubjects()">授業選択に戻る</button>
-      </div>
-      <div class="row g-3" id="gradeContainer"></div>
-    </section>
-
-    <!-- アプリ一覧セクション -->
-    <section id="appSection" style="display: none;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 id="sectionTitle">アプリ一覧</h3>
-        <button class="btn btn-outline-primary" onclick="goBackFromApps()">戻る</button>
-      </div>
-      <div class="row g-4" id="appContainer">
-        <!-- アプリカードが表示される -->
-      </div>
-    </section>
-  </main>
-
-  <!-- フッター -->
-  <footer class="footer">
-    <div class="container">
-      <span class="footer-text">&copy; 2024 子供達の「わかる！」「できた！」を増やす、お役立ちサイト | <a href="privacy.html" style="color: #fff;">プライバシーポリシー</a> | <a href="mailto:contact@wakaru-dekita.com" style="color: #fff;">お問い合わせ</a></span>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // 言語設定
-    const I18N = {
-      ja: {
-        home: 'ホーム', categories: 'カテゴリ', search: '検索', searchPlaceholder: 'アプリを検索',
-        subjectsTitle: '授業から探す（げんざい、更新中！）', appsTitle: 'アプリ一覧', start: 'はじめる', back: '戻る'
-      },
-      en: {
-        home: 'Home', categories: 'Categories', search: 'Search', searchPlaceholder: 'Search apps',
-        subjectsTitle: 'Find by Subject', appsTitle: 'Apps', start: 'Start', back: 'Back'
-      }
-    };
-    let currentLang = localStorage.getItem('lang') || 'ja';
-    function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ja[key] || key; }
-    function getAppField(app, key){ if(currentLang==='en' && app[key + '_en']) return app[key + '_en']; return app[key]; }
-    function subjectDisplay(name){ if(currentLang==='en'){ const m={ '算数':'Math', '国語':'Language', '理科':'Science', '社会':'Social Studies' }; return m[name] || name; } return name; }
-
-    // 教科データ
-    const subjects = [
-      {
-        name: "算数",
-        icon: "🔢",
-        description: "計算や図形を楽しく学ぼう",
-        color: "primary"
-      },
-      {
-        name: "国語",
-        icon: "📚",
-        description: "ひらがな・カタカナ・漢字を覚えよう",
-        color: "success"
-      },
-      {
-        name: "理科",
-        icon: "🔬",
-        description: "実験や観察で自然を学ぼう",
-        color: "info"
-      },
-      {
-        name: "社会",
-        icon: "🌍",
-        description: "地理や歴史を知ろう",
-        color: "warning"
-      }
-    ];
-
-    // アプリデータと状態
-    let apps = [];
-    let currentSubject = null;
-    let currentGrade = null;
-    const SCHOOL_YEARS = [1, 2, 3, 4, 5, 6];
-    const getYearLabel = (n) => `${n}年生`;
-
-    // 教科カードを生成する関数
-    function createSubjectCard(subject) {
-      return `
-        <div class="col-md-6 col-lg-3">
-          <div class="card subject-card h-100 text-center p-4" onclick="showApps('${subject.name}')">
-            <div class="subject-icon">${subject.icon}</div>
-            <h4 class="card-title text-${subject.color}">${subjectDisplay(subject.name)}</h4>
-            <p class="card-text">${subject.description}</p>
-          </div>
-        </div>
-      `;
-    }
-
-    // アプリカードを生成する関数
-    function createAppCard(app) {
-      // タグを生成（学年とカテゴリーから）
-      const tags = [getAppField(app,'grade'), app.category].filter(Boolean);
-      const tagBadges = tags.map(tag => 
-        `<span class="badge bg-info tag-badge">${tag}</span>`
-      ).join('');
-      
-      return `
-        <div class="col-md-6 col-lg-4">
-          <div class="card menu-card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${getAppField(app,'name')}</h5>
-              <p class="card-text">${getAppField(app,'description')}</p>
-              <div class="mb-2 d-flex align-items-center gap-2 flex-wrap">
-                <span class="badge bg-success">${getAppField(app,'difficulty') || app.difficulty}</span>
-                ${tagBadges}
-              </div>
-              <a href="${app.link}" class="btn btn-success mt-3 w-100">${t('start')}</a>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="メインナビゲーション">
+            <div class="logo" aria-label="学習ポータルロゴ">
+                🌟 学習ポータル
             </div>
-          </div>
+            <div class="nav-controls">
+                <div class="search-container">
+                    <label for="search" class="sr-only">検索</label>
+                    <input 
+                        type="search" 
+                        id="search"
+                        class="search-input" 
+                        placeholder="学習内容を検索... / Search content..."
+                        aria-label="学習内容を検索"
+                    >
+                </div>
+                <label for="language" class="sr-only">言語選択</label>
+                <select id="language" class="lang-select" aria-label="言語を選択">
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="en">🇺🇸 English</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <!-- Welcome Section -->
+        <section class="welcome-section" aria-labelledby="welcome-title">
+            <h1 id="welcome-title" class="welcome-title">
+                楽しく学ぼう！<br>
+                <span lang="en">Let's Learn Together!</span>
+            </h1>
+            <p class="welcome-subtitle">
+                みんなで一緒に新しいことを発見しよう 🚀<br>
+                <span lang="en">Discover new things together</span>
+            </p>
+        </section>
+
+        <!-- Subject Cards -->
+        <section class="subjects-section" aria-labelledby="subjects-title">
+            <h2 id="subjects-title" class="section-title">
+                教科を選ぼう / Choose Your Subject
+            </h2>
+            <div class="subjects-grid" id="subjects-grid" role="grid" aria-label="教科選択">
+                <!-- 教科カードがJavaScriptで生成される -->
+            </div>
+        </section>
+
+        <!-- App Container -->
+        <section class="app-container" id="app-container" aria-labelledby="apps-title">
+            <h2 id="apps-title" class="section-title">
+                学習アプリ / Learning Apps
+            </h2>
+            <button class="back-btn" onclick="showSubjects()" id="back-btn">
+                ← 教科選択に戻る / Back to Subjects
+            </button>
+            <div class="app-grid" id="app-grid" role="region" aria-label="学習アプリ一覧">
+                <!-- アプリカードがJavaScriptで生成される -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-text">
+            © 2024 学習ポータル - みんなで楽しく学ぼう！<br>
+            <span lang="en">Learning Portal - Let's Learn Together!</span><br>
+            <a href="privacy.html">プライバシーポリシー / Privacy Policy</a> | 
+            <a href="mailto:contact@wakaru-dekita.com">お問い合わせ / Contact</a>
         </div>
-      `;
-    }
+    </footer>
 
-    // 教科一覧を表示
-    function showSubjects() {
-      document.getElementById('subjectContainer').innerHTML = subjects.map(createSubjectCard).join('');
-      // 表示切り替え（明示的に）
-      const subj = document.getElementById('subjectSection');
-      const grade = document.getElementById('gradeSection');
-      const app = document.getElementById('appSection');
-      if (subj) subj.style.display = 'block';
-      if (grade) grade.style.display = 'none';
-      if (app) app.style.display = 'none';
-      currentSubject = null;
-      currentGrade = null;
-    }
-
-    // 算数カテゴリのアプリだけ取得
-    function getMathApps() {
-      const mathCategories = ["basic", "multiplication", "division", "geometry"];
-      return apps.filter(app => mathCategories.includes((app.category || '').toLowerCase()));
-    }
-
-    // 学年カードを生成
-    function createGradeCard(grade) {
-      return `
-        <div class="col-6 col-md-4 col-lg-3">
-          <div class="card subject-card grade-card h-100 text-center p-4" onclick="showAppsByGrade('${grade}')">
-            <div class="subject-icon">🎒</div>
-            <h4 class="card-title">${grade}</h4>
-          </div>
-        </div>
-      `;
-    }
-
-    // 学年選択は廃止
-    function showGradeSelection() { showApps('算数'); }
-
-    // 特定教科のアプリを表示
-    function showApps(subjectName) {
-      currentSubject = subjectName;
-      // すべての科目で直接アプリ一覧へ
-
-      // カテゴリーに基づいてアプリをフィルタリング
-      const filteredApps = apps.filter(app => {
-        // カテゴリー名を小文字に変換して比較
-        const appCategory = app.category.toLowerCase();
-        const searchCategory = subjectName.toLowerCase();
+    <script>
+        // 言語設定
+        const I18N = {
+            ja: {
+                home: 'ホーム', categories: 'カテゴリ', search: '検索', searchPlaceholder: 'アプリを検索',
+                subjectsTitle: '教科を選ぼう / Choose Your Subject', appsTitle: '学習アプリ / Learning Apps', 
+                start: 'はじめる', back: '戻る', backToSubjects: '← 教科選択に戻る / Back to Subjects'
+            },
+            en: {
+                home: 'Home', categories: 'Categories', search: 'Search', searchPlaceholder: 'Search apps',
+                subjectsTitle: 'Choose Your Subject', appsTitle: 'Learning Apps', 
+                start: 'Start', back: 'Back', backToSubjects: '← Back to Subjects'
+            }
+        };
         
-        // 基本計算（たし算・ひき算）を算数カテゴリーに含める
-        if (searchCategory === "算数") {
-          return appCategory === "basic" || 
-                 appCategory === "multiplication" || 
-                 appCategory === "division" ||
-                 appCategory === "geometry";
+        let currentLang = localStorage.getItem('lang') || 'ja';
+        function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ja[key] || key; }
+        function getAppField(app, key){ if(currentLang==='en' && app[key + '_en']) return app[key + '_en']; return app[key]; }
+        function subjectDisplay(name){ 
+            if(currentLang==='en'){ 
+                const m={ '算数':'Math', '国語':'Language', '理科':'Science', '社会':'Social Studies' }; 
+                return m[name] || name; 
+            } 
+            return name; 
         }
-        
-        // その他の教科は完全一致で検索
-        return app.category === subjectName;
-      });
 
-      // フィルタリングされたアプリを表示
-      document.getElementById('appContainer').innerHTML = filteredApps.map(createAppCard).join('');
-      document.getElementById('sectionTitle').textContent = `${subjectDisplay(subjectName)} ${t('appsTitle')}`;
-      const subj = document.getElementById('subjectSection');
-      if (subj) subj.style.display = 'none';
-      document.getElementById('gradeSection').style.display = 'none';
-      document.getElementById('appSection').style.display = 'block';
-    }
-
-    // 学年表記（例: "1-2年生" や "3年生"）から数値レンジを抽出
-    function parseGradeRange(label) {
-      if (!label) return null;
-      const mRange = label.match(/(\d+)\s*-\s*(\d+)\s*年?/);
-      if (mRange) {
-        const a = parseInt(mRange[1], 10);
-        const b = parseInt(mRange[2], 10);
-        return { min: Math.min(a, b), max: Math.max(a, b) };
-      }
-      const mSingle = label.match(/(\d+)\s*年?/);
-      if (mSingle) {
-        const n = parseInt(mSingle[1], 10);
-        return { min: n, max: n };
-      }
-      return null;
-    }
-
-    function appMatchesYear(app, yearNum) {
-      const range = parseGradeRange(app.grade || '');
-      if (!range) return false;
-      return yearNum >= range.min && yearNum <= range.max;
-    }
-
-    // 学年で算数アプリを表示
-    function showAppsByGrade(grade) {
-      currentGrade = grade;
-      const yearNum = parseInt((grade.match(/\d+/) || ['0'])[0], 10);
-      const filteredApps = getMathApps().filter(app => appMatchesYear(app, yearNum));
-      document.getElementById('appContainer').innerHTML = filteredApps.map(createAppCard).join('');
-      document.getElementById('sectionTitle').textContent = `算数（${getYearLabel(yearNum)}）のアプリ`;
-      document.querySelector('section').style.display = 'none';
-      document.getElementById('gradeSection').style.display = 'none';
-      document.getElementById('appSection').style.display = 'block';
-    }
-
-    // アプリ一覧の戻るボタン挙動
-    function goBackFromApps() {
-      showSubjects();
-    }
-
-    // 検索機能
-    function setupSearch() {
-      const searchInput = document.getElementById('searchInput');
-      const searchForm = document.querySelector('.search-form');
-      
-      searchForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const searchTerm = searchInput.value.toLowerCase();
-        const filteredApps = apps.filter(app => 
-          app.name.toLowerCase().includes(searchTerm) ||
-          app.description.toLowerCase().includes(searchTerm) ||
-          app.category.toLowerCase().includes(searchTerm) ||
-          (app.grade || '').toLowerCase().includes(searchTerm) ||
-          app.difficulty.toLowerCase().includes(searchTerm)
-        );
-        
-        document.getElementById('appContainer').innerHTML = filteredApps.map(createAppCard).join('');
-        document.getElementById('sectionTitle').textContent = `検索結果: "${searchInput.value}"`;
-        document.querySelector('section').style.display = 'none';
-        document.getElementById('appSection').style.display = 'block';
-      });
-    }
-
-    // アプリデータを読み込む関数
-    async function loadAppData() {
-      try {
-        const response = await fetch('data/apps.json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        apps = data.apps;
-        console.log('読み込まれたアプリ:', apps);  // デバッグ用
-        return true;
-      } catch (error) {
-        console.error('データ読み込みエラー:', error);
-        // エラー時のフォールバックデータ
-        apps = [
-          {
-            id: 'addition',
-            name: 'たし算練習',
-            category: 'basic',
-            description: '基本のたし算を楽しく練習しよう！',
-            screenshot: 'img/placeholder.svg',
-            link: 'app-detail.html?id=addition',
-            difficulty: '初級',
-            grade: '1-2年生'
-          }
+        // 教科データ
+        const subjects = [
+            {
+                name: "算数",
+                icon: "🧮",
+                description: "計算や図形を楽しく学ぼう",
+                descriptionEn: "Learn calculations and shapes in a fun way",
+                color: "math"
+            },
+            {
+                name: "国語",
+                icon: "📚",
+                description: "ひらがな・カタカナ・漢字を覚えよう",
+                descriptionEn: "Learn hiragana, katakana, and kanji",
+                color: "language"
+            },
+            {
+                name: "理科",
+                icon: "🔬",
+                description: "実験や観察で自然を学ぼう",
+                descriptionEn: "Learn nature through experiments and observations",
+                color: "science"
+            },
+            {
+                name: "社会",
+                icon: "🌍",
+                description: "地理や歴史を知ろう",
+                descriptionEn: "Learn geography and history",
+                color: "social"
+            }
         ];
-        return false;
-      }
-    }
 
-    // 初期化
-    let __initialized = false;
-    async function initialize() {
-      if (__initialized) return; // 重複初期化防止
-      __initialized = true;
-      try {
-        console.log('初期化開始');
-        const loaded = await loadAppData();
-        if (!loaded) {
-          console.warn('アプリデータの読み込みに失敗しました。フォールバックデータを使用します。');
+        // アプリデータと状態
+        let apps = [];
+        let currentSubject = null;
+
+        // 教科カードを生成する関数
+        function createSubjectCard(subject) {
+            return `
+                <div class="subject-card ${subject.color}" onclick="showApps('${subject.name}')" role="gridcell" tabindex="0">
+                    <span class="subject-emoji" role="img" aria-label="${subject.name}">${subject.icon}</span>
+                    <div class="subject-name">${subjectDisplay(subject.name)}</div>
+                    <div class="subject-name-en" lang="en">${subject.name === '算数' ? 'Math & Numbers' : 
+                                                           subject.name === '国語' ? 'Language & Reading' : 
+                                                           subject.name === '理科' ? 'Science & Discovery' : 
+                                                           'Social Studies'}</div>
+                    <div class="subject-description">${currentLang === 'en' ? subject.descriptionEn : subject.description}</div>
+                </div>
+            `;
         }
-        // 言語UI初期化
-        const sel=document.getElementById('langSelect'); if(sel){ sel.value=currentLang; sel.addEventListener('change',()=>{ currentLang=sel.value; localStorage.setItem('lang', currentLang); updateStaticTexts(); showSubjects(); }); }
-        updateStaticTexts();
-        showSubjects();
-        setupSearch();
-        console.log('初期化完了');
-      } catch (error) {
-        console.error('初期化エラー:', error);
-      }
-    }
 
-    function updateStaticTexts(){
-      document.getElementById('searchInput').placeholder = t('searchPlaceholder');
-      const sb=document.getElementById('searchBtn'); if(sb) sb.textContent=t('search');
-      const subjTitle=document.querySelector('#subjectSection h2'); if(subjTitle) subjTitle.textContent=t('subjectsTitle');
-      const navLinks=document.querySelectorAll('.navbar-nav .nav-link'); if(navLinks[0]) navLinks[0].textContent=t('home'); if(navLinks[1]) navLinks[1].textContent=t('categories');
-      const backBtn=document.querySelector('#appSection button.btn'); if(backBtn) backBtn.textContent=t('back');
-    }
+        // アプリカードを生成する関数
+        function createAppCard(app) {
+            const tags = [getAppField(app,'grade'), app.category].filter(Boolean);
+            const tagBadges = tags.map(tag => 
+                `<span class="app-badge category">${tag}</span>`
+            ).join('');
+            
+            return `
+                <div class="app-card" role="article">
+                    <h3 class="app-title">${getAppField(app,'name')}</h3>
+                    <p class="app-description">${getAppField(app,'description')}</p>
+                    <div class="app-badges">
+                        <span class="app-badge difficulty">${getAppField(app,'difficulty') || app.difficulty}</span>
+                        ${tagBadges}
+                    </div>
+                    <a href="${app.link}" class="start-btn">${t('start')}</a>
+                </div>
+            `;
+        }
 
-    // DOMContentLoadedイベントで初期化
-    document.addEventListener('DOMContentLoaded', initialize);
+        // 教科一覧を表示
+        function showSubjects() {
+            document.getElementById('subjects-grid').innerHTML = subjects.map(createSubjectCard).join('');
+            document.getElementById('subjects-section').style.display = 'block';
+            document.getElementById('app-container').style.display = 'none';
+            currentSubject = null;
+        }
 
-    // フォールバック: DOMContentLoadedが既に発生している場合
-    if (document.readyState === 'interactive' || document.readyState === 'complete') {
-      console.log('DOMContentLoaded既発生。直接初期化を実行。');
-      initialize();
-    }
-  </script>
+        // 特定教科のアプリを表示
+        function showApps(subjectName) {
+            currentSubject = subjectName;
+            
+            // カテゴリーに基づいてアプリをフィルタリング
+            const filteredApps = apps.filter(app => {
+                const appCategory = app.category.toLowerCase();
+                const searchCategory = subjectName.toLowerCase();
+                
+                // 基本計算（たし算・ひき算）を算数カテゴリーに含める
+                if (searchCategory === "算数") {
+                    return appCategory === "basic" || 
+                           appCategory === "multiplication" || 
+                           appCategory === "division" ||
+                           appCategory === "geometry";
+                }
+                
+                // その他の教科は完全一致で検索
+                return app.category === subjectName;
+            });
+
+            // フィルタリングされたアプリを表示
+            document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
+            document.getElementById('subjects-section').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+        }
+
+        // 検索機能
+        function setupSearch() {
+            const searchInput = document.getElementById('search');
+            
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                if (searchTerm.length === 0) {
+                    showSubjects();
+                    return;
+                }
+                
+                const filteredApps = apps.filter(app => 
+                    app.name.toLowerCase().includes(searchTerm) ||
+                    app.description.toLowerCase().includes(searchTerm) ||
+                    app.category.toLowerCase().includes(searchTerm) ||
+                    (app.grade || '').toLowerCase().includes(searchTerm) ||
+                    app.difficulty.toLowerCase().includes(searchTerm)
+                );
+                
+                document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
+                document.getElementById('subjects-section').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+            });
+        }
+
+        // アプリデータを読み込む関数
+        async function loadAppData() {
+            try {
+                const response = await fetch('data/apps.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                apps = data.apps;
+                console.log('読み込まれたアプリ:', apps);
+                return true;
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                // エラー時のフォールバックデータ
+                apps = [
+                    {
+                        id: 'addition',
+                        name: 'たし算練習',
+                        category: 'basic',
+                        description: '基本のたし算を楽しく練習しよう！',
+                        screenshot: 'img/placeholder.svg',
+                        link: 'app-detail.html?id=addition',
+                        difficulty: '初級',
+                        grade: '1-2年生'
+                    }
+                ];
+                return false;
+            }
+        }
+
+        // 初期化
+        let __initialized = false;
+        async function initialize() {
+            if (__initialized) return;
+            __initialized = true;
+            try {
+                console.log('初期化開始');
+                const loaded = await loadAppData();
+                if (!loaded) {
+                    console.warn('アプリデータの読み込みに失敗しました。フォールバックデータを使用します。');
+                }
+                
+                // 言語UI初期化
+                const langSelect = document.getElementById('language');
+                if (langSelect) {
+                    langSelect.value = currentLang;
+                    langSelect.addEventListener('change', () => {
+                        currentLang = langSelect.value;
+                        localStorage.setItem('lang', currentLang);
+                        updateStaticTexts();
+                        showSubjects();
+                    });
+                }
+                
+                updateStaticTexts();
+                showSubjects();
+                setupSearch();
+                console.log('初期化完了');
+            } catch (error) {
+                console.error('初期化エラー:', error);
+            }
+        }
+
+        function updateStaticTexts() {
+            document.getElementById('search').placeholder = t('searchPlaceholder');
+            document.getElementById('subjects-title').textContent = t('subjectsTitle');
+            document.getElementById('apps-title').textContent = t('appsTitle');
+            document.getElementById('back-btn').textContent = t('backToSubjects');
+        }
+
+        // DOMContentLoadedイベントで初期化
+        document.addEventListener('DOMContentLoaded', initialize);
+
+        // フォールバック: DOMContentLoadedが既に発生している場合
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
+            console.log('DOMContentLoaded既発生。直接初期化を実行。');
+            initialize();
+        }
+    </script>
 </body>
 </html>
