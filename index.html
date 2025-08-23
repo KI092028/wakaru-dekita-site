@@ -316,6 +316,151 @@
             box-shadow: 0 4px 20px rgba(158, 158, 158, 0.4);
         }
 
+        /* New Apps Showcase Section */
+        .new-apps-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 50%, #ffe0b2 100%);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 6px 30px rgba(255, 152, 0, 0.2);
+            border: 3px solid #ffb74d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .new-apps-section::before {
+            content: '✨';
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        .new-apps-section::after {
+            content: '🎉';
+            position: absolute;
+            bottom: 1rem;
+            left: 1.5rem;
+            font-size: 2rem;
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        .new-apps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .new-app-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 18px;
+            padding: 1.8rem;
+            border: 3px solid #ff9800;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .new-app-card::before {
+            content: '🆕';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.2rem;
+            background: #ff5722;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-weight: bold;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3);
+        }
+
+        .new-app-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 8px 35px rgba(255, 152, 0, 0.25);
+            border-color: #f57c00;
+        }
+
+        .new-app-card .app-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #e65100;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(230, 81, 0, 0.1);
+        }
+
+        .new-app-card .app-description {
+            color: #5d4037;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .new-app-card .app-badges {
+            margin-bottom: 1.2rem;
+        }
+
+        .new-app-card .app-badge {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+            color: white;
+            padding: 0.4rem 0.9rem;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            margin: 0.3rem;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+        }
+
+        .new-app-card .start-btn {
+            background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.2rem;
+            border-radius: 28px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .new-app-card .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .new-app-created {
+            font-size: 0.9rem;
+            color: #8d6e63;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        /* Animations for new apps section */
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         /* Footer */
         .footer {
             background: linear-gradient(90deg, #37474f 0%, #455a64 100%);
@@ -364,6 +509,41 @@
 
             .app-grid {
                 grid-template-columns: 1fr;
+            }
+
+            /* New apps section responsive */
+            .new-apps-section {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .new-apps-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .new-app-card {
+                padding: 1.5rem;
+            }
+
+            .new-app-card .start-btn {
+                padding: 0.8rem 1.8rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .new-apps-section {
+                padding: 1rem;
+            }
+
+            .new-app-card .app-title {
+                font-size: 1.2rem;
+            }
+
+            .new-app-card .start-btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
             }
         }
 
@@ -470,6 +650,15 @@
                 <!-- アプリカードがJavaScriptで生成される -->
             </div>
         </section>
+        <!-- New Apps Showcase Section -->
+        <section class="new-apps-section" id="new-apps-section" aria-labelledby="new-apps-title">
+            <h2 id="new-apps-title" class="section-title">
+                🌟 あたらしいアプリだよ！ / New Apps!
+            </h2>
+            <div class="new-apps-container" id="new-apps-container" role="region" aria-label="新しいアプリ一覧">
+                <!-- 新しいアプリカードがJavaScriptで生成される -->
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -488,11 +677,13 @@
             ja: {
                 home: 'ホーム', categories: 'カテゴリ', search: '検索', searchPlaceholder: 'アプリを検索',
                 subjectsTitle: '教科を選ぼう / Choose Your Subject', appsTitle: '学習アプリ / Learning Apps', 
+                newAppsTitle: '🌟 あたらしいアプリだよ！ / New Apps!',
                 start: 'はじめる', back: '戻る', backToSubjects: '← 教科選択に戻る / Back to Subjects'
             },
             en: {
                 home: 'Home', categories: 'Categories', search: 'Search', searchPlaceholder: 'Search apps',
                 subjectsTitle: 'Choose Your Subject', appsTitle: 'Learning Apps', 
+                newAppsTitle: '🌟 New Apps!',
                 start: 'Start', back: 'Back', backToSubjects: '← Back to Subjects'
             }
         };
@@ -580,12 +771,87 @@
             `;
         }
 
+        // 新しいアプリカードを生成する関数
+        function createNewAppCard(app) {
+            const tags = [getAppField(app,'grade'), app.category].filter(Boolean);
+            const tagBadges = tags.map(tag => 
+                `<span class="app-badge category">${tag}</span>`
+            ).join('');
+            
+            // directLinkフラグがある場合は直接リンク、そうでなければapp-detail.htmlを経由
+            const href = app.directLink ? app.link : `app-detail.html?id=${app.id}`;
+            
+            // 作成日を表示用にフォーマット
+            const createdDate = app.createdDate ? formatDate(app.createdDate) : '最新';
+            
+            return `
+                <div class="new-app-card" role="article" onclick="location.href='${href}'" tabindex="0" aria-label="${getAppField(app,'name')}を開く">
+                    <div class="new-app-created">${createdDate}</div>
+                    <h3 class="app-title">${getAppField(app,'name')}</h3>
+                    <p class="app-description">${getAppField(app,'description')}</p>
+                    <div class="app-badges">
+                        <span class="app-badge difficulty">${getAppField(app,'difficulty') || app.difficulty}</span>
+                        ${tagBadges}
+                    </div>
+                    <a href="${href}" class="start-btn" target="_self" rel="noopener">
+                        ${currentLang === 'en' ? 'Try Now!' : 'いますぐやってみる！'}
+                    </a>
+                </div>
+            `;
+        }
+
+        // 日付フォーマット関数
+        function formatDate(dateString) {
+            if (!dateString) return '最新';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                return currentLang === 'en' ? 'Today' : '今日';
+            } else if (diffDays <= 7) {
+                return currentLang === 'en' ? `${diffDays} days ago` : `${diffDays}日前`;
+            } else if (diffDays <= 30) {
+                const weeks = Math.floor(diffDays / 7);
+                return currentLang === 'en' ? `${weeks} week${weeks > 1 ? 's' : ''} ago` : `${weeks}週間前`;
+            } else {
+                return date.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ja-JP');
+            }
+        }
+
+        // 新しいアプリを表示する関数
+        function showNewApps() {
+            const newAppsContainer = document.getElementById('new-apps-container');
+            if (!newAppsContainer || !apps.length) return;
+
+            // 作成日でソートして新しい順に3つ取得
+            const sortedApps = [...apps].sort((a, b) => {
+                const dateA = new Date(a.createdDate || '2024-01-01');
+                const dateB = new Date(b.createdDate || '2024-01-01');
+                return dateB - dateA; // 新しい順
+            });
+
+            const newestApps = sortedApps.slice(0, 3);
+            
+            if (newestApps.length > 0) {
+                newAppsContainer.innerHTML = newestApps.map(createNewAppCard).join('');
+                document.getElementById('new-apps-section').style.display = 'block';
+            } else {
+                document.getElementById('new-apps-section').style.display = 'none';
+            }
+        }
+
         // 教科一覧を表示
         function showSubjects() {
             document.getElementById('subjects-grid').innerHTML = subjects.map(createSubjectCard).join('');
             document.getElementById('subjects-section').style.display = 'block';
             document.getElementById('app-container').style.display = 'none';
             currentSubject = null;
+            
+            // 新しいアプリセクションも表示
+            showNewApps();
         }
 
         // 特定教科のアプリを表示
@@ -613,6 +879,7 @@
             document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
             document.getElementById('subjects-section').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
+            document.getElementById('new-apps-section').style.display = 'none';
         }
 
         // 検索機能
@@ -637,6 +904,7 @@
                 document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
                 document.getElementById('subjects-section').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
+                document.getElementById('new-apps-section').style.display = 'none';
             });
         }
 
@@ -707,6 +975,7 @@
             document.getElementById('search').placeholder = t('searchPlaceholder');
             document.getElementById('subjects-title').textContent = t('subjectsTitle');
             document.getElementById('apps-title').textContent = t('appsTitle');
+            document.getElementById('new-apps-title').textContent = t('newAppsTitle');
             document.getElementById('back-btn').textContent = t('backToSubjects');
         }
 

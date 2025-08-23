@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>図形探検 - みんなで図形をおぼえよう！</title>
+    <meta name="description" content="子どもたちが楽しく図形を学べる教育ゲーム">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- メインコンテナ -->
+    <div class="main-container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 class="title">
+                <span class="title-main">図形探検</span>
+                <span class="title-sub">かたちを みつけよう！</span>
+            </h1>
+            <div class="score-board">
+                <div class="score-item">
+                    <span class="score-label">せいかい</span>
+                    <span class="score-value" id="correct-count">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">もんだい</span>
+                    <span class="score-value" id="total-count">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">れんぞく</span>
+                    <span class="score-value" id="streak-count">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ゲームエリア -->
+        <main class="game-area">
+            <!-- 難易度選択画面 -->
+            <div class="difficulty-screen" id="difficulty-screen">
+                <h2 class="screen-title">なんいどを えらんでね</h2>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn easy" onclick="ShapeGame.startGame('easy')">
+                        <span class="difficulty-title">かんたん</span>
+                        <span class="difficulty-desc">きほんの かたち</span>
+                    </button>
+                    <button class="difficulty-btn medium" onclick="ShapeGame.startGame('medium')">
+                        <span class="difficulty-title">ふつう</span>
+                        <span class="difficulty-desc">いろんな かたち</span>
+                    </button>
+                    <button class="difficulty-btn hard" onclick="ShapeGame.startGame('hard')">
+                        <span class="difficulty-title">むずかしい</span>
+                        <span class="difficulty-desc">ふくざつな かたち</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ゲーム画面 -->
+            <div class="game-screen hidden" id="game-screen">
+                <!-- 問題表示エリア -->
+                <div class="question-area">
+                    <h2 class="question-title">この かたちは なんでしょう？</h2>
+                    <div class="shape-display" id="shape-display">
+                        <!-- 図形がここに表示される -->
+                    </div>
+                </div>
+
+                <!-- 選択肢エリア -->
+                <div class="choices-area" id="choices-area">
+                    <!-- 選択肢ボタンがここに生成される -->
+                </div>
+
+                <!-- コントロールボタン -->
+                <div class="control-buttons">
+                    <button class="control-btn back-btn" onclick="ShapeGame.backToDifficulty()">
+                        もどる
+                    </button>
+                    <button class="control-btn hint-btn" onclick="ShapeGame.showHint()">
+                        ヒント
+                    </button>
+                    <button class="control-btn next-btn hidden" onclick="ShapeGame.nextProblem()" id="next-btn">
+                        つぎへ
+                    </button>
+                </div>
+            </div>
+
+            <!-- フィードバック表示 -->
+            <div class="feedback" id="feedback"></div>
+            
+            <!-- ヒント表示 -->
+            <div class="hint-display hidden" id="hint-display">
+                <div class="hint-content">
+                    <h3 class="hint-title">ヒント</h3>
+                    <p class="hint-text" id="hint-text"></p>
+                    <button class="hint-close-btn" onclick="ShapeGame.closeHint()">とじる</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 効果エリア -->
+        <div class="effects-area">
+            <div class="stars-container" id="stars"></div>
+            <div class="confetti-container" id="confetti"></div>
+        </div>
+
+        <!-- 励ましメッセージ -->
+        <div class="encouragement hidden" id="encouragement"></div>
+    </div>
+
+    <!-- 音声設定 -->
+    <div class="audio-controls">
+        <button class="audio-toggle" onclick="ShapeGame.toggleAudio()" id="audio-toggle">
+            🔊
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -158,7 +158,8 @@
       "screenshot": "img/placeholder.svg",
       "link": "app-detail.html?id=ninja-mix",
       "difficulty": "初級",
-      "grade": "1-2年生"
+      "grade": "1-2年生",
+      "createdDate": "2024-08-18"
     },
     {
       "id": "subtraction-blocks",
@@ -168,7 +169,8 @@
       "screenshot": "img/placeholder.svg",
       "link": "app-detail.html?id=subtraction-blocks",
       "difficulty": "初級",
-      "grade": "1-3年生"
+      "grade": "1-3年生",
+      "createdDate": "2024-08-19"
     },
     {
       "id": "addition-toybox",
@@ -178,7 +180,8 @@
       "screenshot": "img/placeholder.svg",
       "link": "app-detail.html?id=addition-toybox",
       "difficulty": "初級",
-      "grade": "1-2年生"
+      "grade": "1-2年生",
+      "createdDate": "2024-08-17"
     },
     {
       "id": "addition",
@@ -239,6 +242,30 @@
       "link": "app-detail.html?id=geometry",
       "difficulty": "中級",
       "grade": "2-3年生"
+    },
+    {
+      "id": "shape-explorer",
+      "name": "図形探検アドベンチャー",
+      "category": "geometry", 
+      "description": "図形の名前を覚えよう！まる、しかく、さんかくから、星やダイヤモンドまで楽しく学習できるよ。",
+      "screenshot": "img/placeholder.svg",
+      "link": "apps/shape-explorer/index.html",
+      "difficulty": "初級〜中級",
+      "grade": "1-3年生",
+      "createdDate": "2024-08-23",
+      "directLink": true
+    },
+    {
+      "id": "refactored-addition",
+      "name": "たし算練習（改良版）",
+      "category": "basic",
+      "description": "新しくなった足し算アプリ！音声効果や美しいアニメーションで楽しく学習しよう。",
+      "screenshot": "img/placeholder.svg", 
+      "link": "apps/refactored/index.html",
+      "difficulty": "初級",
+      "grade": "1-2年生",
+      "createdDate": "2024-08-22",
+      "directLink": true
     }
   ],
   "categories": [

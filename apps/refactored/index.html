@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たしざん れんしゅう</title>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YSBGNQTYRZ');
+    </script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="container">
+            <!-- Visual Effects Containers -->
+            <div class="stars" id="stars"></div>
+            <div class="confetti-container" id="confetti"></div>
+            
+            <!-- Header -->
+            <div class="app-header">
+                <button class="back-btn" onclick="MathGame.goBack()">← もどる</button>
+                <h1 class="app-title">🌟 たしざん れんしゅう</h1>
+            </div>
+            
+            <!-- Score Display -->
+            <div class="score">
+                <div class="score-item">
+                    せいかい: <span id="correct-count">0</span>
+                </div>
+                <div class="score-item">
+                    もんだい: <span id="total-count">0</span>
+                </div>
+                <div class="score-item">
+                    れんぞく: <span id="streak-count">0</span>
+                </div>
+            </div>
+            
+            <!-- Difficulty Selector -->
+            <div class="difficulty-selector">
+                <label class="difficulty-label">むずかしさを えらんでね！</label>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn active" onclick="MathGame.setDifficulty('easy')" data-level="easy">
+                        かんたん (10まで)
+                    </button>
+                    <button class="difficulty-btn" onclick="MathGame.setDifficulty('medium')" data-level="medium">
+                        ふつう (20まで)
+                    </button>
+                    <button class="difficulty-btn" onclick="MathGame.setDifficulty('hard')" data-level="hard">
+                        むずかしい (100まで)
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Problem Area -->
+            <div class="problem-area">
+                <div class="problem" id="problem">5 + 3</div>
+                <div class="input-area">
+                    <span class="equals">=</span>
+                    <input type="text" class="answer-input" id="answer" placeholder="?" maxlength="3" autocomplete="off">
+                </div>
+                <button class="btn btn-primary" id="submit-btn" onclick="MathGame.checkAnswer()">こたえる！</button>
+            </div>
+            
+            <!-- Feedback Area -->
+            <div class="feedback" id="feedback"></div>
+            
+            <!-- Encouragement Message (for streak achievements) -->
+            <div class="encouragement-box hidden" id="encouragement">
+                🔥 すごい！れんぞく せいかい！
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

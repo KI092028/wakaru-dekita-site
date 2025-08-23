@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ひき算の筆算れんしゅう</title>
+  <title>ひき算れんしゅう</title>
   
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
@@ -11,434 +11,687 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-YSBGNQTYRZ');
   </script>
   
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
-      --main-blue: #007BFF;
-      --main-green: #28A745;
-      --main-yellow: #FFC107;
-      --main-red: #DC3545;
+      /* 統一カラーパレット */
+      --primary-blue: #4fc3f7;
+      --primary-green: #66bb6a;
+      --primary-yellow: #ffd166;
+      --primary-pink: #ff6b9d;
+      --success: #28a745;
+      --error: #dc3545;
+      --text-primary: #2c3e50;
+      --text-secondary: #546e7a;
+      --background: #f8f9fa;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
     body {
-      background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
       font-family: 'Comic Sans MS', cursive, sans-serif;
-    }
-    
-    .header {
-      background: var(--main-blue);
-      color: white;
-      padding: 1rem 0;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    
-    .calculation-area {
-      background: white;
-      border-radius: 20px;
-      padding: 2rem;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-      margin: 2rem auto;
-      max-width: 400px;
-    }
-    
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px;
-      max-width: 300px;
-      margin: 0 auto;
-      background: #333;
-      padding: 3px;
-      border-radius: 10px;
-    }
-    
-    .grid-cell {
-      width: 80px;
-      height: 80px;
-      background: white;
-      border: 2px solid #ddd;
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fff3e0 100%);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
-      border-radius: 5px;
+      padding: 16px;
+      overflow: hidden;
     }
     
-    .grid-cell.number {
-      background: #f0f8ff;
-      border-color: var(--main-blue);
-    }
-    
-    .grid-cell.minus {
-      background: #ffe6e6;
-      border-color: var(--main-red);
-      color: var(--main-red);
-    }
-    
-    .grid-cell.input {
-      background: #f0fff0;
-      border: 3px solid var(--main-green);
-      padding: 0;
-    }
-    
-    .grid-cell.input input {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       text-align: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      font-family: 'Courier New', monospace;
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 統一ヘッダー */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .back-btn {
+      background: linear-gradient(45deg, var(--text-secondary), #607d8b);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(96, 125, 139, 0.3);
+    }
+    
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(96, 125, 139, 0.4);
+    }
+    
+    .title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .score {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .score-item {
+      background: linear-gradient(45deg, var(--primary-blue), #29b6f6);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+    }
+    
+    .problem-area {
+      background: linear-gradient(45deg, #fff3e0, #ffecb3);
+      border-radius: 20px;
+      padding: 40px 24px;
+      margin: 24px 0;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    
+    .problem {
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      letter-spacing: 4px;
+    }
+    
+    .input-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .equals {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .answer-input {
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-align: center;
+      border: 4px solid var(--primary-blue);
+      border-radius: 20px;
+      padding: 20px 24px;
+      width: 160px;
+      background: white;
+      color: var(--text-primary);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+    
+    .answer-input:focus {
       outline: none;
+      border-color: var(--primary-yellow);
+      transform: scale(1.05);
+      box-shadow: 0 8px 24px rgba(255, 209, 102, 0.4);
     }
     
-    .grid-cell.input:focus-within {
-      border-color: var(--main-yellow);
-      box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+    .submit-btn {
+      background: linear-gradient(45deg, var(--primary-green), #4caf50);
+      color: white;
+      border: none;
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.3);
+      position: relative;
+      z-index: 2;
     }
     
-    .grid-cell.empty {
-      background: #f8f9fa;
-      border-color: #e9ecef;
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
     }
     
-    .btn-large {
+    .submit-btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .difficulty-selector {
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .difficulty-label {
       font-size: 1.2rem;
-      padding: 0.8rem 2rem;
-      margin: 0.5rem;
-      border-radius: 15px;
-      font-weight: bold;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: block;
+    }
+    
+    .difficulty-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .difficulty-btn {
+      background: linear-gradient(45deg, var(--primary-pink), #e91e63);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+    }
+    
+    .difficulty-btn.active {
+      background: linear-gradient(45deg, var(--primary-yellow), #ffb300);
+      box-shadow: 0 4px 12px rgba(255, 179, 0, 0.4);
+    }
+    
+    .difficulty-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(233, 30, 99, 0.4);
     }
     
     .feedback {
-      text-align: center;
+      margin-top: 20px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .correct {
+      color: var(--success);
+      animation: bounce 0.6s ease;
+    }
+    
+    .incorrect {
+      color: var(--error);
+      animation: shake 0.6s ease;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 60%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      80% { transform: translateY(-10px); }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      20%, 40%, 60%, 80% { transform: translateX(8px); }
+    }
+    
+    .next-btn {
+      background: linear-gradient(45deg, var(--primary-blue), #2196f3);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      margin-left: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+    
+    .next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+    }
+    
+    /* 成功時の星エフェクト */
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .star {
+      position: absolute;
+      color: var(--primary-yellow);
       font-size: 1.5rem;
-      font-weight: bold;
-      margin: 1rem 0;
-      padding: 1rem;
-      border-radius: 15px;
+      animation: twinkle 2s infinite;
     }
     
-    .feedback.correct {
-      background: #d4edda;
-      color: #155724;
-      border: 2px solid var(--main-green);
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
     }
     
-    .feedback.incorrect {
-      background: #f8d7da;
-      color: #721c24;
-      border: 2px solid var(--main-red);
+    /* レスポンシブ対応 */
+    @media (max-width: 600px) {
+      .container {
+        padding: 24px 16px;
+        max-width: 100%;
+      }
+      
+      .title {
+        font-size: 1.8rem;
+        position: static;
+        transform: none;
+        margin-bottom: 16px;
+      }
+      
+      .app-header {
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .problem {
+        font-size: 3rem;
+      }
+      
+      .answer-input {
+        font-size: 3rem;
+        width: 140px;
+        padding: 16px 20px;
+      }
+      
+      .equals {
+        font-size: 3rem;
+      }
+      
+      .score {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .difficulty-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
     }
     
-    .score-display {
-      background: var(--main-yellow);
-      color: #333;
-      padding: 1rem;
-      border-radius: 15px;
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-    
-    .emoji {
-      font-size: 2rem;
-      margin: 0 0.5rem;
+    @media (max-width: 400px) {
+      .container {
+        padding: 20px 12px;
+      }
+      
+      .title {
+        font-size: 1.6rem;
+      }
+      
+      .problem {
+        font-size: 2.5rem;
+      }
+      
+      .answer-input {
+        font-size: 2.5rem;
+        width: 120px;
+      }
+      
+      .equals {
+        font-size: 2.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🧮 ひき算の筆算れんしゅう 🧮</h1>
-    <p>筆算で引き算をマスターしよう！</p>
-  </div>
-
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <!-- スコア表示 -->
-        <div class="score-display">
-          <span class="emoji">⭐</span>
-          正解数: <span id="correctCount">0</span> / 問題数: <span id="totalCount">0</span>
-          <span class="emoji">⭐</span>
-        </div>
-
-        <!-- 計算エリア -->
-        <div class="calculation-area">
-          <div class="grid-container" id="calculationGrid">
-            <!-- 3x3のマス目が動的に生成される -->
-          </div>
-        </div>
-
-        <!-- フィードバック -->
-        <div id="feedback" class="feedback" style="display: none;"></div>
-
-        <!-- ボタン -->
-        <div class="text-center">
-          <button class="btn btn-success btn-large" onclick="checkAnswer()">
-            <span class="emoji">✓</span> こたえあわせ
-          </button>
-
-          <button class="btn btn-primary btn-large" onclick="nextProblem()">
-            <span class="emoji">➡️</span> つぎの問題
-          </button>
-          <button class="btn btn-secondary btn-large" onclick="goToMenu()">
-            <span class="emoji">🏠</span> メニューにもどる
-          </button>
-        </div>
-
-        <!-- 難易度選択 -->
-        <div class="text-center mt-4">
-          <h5>むずかしさを選んでね</h5>
-          <button class="btn btn-outline-primary" onclick="setDifficulty('easy')">かんたん (2桁)</button>
-          <button class="btn btn-outline-warning" onclick="setDifficulty('medium')">ふつう (3桁)</button>
-          <button class="btn btn-outline-danger" onclick="setDifficulty('hard')">むずかしい (3桁大きい数)</button>
-        </div>
+    <div class="stars" id="stars"></div>
+    
+    <!-- 統一ヘッダー -->
+    <div class="app-header">
+      <button class="back-btn" onclick="goBack()">← もどる</button>
+      <h1 class="title">🔢 ひき算れんしゅう</h1>
+    </div>
+    
+    <!-- スコア表示 -->
+    <div class="score">
+      <div class="score-item">
+        せいかい: <span id="correct-count">0</span>
+      </div>
+      <div class="score-item">
+        もんだい: <span id="total-count">0</span>
       </div>
     </div>
+    
+    <!-- 難易度選択 -->
+    <div class="difficulty-selector">
+      <label class="difficulty-label">むずかしさを えらんでね！</label>
+      <div class="difficulty-buttons">
+        <button class="difficulty-btn active" onclick="setDifficulty('easy')" data-level="easy">
+          かんたん (10まで)
+        </button>
+        <button class="difficulty-btn" onclick="setDifficulty('medium')" data-level="medium">
+          ふつう (20まで)
+        </button>
+        <button class="difficulty-btn" onclick="setDifficulty('hard')" data-level="hard">
+          むずかしい (100まで)
+        </button>
+      </div>
+    </div>
+    
+    <!-- 問題エリア -->
+    <div class="problem-area">
+      <div class="problem" id="problem">8 - 3</div>
+      <div class="input-area">
+        <span class="equals">=</span>
+        <input type="text" class="answer-input" id="answer" placeholder="?" maxlength="3" autocomplete="off">
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="checkAnswer()">こたえる！</button>
+    </div>
+    
+    <div class="feedback" id="feedback"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    let currentMinuend = 0;
-    let currentSubtrahend = 0;
-    let correctAnswer = 0;
+    let currentProblem = {};
     let correctCount = 0;
     let totalCount = 0;
+    let isAnswered = false;
     let difficulty = 'easy';
-    let maxDigits = 2;
+    let audioContext = null;
 
-    // 全角数字を半角に変換
-    function toHalfWidth(str) {
-      return str.replace(/[０-９]/g, function(s) {
-        return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
-      });
-    }
+    const encouragements = [
+      "🎉 すごい！せいかい！",
+      "✨ やったね！",
+      "🌟 かんぺき！",
+      "🎊 おめでとう！",
+      "💫 すばらしい！",
+      "🏆 よくできました！"
+    ];
 
-    // 3x3グリッドを作成
-    function createGrid() {
-      const grid = document.getElementById('calculationGrid');
-      grid.innerHTML = '';
-      
-      // 9個のセルを作成
-      for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'grid-cell empty';
-        cell.id = `cell-${i}`;
-        grid.appendChild(cell);
-      }
-    }
+    const tryAgainMessages = [
+      "😊 もういちど がんばって！",
+      "🤔 ちがうよ。もういちど！",
+      "💪 あとすこし！がんばって！",
+      "🌈 だいじょうぶ！もういちど！"
+    ];
 
-    // 数字を右詰めで配置する位置を計算
-    function getPositions(digits, maxDigits) {
-      const positions = [];
-      const startPos = 3 - maxDigits; // 右詰めの開始位置
-      
-      for (let i = 0; i < digits.length; i++) {
-        positions.push(startPos + i);
-      }
-      return positions;
-    }
-
-    // 計算表示を更新
-    function updateDisplay() {
-      createGrid();
-      
-      const minuendStr = currentMinuend.toString();
-      const subtrahendStr = currentSubtrahend.toString();
-      
-      // 被減数を上段右詰めで配置
-      const minuendPositions = getPositions(minuendStr.split(''), maxDigits);
-      minuendStr.split('').forEach((digit, index) => {
-        const cell = document.getElementById(`cell-${minuendPositions[index]}`);
-        cell.textContent = digit;
-        cell.className = 'grid-cell number';
-      });
-      
-      // マイナス記号を中段左端に配置
-      const minusCell = document.getElementById('cell-3');
-      minusCell.textContent = '－';
-      minusCell.className = 'grid-cell minus';
-      
-      // 減数を中段右詰めで配置（一桁の場合は一の位に配置）
-      const subtrahendDigits = subtrahendStr.split('');
-      const subtrahendStartPos = 3 - subtrahendDigits.length; // 右詰めの開始位置を計算
-      subtrahendDigits.forEach((digit, index) => {
-        const cellIndex = 3 + subtrahendStartPos + index;
-        const cell = document.getElementById(`cell-${cellIndex}`);
-        cell.textContent = digit;
-        cell.className = 'grid-cell number';
-      });
-      
-      // 答え入力欄を各位に対応して配置
-      for (let i = 0; i < maxDigits; i++) {
-        const cell = document.getElementById(`cell-${6 + (3 - maxDigits) + i}`);
-        cell.className = 'grid-cell input';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = 1;
-        input.id = `answer-${i}`;
-        input.addEventListener('input', handleDigitInput);
-        input.addEventListener('keydown', handleKeyDown);
-        cell.appendChild(input);
-      }
-    }
-
-    // 数字入力の処理
-    function handleDigitInput(event) {
-      const input = event.target;
-      let value = toHalfWidth(input.value);
-      
-      // 数字以外を除去
-      value = value.replace(/[^0-9]/g, '');
-      
-      if (value.length > 1) {
-        value = value.slice(-1);
-      }
-      
-      input.value = value;
-      
-      // 次の入力欄に移動
-      if (value && input.nextElementSibling) {
-        input.nextElementSibling.focus();
-      }
-    }
-
-    // キーボード操作の処理
-    function handleKeyDown(event) {
-      const input = event.target;
-      
-      if (event.key === 'Backspace' && !input.value && input.previousElementSibling) {
-        input.previousElementSibling.focus();
-      } else if (event.key === 'ArrowLeft' && input.previousElementSibling) {
-        input.previousElementSibling.focus();
-      } else if (event.key === 'ArrowRight' && input.nextElementSibling) {
-        input.nextElementSibling.focus();
-      } else if (event.key === 'Enter') {
-        checkAnswer();
-      }
-    }
-
-    // 難易度設定
-    function setDifficulty(level) {
-      difficulty = level;
-      maxDigits = level === 'easy' ? 2 : 3;
-      nextProblem();
-      
-      // ボタンの見た目を更新
-      document.querySelectorAll('.btn-outline-primary, .btn-outline-warning, .btn-outline-danger').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-    }
-
-    // 新しい問題を生成
-    function generateProblem() {
-      let minuend, subtrahend;
-      
-      switch(difficulty) {
-        case 'easy':
-          minuend = Math.floor(Math.random() * 90) + 10; // 10-99
-          subtrahend = Math.floor(Math.random() * (minuend - 1)) + 1;
-          maxDigits = 2;
-          break;
-        case 'medium':
-          minuend = Math.floor(Math.random() * 900) + 100; // 100-999
-          subtrahend = Math.floor(Math.random() * (minuend - 1)) + 1;
-          maxDigits = 3;
-          break;
-        case 'hard':
-          minuend = Math.floor(Math.random() * 900) + 500; // 500-999
-          subtrahend = Math.floor(Math.random() * (minuend - 100)) + 100;
-          maxDigits = 3;
-          break;
-      }
-      
-      currentMinuend = minuend;
-      currentSubtrahend = subtrahend;
-      correctAnswer = minuend - subtrahend;
-      
-      updateDisplay();
-      document.getElementById('feedback').style.display = 'none';
-    }
-
-    // 答えをチェック
-    function checkAnswer() {
-      let userAnswerStr = '';
-      let hasInput = false;
-      
-      // 各位の入力を取得（左から右へ）
-      for (let i = 0; i < maxDigits; i++) {
-        const input = document.getElementById(`answer-${i}`);
-        if (input) {
-          const value = input.value || '0';
-          userAnswerStr += value;
-          if (value !== '0' && value !== '') {
-            hasInput = true;
-          }
+    // 音響初期化
+    function initAudio() {
+      if (!audioContext) {
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+          console.log('Audio not supported');
         }
       }
-      
-      const userAnswer = parseInt(userAnswerStr);
-      const feedbackElement = document.getElementById('feedback');
-      
-      if (!hasInput) {
-        feedbackElement.innerHTML = '<span class="emoji">❓</span> 数字を入力してね！';
-        feedbackElement.className = 'feedback incorrect';
-        feedbackElement.style.display = 'block';
-        return;
-      }
-      
-      totalCount++;
-      
-      if (userAnswer === correctAnswer) {
-        correctCount++;
-        feedbackElement.innerHTML = '<span class="emoji">🎉</span> よくできました！ <span class="emoji">👏</span>';
-        feedbackElement.className = 'feedback correct';
-      } else {
-        feedbackElement.innerHTML = `<span class="emoji">💪</span> もう一度やってみよう！正解は ${correctAnswer} です <span class="emoji">📝</span>`;
-        feedbackElement.className = 'feedback incorrect';
-      }
-      
-      feedbackElement.style.display = 'block';
-      updateScore();
     }
 
-    // 次の問題
-    function nextProblem() {
-      generateProblem();
+    // 成功音を再生
+    function playSuccessSound() {
+      if (!audioContext) return;
+      
+      const frequencies = [523, 659, 784]; // ドミソ
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.frequency.value = freq;
+          oscillator.type = 'triangle';
+          
+          gainNode.gain.value = 0.1;
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.start();
+          oscillator.stop(audioContext.currentTime + 0.3);
+        }, index * 100);
+      });
     }
 
-    // スコア更新
-    function updateScore() {
-      document.getElementById('correctCount').textContent = correctCount;
-      document.getElementById('totalCount').textContent = totalCount;
+    // エラー音を再生
+    function playErrorSound() {
+      if (!audioContext) return;
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.frequency.value = 200;
+      oscillator.type = 'sawtooth';
+      
+      gainNode.gain.value = 0.05;
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.2);
     }
 
-    // メニューに戻る
-    function goToMenu() {
+    // 戻るボタン
+    function goBack() {
       if (confirm('メニューに戻りますか？')) {
         window.history.back();
       }
     }
 
-    // 初期化
-    document.addEventListener('DOMContentLoaded', function() {
+    // 全角数字を半角数字に変換
+    function convertToHalfWidth(str) {
+      return str.replace(/[０-９]/g, function(s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+      });
+    }
+
+    // 数字以外の文字を除去
+    function extractNumbers(str) {
+      return str.replace(/[^0-9]/g, '');
+    }
+
+    // 難易度設定
+    function setDifficulty(level) {
+      difficulty = level;
+      
+      // ボタンの見た目を更新
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-level="${level}"]`).classList.add('active');
+      
       generateProblem();
-      // デフォルトで「かんたん」を選択状態に
-      document.querySelector('.btn-outline-primary').classList.add('active');
+    }
+
+    // 問題生成
+    function generateProblem() {
+      let num1, num2;
+      
+      switch(difficulty) {
+        case 'easy':
+          num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+          num2 = Math.floor(Math.random() * num1) + 1; // 1-num1 (答えが正の数になる)
+          break;
+        case 'medium':
+          num1 = Math.floor(Math.random() * 20) + 1; // 1-20
+          num2 = Math.floor(Math.random() * num1) + 1; // 1-num1
+          break;
+        case 'hard':
+          num1 = Math.floor(Math.random() * 100) + 1; // 1-100
+          num2 = Math.floor(Math.random() * num1) + 1; // 1-num1
+          break;
+      }
+      
+      currentProblem = {
+        num1: num1,
+        num2: num2,
+        answer: num1 - num2
+      };
+      
+      document.getElementById('problem').textContent = `${num1} - ${num2}`;
+      document.getElementById('answer').value = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('answer').focus();
+      isAnswered = false;
+      
+      // 既存の「つぎのもんだい」ボタンを削除
+      const existingNextBtn = document.querySelector('.next-btn');
+      if (existingNextBtn) {
+        existingNextBtn.remove();
+      }
+    }
+
+    // 答えをチェック
+    function checkAnswer() {
+      if (isAnswered) return;
+      
+      let userInput = document.getElementById('answer').value;
+      
+      // 全角数字を半角数字に変換
+      userInput = convertToHalfWidth(userInput);
+      
+      // 数字以外の文字を除去
+      userInput = extractNumbers(userInput);
+      
+      const userAnswer = parseInt(userInput);
+      const feedback = document.getElementById('feedback');
+      
+      if (isNaN(userAnswer) || userInput === '') {
+        feedback.textContent = "すうじを いれてね！";
+        feedback.className = 'feedback incorrect';
+        playErrorSound();
+        return;
+      }
+      
+      totalCount++;
+      document.getElementById('total-count').textContent = totalCount;
+      
+      if (userAnswer === currentProblem.answer) {
+        correctCount++;
+        document.getElementById('correct-count').textContent = correctCount;
+        
+        const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+        feedback.textContent = randomEncouragement;
+        feedback.className = 'feedback correct';
+        
+        playSuccessSound();
+        createStars();
+        
+        // 「つぎのもんだい」ボタンを追加
+        const nextBtn = document.createElement('button');
+        nextBtn.textContent = 'つぎのもんだい';
+        nextBtn.className = 'next-btn';
+        nextBtn.onclick = generateProblem;
+        feedback.appendChild(nextBtn);
+        
+        isAnswered = true;
+      } else {
+        const randomTryAgain = tryAgainMessages[Math.floor(Math.random() * tryAgainMessages.length)];
+        feedback.textContent = randomTryAgain;
+        feedback.className = 'feedback incorrect';
+        
+        playErrorSound();
+        
+        // 入力欄をクリアして再挑戦
+        setTimeout(() => {
+          document.getElementById('answer').value = '';
+          document.getElementById('answer').focus();
+        }, 1000);
+      }
+    }
+
+    // 星エフェクトを作成
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      
+      for (let i = 0; i < 12; i++) {
+        const star = document.createElement('div');
+        star.textContent = '⭐';
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 2 + 's';
+        starsContainer.appendChild(star);
+        
+        // 星を3秒後に削除
+        setTimeout(() => {
+          if (star.parentNode) {
+            star.parentNode.removeChild(star);
+          }
+        }, 3000);
+      }
+    }
+
+    // 入力欄のイベントリスナー
+    document.getElementById('answer').addEventListener('input', function(e) {
+      let value = e.target.value;
+      
+      // 全角数字を半角数字に変換
+      value = convertToHalfWidth(value);
+      
+      // 数字以外の文字を除去
+      value = extractNumbers(value);
+      
+      // 最大3桁まで制限
+      if (value.length > 3) {
+        value = value.substring(0, 3);
+      }
+      
+      e.target.value = value;
     });
+
+    // Enterキーで答えを送信
+    document.getElementById('answer').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkAnswer();
+      }
+    });
+
+    // ユーザー操作で音響を初期化
+    document.addEventListener('click', initAudio, { once: true });
+    document.addEventListener('touchstart', initAudio, { once: true });
+
+    // 初回問題生成
+    generateProblem();
   </script>
-  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96bf37c6f7df0087',t:'MTc1NDY1ODI0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
-
-
-
