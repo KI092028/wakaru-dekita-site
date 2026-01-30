@@ -3,110 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>キャンディー引き算チャレンジ</title>
-  <meta name="description" content="びんのキャンディーで ひきざん！ へるアニメのあと、のこりを タップで かぞえよう。10問、リピート、音つき。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>キャンディーひきざん（シンプル）</title>
+  <meta name="description" content="キャンディーでひきざん。見た目はたのしく、操作はシンプル。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root{--bg1:#f6d5f7;--bg2:#fbe9d7;--pink:#ff6b6b;--blue:#74b9ff;--green:#2ecc71}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:var(--pink);font-weight:800}
-    .equation{text-align:center;font-size:2rem;font-weight:800;color:#2d3436}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,var(--blue),#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .jar{position:relative;margin-top:8px;border:4px solid #b4d4ff;border-radius:16px;padding:12px;min-height:300px;background:linear-gradient(180deg,#fff,#f7fff7)}
-    .candies{position:relative;display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
-    .candy{width:28px;height:28px;border-radius:50%;background:conic-gradient(from 45deg,#ff7675,#ffd166,#55efc4,#a29bfe,#74b9ff);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.1)}
-    .candy.counted{outline:3px solid rgba(0,0,0,.25)}
-    .vanish{animation:vanish .5s ease forwards}
-    @keyframes vanish{to{transform:translateY(-16px) scale(.2);opacity:0}}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#e17055}
-    .rainbow{pointer-events:none;position:absolute;inset:0}
-    .spark{position:absolute;width:10px;height:10px;border-radius:50%;background:red;animation:boom .8s ease-out forwards}
-    @keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
-  </style>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
-  <div class="app" role="application" aria-label="キャンディー引き算チャレンジ">
-    <div class="title">🍬 キャンディー ひきざん</div>
-    <div class="equation" id="equation">9 - 2 = ?</div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 10</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="キャンディーひきざん">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🍬 キャンディー ひきざん</h1>
+          <p class="sub" id="qc-subtitle">キャンディーが へるよ！こたえは いくつ？</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">9 - 3</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">🍬 のこりの数を かぞえる イメージで！</div>
+      </div>
     </div>
-    <div class="jar" id="jar">
-      <div class="candies" id="candies"></div>
-      <div class="rainbow" id="rainbow"></div>
-    </div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let idx=0,total=10,score=0,repeat=false;
-    let a=9,b=2,ans=7; let removed=false;
-    let audioCtx=null;
-    const candies=document.getElementById('candies');
-    const rainbow=document.getElementById('rainbow');
-    const feedback=document.getElementById('feedback');
-    const eq=document.getElementById('equation');
-
-    init();
-    function init(){ bind(); nextQ(true); }
-    function bind(){
-      document.getElementById('checkBtn').addEventListener('click', check);
-      document.getElementById('nextBtn').addEventListener('click', nextQ);
-      document.getElementById('restartBtn').addEventListener('click', start);
-      document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
-      const warm=()=>{ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } window.removeEventListener('pointerdown',warm)}; window.addEventListener('pointerdown',warm,{once:true});
-    }
-    function start(){ idx=0; score=0; nextQ(true); }
-    function nextQ(reset){
-      if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; }
-      generate(); render(); idx++; updateHUD();
-    }
-    function generate(){ a=rand(2,10); b=rand(1,a-1); ans=a-b; removed=false; eq.textContent=`${a} - ${b} = ?`; }
-    function render(){ feedback.textContent=''; candies.innerHTML='';
-      for(let i=0;i<a;i++){ const c=document.createElement('div'); c.className='candy'; c.addEventListener('click',()=>toggle(c)); candies.appendChild(c); }
-      // 自動で b 個消える
-      const idxs=shuffle([...Array(a).keys()]).slice(0,b);
-      setTimeout(()=>{ idxs.forEach(i=>{ const el=candies.children[i]; if(el){ el.classList.add('vanish'); setTimeout(()=>el.remove(),500);} }); removed=true; },500);
-    }
-    function toggle(el){ if(!removed) return; el.classList.toggle('counted'); play(500,.06,'sine',.04); }
-    function countSelected(){ return candies.querySelectorAll('.candy.counted').length; }
-    function check(){ if(!removed){ feedback.className='feedback incorrect'; feedback.textContent='まってね… キャンディーが へってから こたえてね'; return; } const selected=countSelected(); const remaining=candies.querySelectorAll('.candy').length; if(selected===remaining){ score++; feedback.className='feedback correct'; feedback.textContent='🌈 せいかい！'; burst(); playWin(); setTimeout(()=>nextQ(),900); } else { feedback.className='feedback incorrect'; feedback.textContent='やさしい ヒント: のこりだけ タップしてね'; shake(); } updateHUD(); }
-    function burst(){ const jar=document.getElementById('jar'); const w=jar.clientWidth,h=jar.clientHeight; for(let i=0;i<20;i++){ const s=document.createElement('div'); s.className='spark'; s.style.left=(w/2)+'px'; s.style.top=(h/2)+'px'; s.style.background=['#ff7675','#74b9ff','#55efc4','#ffd166','#a29bfe'][i%5]; s.style.setProperty('--dx',(Math.random()*w-w/2)+'px'); s.style.setProperty('--dy',(Math.random()*h-h/2)+'px'); rainbow.appendChild(s); setTimeout(()=>s.remove(),800);} }
-    function shake(){ const jar=document.getElementById('jar'); jar.style.animation='shake .3s ease'; setTimeout(()=>jar.style.animation='',300); }
-    function play(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
-    function playWin(){ [659,784,988].forEach((f,i)=>setTimeout(()=>play(f,.1,'triangle',.07),i*90)); }
-    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
-    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    let maxN=10;
+    QuizCore.create({
+      appId:'candy-subtract',
+      title:'🍬 キャンディー ひきざん',
+      subtitle:'キャンディーが へるよ！こたえは いくつ？',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const a=Math.floor(Math.random()*maxN)+1;
+        const b=Math.floor(Math.random()*(a+1));
+        return {text:`${a} - ${b}`, answer:a-b};
+      }
+    });
   </script>
 </body>
 </html>
-
-

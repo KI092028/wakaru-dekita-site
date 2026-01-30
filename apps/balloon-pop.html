@@ -3,83 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>バルーン引き算ポップ</title>
-  <meta name="description" content="ふうせんで ひきざん！ ポンっと はじけて のこりを かぞえよう。8問、タイマーつき、モバイル対応。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>バルーン ひきざん（シンプル）</title>
+  <meta name="description" content="ふうせんがへるよ！ひき算の練習。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root{--bg1:#c6ffdd;--bg2:#fbd786}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .equation{text-align:center;font-size:2rem;font-weight:800}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .sky{position:relative;border:4px solid #b4d4ff;border-radius:16px;padding:12px;background:linear-gradient(180deg,#e3f2fd,#ffffff);min-height:280px}
-    .balloons{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
-    .balloon{width:28px;height:36px;border-radius:14px 14px 16px 16px;position:relative;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.1)}
-    .balloon::after{content:'';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:2px;height:8px;background:#999}
-    .colors{color:red}
-    .pop{animation:pop .35s ease forwards}
-    @keyframes pop{to{transform:scale(.2);opacity:0}}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#e17055}
-    .timer{height:12px;background:#ecf0f1;border:2px solid #dfe6e9;border-radius:10px;overflow:hidden;margin-top:8px}
-    .bar{height:100%;width:100%;background:linear-gradient(90deg,#2ecc71,#27ae60)}
-  </style>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
-  <div class="app" role="application" aria-label="バルーン引き算ポップ">
-    <div class="title">🎈 バルーン ひきざん</div>
-    <div class="equation" id="equation">10 - 5 = ?</div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 8</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="バルーン ひきざん">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🎈 バルーン ひきざん</h1>
+          <p class="sub" id="qc-subtitle">ふうせんが へったら のこりは？</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">8 - 5</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-    <div class="timer"><div class="bar" id="bar"></div></div>
-    <div class="sky" id="sky"><div class="balloons" id="balloons"></div></div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let idx=0,total=8,score=0,repeat=false; let a=10,b=5,ans=5; let removed=false; let timer=null,dur=12,remain=dur;
-    const balloons=document.getElementById('balloons'); const bar=document.getElementById('bar'); const feedback=document.getElementById('feedback');
-    init(); function init(){ bind(); nextQ(true); }
-    function bind(){ document.getElementById('checkBtn').addEventListener('click', check); document.getElementById('nextBtn').addEventListener('click', nextQ); document.getElementById('restartBtn').addEventListener('click', start); document.getElementById('repeatBtn').addEventListener('click',()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;}); }
-    function start(){ idx=0; score=0; nextQ(true); }
-    function nextQ(reset){ if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; } generate(); render(); idx++; updateHUD(); startTimer(); }
-    function generate(){ a=rand(2,10); b=rand(1,a-1); ans=a-b; removed=false; document.getElementById('equation').textContent=`${a} - ${b} = ?`; }
-    function render(){ balloons.innerHTML=''; feedback.textContent=''; const colors=['#ff7675','#74b9ff','#55efc4','#ffeaa7','#a29bfe']; for(let i=0;i<a;i++){ const d=document.createElement('div'); d.className='balloon'; d.style.background=colors[i%colors.length]; d.addEventListener('click',()=>d.classList.toggle('select')); balloons.appendChild(d);} const idxs=shuffle([...Array(a).keys()]).slice(0,b); setTimeout(()=>{ idxs.forEach(i=>{ const el=balloons.children[i]; if(el){ el.classList.add('pop'); setTimeout(()=>el.remove(),350);} }); removed=true; },400); }
-    function check(){ if(!removed){ feedback.className='feedback incorrect'; feedback.textContent='ふうせんが へってから こたえてね'; return;} const remain=document.querySelectorAll('#balloons .balloon').length; const selected=document.querySelectorAll('#balloons .balloon.select').length; if(selected===remain){ score++; feedback.className='feedback correct'; feedback.textContent='🎉 せいかい！'; setTimeout(()=>nextQ(),700);} else { feedback.className='feedback incorrect'; feedback.textContent='ヒント: のこりだけ タップ'; } updateHUD(); }
-    function startTimer(){ stopTimer(); remain=dur; tick(); timer=setInterval(()=>{ remain-=0.1; tick(); if(remain<=0){ stopTimer(); feedback.className='feedback incorrect'; feedback.textContent='⌛ じかんぎれ！'; } },100); }
-    function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
-    function tick(){ bar.style.width=`${Math.max(0, remain/dur)*100}%`; }
-    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
-    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; } function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    QuizCore.create({
+      appId:'balloon-pop',
+      title:'🎈 バルーン ひきざん',
+      subtitle:'ふうせんが へったら のこりは？',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const a=Math.floor(Math.random()*10)+1;
+        const b=Math.floor(Math.random()*(a+1));
+        return {text:`${a} - ${b}`, answer:a-b};
+      }
+    });
   </script>
 </body>
 </html>
-
-

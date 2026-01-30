@@ -773,8 +773,11 @@
             }
         }
         function updateDailyOnTop(){
-            setDailyChip('daily-addition', readDaily('wakaru.addition.daily.v1'), 3);
-            setDailyChip('daily-multiplication', readDaily('wakaru.multiplication.daily.v1'), 3);
+            // v2 preferred (new quiz-core). fallback to v1 for older apps.
+            const addDone = Math.max(readDaily('wakaru.addition.daily.v2'), readDaily('wakaru.addition.daily.v1'));
+            const mulDone = Math.max(readDaily('wakaru.multiplication.daily.v2'), readDaily('wakaru.multiplication.daily.v1'));
+            setDailyChip('daily-addition', addDone, 3);
+            setDailyChip('daily-multiplication', mulDone, 3);
             setDailyChip('daily-shape', readDaily('wakaru.shapehunt.daily.v1'), 1);
         }
 

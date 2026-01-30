@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ロボット たしざん（シンプル）</title>
-  <meta name="description" content="ロボットとたし算。シンプルに計算練習。" />
+  <title>わり算（シンプル）</title>
+  <meta name="description" content="わり算の練習。わりきれる問題だけを出題。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
@@ -12,12 +12,12 @@
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="ロボット たしざん">
+    <div class="card" role="application" aria-label="わり算">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
-          <h1 class="h1" id="qc-title">🤖 ロボット たしざん</h1>
-          <p class="sub" id="qc-subtitle">こたえて ロボットに エネルギー！</p>
+          <h1 class="h1" id="qc-title">➗ わり算</h1>
+          <p class="sub" id="qc-subtitle">わりきれる もんだい だけ！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -29,7 +29,12 @@
       </div>
 
       <div class="panel">
-        <div class="problem" id="qc-problem">7 + 2</div>
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="div-badge">2〜9のだん</span>
+          <button class="btn ghost" data-max="5">やさしい</button>
+          <button class="btn ghost" data-max="9">ふつう</button>
+        </div>
+        <div class="problem" id="qc-problem">12 ÷ 3</div>
         <div class="row">
           <span style="font-weight:900;font-size:2.2rem;">=</span>
           <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
@@ -49,15 +54,26 @@
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    QuizCore.create({
-      appId:'robot-addition',
-      title:'🤖 ロボット たしざん',
-      subtitle:'こたえて ロボットに エネルギー！',
+    let maxDan=9;
+    const badge=document.getElementById('div-badge');
+    function upd(){ badge.textContent = `2〜${maxDan}のだん`; }
+
+    const quiz = QuizCore.create({
+      appId:'division',
+      title:'➗ わり算',
+      subtitle:'わりきれる もんだい だけ！',
       dailyGoal:3,
       buildQuestion:()=>{
-        const a=Math.floor(Math.random()*10)+1;
-        const b=Math.floor(Math.random()*10)+1;
-        return {text:`${a} + ${b}`, answer:a+b};
+        const b = 2 + Math.floor(Math.random()*(maxDan-1));
+        const a = 1 + Math.floor(Math.random()*9);
+        const dividend = a*b;
+        return {text:`${dividend} ÷ ${b}`, answer:a};
+      },
+      onInitUI:()=>{
+        upd();
+        document.querySelectorAll('[data-max]').forEach(btn=>{
+          btn.addEventListener('click', ()=>{ maxDan=Number(btn.dataset.max); upd(); quiz.newQuestion(); });
+        });
       }
     });
   </script>

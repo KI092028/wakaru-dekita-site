@@ -3,154 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>忍者足し引きミックス修行</title>
-  <meta name="description" content="たし算・ひき算のミックス修行！忍者テーマで10問チャレンジ。タッチ対応、レベルアップ、星の爆発アニメ、リピート練習モード。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>忍者 足し引きミックス（シンプル）</title>
+  <meta name="description" content="忍者修行で足し算・引き算。シンプルにテンポ良く。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root { --bg1:#141e30; --bg2:#243b55; --accent:#ffce54; --pink:#ff6b6b; --green:#2ecc71; --blue:#74b9ff; }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#0f1624;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.35);padding:16px;color:#fff;position:relative;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:var(--accent);font-weight:800;letter-spacing:1px}
-    .hud{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#3f51b5,#2196f3);padding:6px 12px;border-radius:999px;font-weight:800}
-    .arena{margin-top:12px;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.05),transparent 60%),#101828;border:2px solid rgba(255,255,255,.08);border-radius:16px;min-height:220px;position:relative;overflow:hidden}
-    .equation{font-size:2.4rem;text-align:center;margin:20px 0 10px}
-    .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:520px;margin:10px auto}
-    .choice{background:linear-gradient(45deg,#26a69a,#2bbbad);border:none;color:#fff;font-weight:800;font-size:1.6rem;padding:14px 0;border-radius:14px;box-shadow:0 10px 24px rgba(43,187,173,.25)}
-    .choice:active{transform:translateY(1px)}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71} .incorrect{color:#ff7675}
-    /* 斬撃 */
-    .slash{position:absolute;left:50%;top:50%;width:4px;height:0;background:linear-gradient(to bottom,transparent,#fff,transparent);transform:translate(-50%,-50%) rotate(25deg);box-shadow:0 0 18px rgba(255,255,255,.7);animation:slash .35s ease-out forwards;}
-    @keyframes slash{from{height:0;opacity:1}to{height:260px;opacity:.2}}
-    /* 星爆発 */
-    .stars{pointer-events:none;position:absolute;inset:0}
-    .star{position:absolute;width:10px;height:10px;background:#ffd166;border-radius:50%;box-shadow:0 0 10px #ffd166;animation:boom .8s ease-out forwards}
-    @keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
-    /* 忍者ポーズ */
-    .ninja{position:absolute;bottom:8px;right:8px;font-size:42px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
-    .retry{animation:retry .5s ease-in-out}
-    @keyframes retry{0%,100%{transform:rotate(0)}30%{transform:rotate(-15deg)}60%{transform:rotate(15deg)}}
-    @media (max-width:560px){.equation{font-size:2rem}.choice{font-size:1.4rem;padding:12px 0}}
-  </style>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
-  <div class="app" role="application" aria-label="忍者足し引きミックス修行">
-    <div class="title">🥷 忍者足し引きミックス修行</div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 10</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="level">レベル: 1</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="忍者 足し引きミックス">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🥷 忍者 ミックス修行</h1>
+          <p class="sub" id="qc-subtitle">たしざん / ひきざん を きりかえて しゅぎょう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="mix-badge">ミックス</span>
+          <button class="btn ghost" data-mode="mix">ミックス</button>
+          <button class="btn ghost" data-mode="add">たしざん</button>
+          <button class="btn ghost" data-mode="sub">ひきざん</button>
+        </div>
+
+        <div class="problem" id="qc-problem">6 + 1</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-    <div class="arena" id="arena">
-      <div class="equation" id="equation">3 + 4 = ?</div>
-      <div class="choices" id="choices"></div>
-      <div class="stars" id="stars"></div>
-      <div class="ninja" id="ninja">🥷⚔️</div>
-    </div>
-    <div class="controls">
-      <button class="btn" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    // 状態
-    let idx = 0, total = 10, score = 0, lvl = 1, repeat = false;
-    let a=3,b=4,op='+',ans=7;
-    const eqEl = document.getElementById('equation');
-    const choicesEl = document.getElementById('choices');
-    const arena = document.getElementById('arena');
-    const stars = document.getElementById('stars');
-    const feedback = document.getElementById('feedback');
-    const ninja = document.getElementById('ninja');
+    let mode='mix';
+    const badge=document.getElementById('mix-badge');
+    function upd(){ badge.textContent = (mode==='mix'?'ミックス':(mode==='add'?'たしざん':'ひきざん')); }
 
-    init();
-    function init(){
-      document.getElementById('nextBtn').addEventListener('click', nextQ);
-      document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat;document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`;document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`});
-      startSession();
-    }
-    function startSession(){ idx=0; score=0; lvl=1; updateHUD(); nextQ(true);}    
-    function nextQ(reset){
-      if(!reset && idx>=total){
-        feedback.className='feedback correct';
-        feedback.textContent=`🎉 修行おわり！ スコア: ${score} / ${total}`;
-        if(repeat){ setTimeout(startSession,900); }
-        return;
+    const quiz = QuizCore.create({
+      appId:'ninja-mix',
+      title:'🥷 忍者 ミックス修行',
+      subtitle:'たしざん / ひきざん を きりかえて しゅぎょう！',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const pick = (mode==='mix') ? (Math.random()<0.5?'add':'sub') : mode;
+        const a=Math.floor(Math.random()*10)+1;
+        const b=Math.floor(Math.random()*10)+1;
+        if(pick==='add') return {text:`${a} + ${b}`, answer:a+b};
+        const hi=Math.max(a,b), lo=Math.min(a,b);
+        return {text:`${hi} - ${lo}`, answer:hi-lo};
+      },
+      onInitUI:()=>{
+        upd();
+        document.querySelectorAll('[data-mode]').forEach(btn=>{
+          btn.addEventListener('click', ()=>{ mode=btn.dataset.mode; upd(); quiz.newQuestion(); });
+        });
       }
-      feedback.textContent='';
-      generate(); render(); idx++; updateHUD();
-    }
-    function updateHUD(){
-      document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`;
-      document.getElementById('score').textContent=`スコア: ${score}`;
-      document.getElementById('level').textContent=`レベル: ${lvl}`;
-    }
-    function generate(){
-      // 1-10 範囲、引き算は借りなし（答え1-10）
-      const isAdd = Math.random()<0.5;
-      if(isAdd){
-        op='+'; a=rand(1,10); b=rand(1,10); while(a+b>10) { a=rand(1,10); b=rand(1,10);} ans=a+b;
-      }else{
-        op='-'; a=rand(2,10); b=rand(1,Math.min(10,a-1)); ans=a-b;
-      }
-      // レベルアップ（正解3連続ごと）
-      if(score>0 && score%3===0) lvl = 1 + Math.floor(score/3);
-    }
-    function render(){
-      eqEl.textContent=`${a} ${op} ${b} = ?`;
-      // choices
-      const opts = new Set([ans]);
-      while(opts.size<3){ opts.add(ans + rand(-3,3) || 1); }
-      const arr=[...opts].slice(0,3).sort(()=>Math.random()-0.5);
-      choicesEl.innerHTML='';
-      arr.forEach(n=>{
-        const btn=document.createElement('button');
-        btn.className='choice'; btn.textContent=n;
-        btn.addEventListener('click',()=>select(n));
-        choicesEl.appendChild(btn);
-      });
-      // slash intro
-      slash();
-    }
-    function select(n){
-      if(n===ans){ score++; feedback.className='feedback correct'; feedback.textContent='💥 せいかい！';
-        explode(); slash();
-      }else{ feedback.className='feedback incorrect'; feedback.textContent='🥷 もういちど！';
-        ninja.classList.add('retry'); setTimeout(()=>ninja.classList.remove('retry'),500);
-      }
-      updateHUD();
-    }
-    function slash(){ const s=document.createElement('div'); s.className='slash'; arena.appendChild(s); setTimeout(()=>s.remove(),400); }
-    function explode(){
-      const w=arena.clientWidth,h=arena.clientHeight;
-      for(let i=0;i<20;i++){ const st=document.createElement('div'); st.className='star';
-        const dx=(Math.random()*w - w/2)+'px'; const dy=(Math.random()*h - h/2)+'px';
-        st.style.left=(w/2)+'px'; st.style.top=(h/2)+'px'; st.style.setProperty('--dx',dx); st.style.setProperty('--dy',dy);
-        stars.appendChild(st); setTimeout(()=>st.remove(),800); }
-    }
-    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    });
   </script>
 </body>
 </html>
-
-
