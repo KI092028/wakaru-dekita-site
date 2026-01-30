@@ -636,6 +636,39 @@
                     2〜3年生向け：クイズで九九を楽しく練習
                 </div>
             </div>
+
+            <!-- Daily missions (progress shown via localStorage) -->
+            <div id="daily-section" style="margin-top: 1.75rem; width: 100%; max-width: 720px;">
+                <h2 style="text-align:center; font-size: 1.35rem; color:#2c3e50; margin: 0 0 0.75rem 0;">
+                    🎯 きょうのチャレンジ
+                </h2>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
+                    <a href="apps/addition.html" class="subject-card" style="text-decoration:none;" aria-label="たしざん きょうの3もん">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+                            <div style="font-weight:800; color:#2c3e50;">➕ たしざん</div>
+                            <div id="daily-addition" style="font-weight:800; color:#546e7a;">0/3</div>
+                        </div>
+                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（1〜2年生）</div>
+                    </a>
+                    <a href="apps/multiplication.html" class="subject-card" style="text-decoration:none;" aria-label="かけざん きょうの3もん">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+                            <div style="font-weight:800; color:#2c3e50;">🧮 かけざん</div>
+                            <div id="daily-multiplication" style="font-weight:800; color:#546e7a;">0/3</div>
+                        </div>
+                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（2〜3年生）</div>
+                    </a>
+                    <a href="apps/shape-hunt.html" class="subject-card" style="text-decoration:none;" aria-label="かたち きょうの1かい">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+                            <div style="font-weight:800; color:#2c3e50;">🔺 かたち</div>
+                            <div id="daily-shape" style="font-weight:800; color:#546e7a;">0/1</div>
+                        </div>
+                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの1かい（1〜2年生）</div>
+                    </a>
+                </div>
+                <div style="text-align:center; margin-top:0.75rem; color:#78909c; font-size:0.9rem;">
+                    ※ 進みぐあいは このスマホ/PCに きろくされます
+                </div>
+            </div>
         </section>
 
         <!-- Subject Cards -->
@@ -707,6 +740,42 @@
                 return m[name] || name; 
             } 
             return name; 
+        }
+
+        // Daily progress (localStorage)
+        function todayKey(){
+            const d=new Date();
+            const y=d.getFullYear();
+            const m=String(d.getMonth()+1).padStart(2,'0');
+            const da=String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${da}`;
+        }
+        function readDaily(key){
+            try{
+                const raw=localStorage.getItem(key);
+                const st=raw?JSON.parse(raw):{};
+                if(st.date!==todayKey()) return 0;
+                return Number(st.done||0) || 0;
+            }catch(e){
+                return 0;
+            }
+        }
+        function setDailyChip(id, done, goal){
+            const el=document.getElementById(id);
+            if(!el) return;
+            const d=Math.min(done, goal);
+            el.textContent = `${d}/${goal}`;
+            if(d>=goal){
+                el.textContent = `✅ ${goal}/${goal}`;
+                el.style.color = '#2e7d32';
+            }else{
+                el.style.color = '#546e7a';
+            }
+        }
+        function updateDailyOnTop(){
+            setDailyChip('daily-addition', readDaily('wakaru.addition.daily.v1'), 3);
+            setDailyChip('daily-multiplication', readDaily('wakaru.multiplication.daily.v1'), 3);
+            setDailyChip('daily-shape', readDaily('wakaru.shapehunt.daily.v1'), 1);
         }
 
         // 教科データ
@@ -973,8 +1042,13 @@
                 }
                 
                 updateStaticTexts();
+                updateDailyOnTop();
                 showSubjects();
                 setupSearch();
+
+                // Keep daily display fresh when returning to tab
+                window.addEventListener('focus', updateDailyOnTop);
+
                 console.log('初期化完了');
             } catch (error) {
                 console.error('初期化エラー:', error);
