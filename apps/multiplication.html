@@ -1,676 +1,142 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>かけ算まとまりゲーム</title>
-    
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>かけ算九九（シンプル）</title>
+  <meta name="description" content="九九の計算練習。段をえらんで、毎日の3問チャレンジ。" />
 
-      gtag('config', 'G-YSBGNQTYRZ');
-    </script>
-    
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-YSBGNQTYRZ');
+  </script>
 
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .title {
-            color: #4a5568;
-            font-size: 28px;
-            font-weight: bold;
-            margin: 0 0 10px 0;
-        }
-
-        .subtitle {
-            color: #718096;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .game-container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .grid-container {
-            position: relative;
-            display: inline-block;
-            padding: 20px;
-            background: #f7fafc;
-            border-radius: 15px;
-            border: 3px solid #e2e8f0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 2px;
-            background: #cbd5e0;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .cell {
-            width: 40px;
-            height: 40px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            user-select: none;
-            position: relative;
-        }
-
-        .cell::before {
-            content: '●';
-            color: #2d3748;
-            font-size: 20px;
-            display: block;
-        }
-
-        .cell.empty::before {
-            content: '';
-        }
-
-        .cell:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .cell.selected {
-            background: #4299e1;
-            color: white;
-            border-color: #2b6cb0;
-            transform: scale(1.1);
-        }
-
-        .cell.grouped {
-            border-width: 3px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #4299e1, #3182ce);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #48bb78, #38a169);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #f56565, #e53e3e);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
-        }
-
-        .result {
-            background: #f0fff4;
-            border: 2px solid #68d391;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2f855a;
-            width: 100%;
-            max-width: 500px;
-        }
-        
-        .answer-section {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .answer-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .answer-label {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        
-        .answer-input {
-            font-size: 18px;
-            font-weight: 600;
-            width: 100px;
-            text-align: center;
-            border: 3px solid #4299e1;
-            border-radius: 10px;
-            padding: 10px;
-            font-family: inherit;
-        }
-
-        .color-palette {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .color-btn {
-            width: 30px;
-            height: 30px;
-            border: 3px solid white;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .color-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .color-btn.active {
-            border-color: #2d3748;
-            transform: scale(1.1);
-        }
-
-        .instructions {
-            background: #fff5f5;
-            border: 2px solid #feb2b2;
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            color: #c53030;
-            font-size: 14px;
-            max-width: 500px;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .cell {
-                width: 35px;
-                height: 35px;
-                font-size: 12px;
-            }
-            
-            .title {
-                font-size: 24px;
-            }
-            
-            .game-container {
-                padding: 20px;
-            }
-        }
-    </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
+  <style>
+    /* light game flavor: "stamps" */
+    .stamps{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px}
+    .stamp{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid #d7ecff;background:#f6fbff;color:#1e88e5}
+    .stamp.on{background:linear-gradient(45deg,#00b894,#00cec9);color:#fff;border-color:transparent}
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1 class="title">🧮 かけ算まとまりゲーム</h1>
-        <p class="subtitle">マス目をドラッグして「まとまり」を作ろう！</p>
-        <p class="subtitle" id="stats">せいかい: 0　|　きょう: 0/3</p>
-    </div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="かけ算九九（シンプル）">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧮 かけ算九九</h1>
+          <p class="sub" id="qc-subtitle">えらんだ「だん」を 3もん クリア！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
 
-    <div class="game-container">
-        <div class="instructions">
-            💡 マス目をドラッグして長方形の「まとまり」を作ろう！ダブルクリックで黒丸を消したり戻したりできるよ！
+      <div class="pills" aria-label="スコア">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="dan-badge">だん：ぜんぶ</span>
+          <button class="btn ghost" data-dan="all">ぜんぶ</button>
+          <button class="btn ghost" data-dan="2">2</button>
+          <button class="btn ghost" data-dan="3">3</button>
+          <button class="btn ghost" data-dan="4">4</button>
+          <button class="btn ghost" data-dan="5">5</button>
+          <button class="btn ghost" data-dan="6">6</button>
+          <button class="btn ghost" data-dan="7">7</button>
+          <button class="btn ghost" data-dan="8">8</button>
+          <button class="btn ghost" data-dan="9">9</button>
         </div>
 
-        <div class="color-palette">
-            <div class="color-btn active" style="background: #4299e1;" data-color="#4299e1"></div>
-            <div class="color-btn" style="background: #48bb78;" data-color="#48bb78"></div>
-            <div class="color-btn" style="background: #ed8936;" data-color="#ed8936"></div>
-            <div class="color-btn" style="background: #9f7aea;" data-color="#9f7aea"></div>
-            <div class="color-btn" style="background: #f56565;" data-color="#f56565"></div>
-            <div class="color-btn" style="background: #38b2ac;" data-color="#38b2ac"></div>
+        <div class="problem" id="qc-problem">2 × 3</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
         </div>
-
-        <div class="grid-container">
-            <div class="grid" id="grid"></div>
-        </div>
-
         <div class="controls">
-            <button class="btn btn-secondary" onclick="createGroup()">✨ まとまりを作る</button>
-            <button class="btn btn-danger" onclick="clearSelection()">🗑️ 選択をクリア</button>
-            <button class="btn btn-primary" onclick="resetGrid()">🔄 リセット</button>
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
 
-        <div class="result" id="result">
-            マス目を選んで「まとまり」を作ってみよう！
+        <div class="small" style="margin-top:6px;">きょうのスタンプ</div>
+        <div class="stamps" id="stamps" aria-label="今日のスタンプ">
+          <div class="stamp" data-i="1">1</div>
+          <div class="stamp" data-i="2">2</div>
+          <div class="stamp" data-i="3">3</div>
         </div>
-        
-        <div class="answer-section">
-            <div class="answer-row">
-                <span class="answer-label">答え:</span>
-                <input type="text" class="answer-input" id="answerInput" placeholder="?" maxlength="3" />
-                <button class="btn btn-success" onclick="checkAnswer()">こたえる！</button>
-            </div>
-        </div>
+      </div>
+
+      <div class="small">※ 進みぐあいは このスマホ/PCに きろくされます</div>
     </div>
+  </div>
 
-    <script>
-        let selectedCells = [];
-        let groups = [];
-        let currentColor = '#4299e1';
-        let isSelecting = false;
-        let startCell = null;
+  <script src="../js/quiz-core.js"></script>
+  <script>
+    let dan = 'all';
+    const badge = document.getElementById('dan-badge');
+    const stamps = document.getElementById('stamps');
 
-        // せいかい数・デイリー
-        const DAILY_KEY = 'wakaru.multiplication.daily.v1';
-        let correctCount = 0;
-        let dailyGoal = 3;
-        let dailyDone = 0;
+    function updateBadge(){
+      badge.textContent = `だん：${dan==='all'?'ぜんぶ':dan}`;
+    }
+    function updateStamps(){
+      // QuizCore uses key wakaru.multiplication.daily.v2
+      let done=0;
+      try{
+        const raw=localStorage.getItem('wakaru.multiplication.daily.v2');
+        const st=raw?JSON.parse(raw):{};
+        const d=new Date();
+        const y=d.getFullYear();
+        const m=String(d.getMonth()+1).padStart(2,'0');
+        const da=String(d.getDate()).padStart(2,'0');
+        const tk=`${y}-${m}-${da}`;
+        done = (st.date===tk) ? (Number(st.done||0)||0) : 0;
+      }catch(e){ done=0; }
+      [...stamps.querySelectorAll('.stamp')].forEach(el=>{
+        const i=Number(el.dataset.i);
+        el.classList.toggle('on', i<=done);
+      });
+    }
 
-        function todayKey(){
-            const d=new Date();
-            const y=d.getFullYear();
-            const m=String(d.getMonth()+1).padStart(2,'0');
-            const da=String(d.getDate()).padStart(2,'0');
-            return `${y}-${m}-${da}`;
-        }
-        function loadDaily(){
-            try{
-                const raw=localStorage.getItem(DAILY_KEY);
-                const st=raw?JSON.parse(raw):{};
-                if(st.date!==todayKey()){
-                    st.date=todayKey();
-                    st.done=0;
-                }
-                dailyDone=st.done||0;
-            }catch(e){ dailyDone=0; }
-            updateStats();
-        }
-        function saveDaily(){
-            try{ localStorage.setItem(DAILY_KEY, JSON.stringify({date: todayKey(), done: dailyDone})); }catch(e){}
-            updateStats();
-        }
-        function updateStats(){
-            const el=document.getElementById('stats');
-            if(el) el.textContent = `せいかい: ${correctCount}　|　きょう: ${Math.min(dailyDone,dailyGoal)}/${dailyGoal}`;
-        }
-
-        // グリッドを初期化
-        function initGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            
-            for (let i = 0; i < 30; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.index = i;
-                cell.dataset.row = Math.floor(i / 6);
-                cell.dataset.col = i % 6;
-                
-                // 右上の2×3マス（行0-1、列4-5）を空白にする
-                const row = Math.floor(i / 6);
-                const col = i % 6;
-                if (row < 2 && col >= 4) {
-                    cell.classList.add('empty');
-                }
-                
-                // マウスイベント
-                cell.addEventListener('mousedown', startSelection);
-                cell.addEventListener('mouseenter', continueSelection);
-                cell.addEventListener('mouseup', endSelection);
-                
-                // ダブルクリックイベント
-                cell.addEventListener('dblclick', toggleDot);
-                
-                // タッチイベント（スマホ対応）
-                cell.addEventListener('touchstart', handleTouchStart);
-                cell.addEventListener('touchmove', handleTouchMove);
-                cell.addEventListener('touchend', handleTouchEnd);
-                
-                grid.appendChild(cell);
-            }
-        }
-
-        // マウス選択開始
-        function startSelection(e) {
-            e.preventDefault();
-            isSelecting = true;
-            startCell = e.target;
-            clearSelection();
-            selectCell(e.target);
-        }
-
-        // マウス選択継続
-        function continueSelection(e) {
-            if (!isSelecting || !startCell) return;
-            
-            clearSelection();
-            selectRectangle(startCell, e.target);
-        }
-
-        // マウス選択終了
-        function endSelection(e) {
-            isSelecting = false;
-            startCell = null;
-        }
-
-        // ダブルクリックで黒丸の表示/非表示を切り替え
-        function toggleDot(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const cell = e.target;
-            cell.classList.toggle('empty');
-        }
-
-        // タッチイベント処理
-        function handleTouchStart(e) {
-            e.preventDefault();
-            startSelection(e);
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (element && element.classList.contains('cell')) {
-                continueSelection({target: element});
-            }
-        }
-
-        function handleTouchEnd(e) {
-            e.preventDefault();
-            endSelection(e);
-        }
-
-        // 長方形選択
-        function selectRectangle(start, end) {
-            const startRow = parseInt(start.dataset.row);
-            const startCol = parseInt(start.dataset.col);
-            const endRow = parseInt(end.dataset.row);
-            const endCol = parseInt(end.dataset.col);
-
-            const minRow = Math.min(startRow, endRow);
-            const maxRow = Math.max(startRow, endRow);
-            const minCol = Math.min(startCol, endCol);
-            const maxCol = Math.max(startCol, endCol);
-
-            for (let row = minRow; row <= maxRow; row++) {
-                for (let col = minCol; col <= maxCol; col++) {
-                    const index = row * 6 + col;
-                    const cell = document.querySelector(`[data-index="${index}"]`);
-                    if (cell) {
-                        selectCell(cell);
-                    }
-                }
-            }
-        }
-
-        // セル選択
-        function selectCell(cell) {
-            if (!selectedCells.includes(cell)) {
-                selectedCells.push(cell);
-                cell.classList.add('selected');
-            }
-        }
-
-        // 選択クリア
-        function clearSelection() {
-            selectedCells.forEach(cell => {
-                cell.classList.remove('selected');
-            });
-            selectedCells = [];
-            updateResult('マス目を選んで「まとまり」を作ってみよう！');
-        }
-
-        // グループ作成
-        function createGroup() {
-            if (selectedCells.length === 0) {
-                updateResult('まず、マス目を選んでね！');
-                return;
-            }
-
-            // 長方形かチェック
-            const rectangle = getRectangleInfo(selectedCells);
-            if (!rectangle) {
-                updateResult('長方形になるように選んでね！');
-                return;
-            }
-
-            // グループを作成
-            const group = {
-                cells: [...selectedCells],
-                color: currentColor,
-                width: rectangle.width,
-                height: rectangle.height
-            };
-
-            groups.push(group);
-
-            // セルに色を適用
-            selectedCells.forEach(cell => {
-                cell.style.background = currentColor;
-                cell.style.color = 'white';
-                cell.classList.add('grouped');
-                cell.classList.remove('selected');
-            });
-
-            // 結果表示
-            updateResult(`🎉 まとまりができたよ！`);
-
-            selectedCells = [];
-        }
-
-        // 長方形情報を取得
-        function getRectangleInfo(cells) {
-            if (cells.length === 0) return null;
-
-            const rows = cells.map(cell => parseInt(cell.dataset.row));
-            const cols = cells.map(cell => parseInt(cell.dataset.col));
-
-            const minRow = Math.min(...rows);
-            const maxRow = Math.max(...rows);
-            const minCol = Math.min(...cols);
-            const maxCol = Math.max(...cols);
-
-            const width = maxCol - minCol + 1;
-            const height = maxRow - minRow + 1;
-
-            // 選択されたセル数が長方形の面積と一致するかチェック
-            if (cells.length !== width * height) {
-                return null;
-            }
-
-            // すべてのセルが長方形内にあるかチェック
-            for (let row = minRow; row <= maxRow; row++) {
-                for (let col = minCol; col <= maxCol; col++) {
-                    const expectedIndex = row * 6 + col;
-                    const expectedCell = document.querySelector(`[data-index="${expectedIndex}"]`);
-                    if (!cells.includes(expectedCell)) {
-                        return null;
-                    }
-                }
-            }
-
-            return { width, height };
-        }
-
-        // 結果更新
-        function updateResult(message) {
-            document.getElementById('result').textContent = message;
-        }
-
-        // グリッドリセット
-        function resetGrid() {
-            groups = [];
-            selectedCells = [];
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cell, index) => {
-                cell.style.background = 'white';
-                cell.style.color = '#2d3748';
-                cell.classList.remove('selected', 'grouped');
-                cell.textContent = '';
-                
-                // 右上の2×3マス（行0-1、列4-5）を空白に戻す
-                const row = Math.floor(index / 6);
-                const col = index % 6;
-                if (row < 2 && col >= 4) {
-                    cell.classList.add('empty');
-                } else {
-                    cell.classList.remove('empty');
-                }
-            });
-            updateResult('マス目を選んで「まとまり」を作ってみよう！');
-        }
-
-        // 色選択
-        function setupColorPalette() {
-            const colorBtns = document.querySelectorAll('.color-btn');
-            colorBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    colorBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentColor = btn.dataset.color;
-                });
-            });
-        }
-
-        // 入力処理（全角半角対応）
-        function setupInput() {
-            const answerInput = document.getElementById('answerInput');
-            
-            answerInput.addEventListener('input', (e) => {
-                let v = e.target.value;
-                // 全角→半角
-                v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-                // 数字以外除去
-                v = v.replace(/[^0-9]/g, '');
-                if (v.length > 3) v = v.slice(0,3);
-                e.target.value = v;
-            });
-            
-            // Enterキーでも回答
-            answerInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') checkAnswer();
-            });
-        }
-        
-        // 回答チェック
-        function checkAnswer() {
-            const input = document.getElementById('answerInput');
-            const userAnswer = parseInt(input.value, 10);
-            
-            if (Number.isNaN(userAnswer)) {
-                updateResult('すうじを いれてね！');
-                return;
-            }
-            
-            // 現在の「まとまり」の数を計算（セル数ではなく、作ったグループ数）
-            const currentGroups = groups.length;
-            
-            if (userAnswer === currentGroups) {
-                correctCount++;
-                dailyDone = Math.min(dailyGoal, dailyDone + 1);
-                saveDaily();
-
-                updateResult(dailyDone>=dailyGoal
-                    ? '🏅 せいかい！ きょうのミッション クリア！'
-                    : '🎉 せいかい！ まとまりの数が あってるよ！'
-                );
-                input.style.borderColor = '#48bb78';
-                setTimeout(() => {
-                    input.style.borderColor = '#4299e1';
-                    input.value = '';
-                }, 2000);
-            } else {
-                updateResult(`ちがうよ！ まとまりの数は ${currentGroups} こ だよ。`);
-                input.style.borderColor = '#f56565';
-                setTimeout(() => {
-                    input.style.borderColor = '#4299e1';
-                }, 2000);
-            }
-        }
-        
-        // 初期化
-        document.addEventListener('DOMContentLoaded', () => {
-            initGrid();
-            setupColorPalette();
-            setupInput();
-            loadDaily();
-            updateStats();
-            
-            // マウスアップイベントをドキュメント全体に追加
-            document.addEventListener('mouseup', () => {
-                isSelecting = false;
-                startCell = null;
-            });
+    const quiz = QuizCore.create({
+      appId: 'multiplication',
+      title: '🧮 かけ算九九',
+      subtitle: 'えらんだ「だん」を 3もん クリア！',
+      dailyGoal: 3,
+      buildQuestion: () => {
+        const a = (dan==='all') ? (2 + Math.floor(Math.random()*8)) : Number(dan);
+        const b = 1 + Math.floor(Math.random()*9);
+        return { text: `${a} × ${b}`, answer: a*b };
+      },
+      onInitUI: (state) => {
+        updateBadge();
+        updateStamps();
+        document.querySelectorAll('[data-dan]').forEach(btn=>{
+          btn.addEventListener('click', ()=>{ dan=btn.dataset.dan; updateBadge(); quiz.newQuestion(); });
         });
-    </script>
+        // refresh stamps when coming back
+        window.addEventListener('focus', updateStamps);
+        // patch into daily save by polling (simple + safe)
+        setInterval(updateStamps, 1500);
+      }
+    });
+
+    // also update stamps after each check
+    document.getElementById('qc-submit').addEventListener('click', ()=>setTimeout(updateStamps, 80));
+    document.getElementById('qc-next').addEventListener('click', ()=>setTimeout(updateStamps, 80));
+  </script>
 </body>
 </html>
