@@ -3,98 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>反復パターン完成パズル</title>
-  <meta name="description" content="色や形のパターンを完成させよう！ランダム問題、エンドレス、レベルあり。正解でダンス、間違いは説明つきリセット。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>パターン完成（シンプル）</title>
+  <meta name="description" content="くりかえしパターンの「？」をえらぶクイズ。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#a18cd1;--bg2:#fbc2eb;--deep:#2d3436}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .row{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
-    .slot,.choice{width:72px;height:72px;border-radius:14px;border:3px solid #eaeaea;display:flex;align-items:center;justify-content:center;font-size:2rem}
-    .slot.empty{border-style:dashed}
-    .choice{cursor:pointer}
-    .dance{animation:dance .7s ease}
-    @keyframes dance{25%{transform:translateY(-8px)}50%{transform:translateY(0)}75%{transform:translateY(-5px)}}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#ff7675}
+    .seq{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .tile{width:72px;height:72px;border-radius:18px;background:#f6fbff;border:3px solid #d7ecff;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900}
+    .miss{background:linear-gradient(45deg,#ffd166,#ffb300);border-color:transparent;color:#4a3b00}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="反復パターン完成パズル">
-    <div class="title">🔁 反復パターン 完成パズル</div>
-    <div class="hud">
-      <div class="pill" id="level">レベル: 1</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="repeat">リピート: ON</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="パターン完成">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧩 パターン完成</h1>
+          <p class="sub" id="qc-subtitle">つぎに くる かたちは？</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">パターンの「？」は？</div>
+        <div class="seq" id="seq"></div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div class="choices" id="choices"></div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-    <div class="row" id="pattern"></div>
-    <div class="row" id="choices"></div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let lvl=1, score=0;
-    let base=['🔴','🔵']; // 色 or 形
-    let pattern=[], answer='🔴';
-    const patternEl=document.getElementById('pattern');
+    const seqEl=document.getElementById('seq');
     const choicesEl=document.getElementById('choices');
-    const feedback=document.getElementById('feedback');
+    const shapes=[{id:1,icon:'●'},{id:2,icon:'■'},{id:3,icon:'▲'}];
 
-    init();
-    function init(){ bind(); next(true); }
-    function bind(){
-      document.getElementById('checkBtn').addEventListener('click', check);
-      document.getElementById('nextBtn').addEventListener('click', next);
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function renderSeq(arr, missIndex){
+      seqEl.innerHTML='';
+      arr.forEach((s,i)=>{
+        const d=document.createElement('div');
+        d.className='tile'+(i===missIndex?' miss':'');
+        d.textContent=(i===missIndex?'?':s.icon);
+        seqEl.appendChild(d);
+      });
     }
-    function next(reset){
-      if(score>0 && score%3===0) lvl = 1 + Math.floor(score/3);
-      generate(); render(); updateHUD();
+    function renderChoices(list){
+      choicesEl.innerHTML='';
+      list.forEach(s=>{
+        const b=document.createElement('button');
+        b.className='btn blue';
+        b.textContent=s.icon;
+        b.addEventListener('click', ()=>{ document.getElementById('qc-input').value=String(s.id); });
+        choicesEl.appendChild(b);
+      });
     }
-    function generate(){
-      base = Math.random()<0.5 ? ['🔴','🔵'] : ['🟨','🟩'];
-      const len = 4 + Math.min(2,lvl); // 少しずつ長く
-      pattern=[];
-      for(let i=0;i<len-1;i++) pattern.push(base[i%base.length]);
-      answer=base[(len-1)%base.length];
-    }
-    function render(){
-      feedback.textContent='';
-      patternEl.innerHTML=''; choicesEl.innerHTML='';
-      pattern.forEach(sym=>{ const s=document.createElement('div'); s.className='slot'; s.textContent=sym; patternEl.appendChild(s); });
-      const empty=document.createElement('div'); empty.className='slot empty'; empty.textContent='?'; empty.id='empty'; patternEl.appendChild(empty);
-      const opts=new Set([answer]); while(opts.size<4){ const o=(Math.random()<0.5?base[0]:base[1]); opts.add(o);} const arr=[...opts].sort(()=>Math.random()-0.5);
-      arr.forEach(sym=>{ const c=document.createElement('div'); c.className='choice'; c.textContent=sym; c.addEventListener('click',()=>select(sym,c)); choicesEl.appendChild(c); });
-    }
-    let picked=null;
-    function select(sym,btn){ picked=sym; [...choicesEl.children].forEach(b=>b.style.outline=''); btn.style.outline='4px solid rgba(0,0,0,.2)'; }
-    function check(){ if(picked==null){ feedback.className='feedback incorrect'; feedback.textContent='すうじ（え）を えらんでね！'; return; } if(picked===answer){ score++; feedback.className='feedback correct'; feedback.textContent='🎉 せいかい！'; document.getElementById('empty').textContent=answer; document.getElementById('empty').classList.add('dance'); setTimeout(next,800); } else { feedback.className='feedback incorrect'; feedback.textContent='ちがうよ！ パターンを よくみよう！'; next(); } updateHUD(); }
-    function updateHUD(){ document.getElementById('level').textContent=`レベル: ${lvl}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+
+    QuizCore.create({
+      appId:'pattern-complete',
+      title:'🧩 パターン完成',
+      subtitle:'つぎに くる かたちは？',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        // ABAB or ABCABC
+        const type = Math.random()<0.5?'ab':'abc';
+        let pattern;
+        if(type==='ab'){
+          const a=shapes[Math.floor(Math.random()*3)];
+          let b=shapes[Math.floor(Math.random()*3)];
+          while(b.id===a.id) b=shapes[Math.floor(Math.random()*3)];
+          pattern=[a,b,a,b,a];
+        }else{
+          pattern=[shapes[0],shapes[1],shapes[2],shapes[0],shapes[1]];
+          // shuffle mapping sometimes
+          const perm=shuffle([...shapes]);
+          pattern=pattern.map(s=>perm[s.id-1]);
+        }
+        const missIndex=4;
+        const ans=pattern[missIndex].id;
+        renderSeq(pattern, missIndex);
+        renderChoices(shuffle([...shapes]));
+        return { text:'パターンの「？」は？', answer: ans };
+      }
+    });
   </script>
 </body>
 </html>
-
-

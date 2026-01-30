@@ -3,104 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>パズルブロック並べ替え</title>
-  <meta name="description" content="ドラッグで数字ブロックを小さい順に並べよう！正解で星が舞う、間違いはシャッフル。ループ練習、スマホ対応。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>ならべかえクイズ（シンプル）</title>
+  <meta name="description" content="小さい順に並ぶとき、次にくる数をえらぶクイズ。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#ffd3a5;--bg2:#fd6585;--deep:#2d3436}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .mission{text-align:center;font-size:1.7rem;font-weight:800;color:var(--deep)}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .board{margin-top:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-    .block{height:90px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.8rem;color:#fff;cursor:grab;touch-action:none;user-select:none;position:relative}
-    .block:active{cursor:grabbing}
-    .a1{background:#ff7675}.a2{background:#74b9ff}.a3{background:#55efc4}.a4{background:#ffeaa7;color:#333}.a5{background:#a29bfe}
-    .ghost{outline:4px dashed rgba(0,0,0,.2)}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#ff7675}
-    .confetti{position:relative;height:0}
-    .star{position:absolute;font-size:20px;animation:boom .8s ease-out forwards}
-    @keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:0}}
-    @media (max-width:560px){.board{grid-template-columns:repeat(3,1fr)}.block{height:76px;font-size:1.6rem}}
+    .rowNums{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .num{width:76px;height:76px;border-radius:18px;background:#f6fbff;border:3px solid #d7ecff;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900}
+    .blank{background:linear-gradient(45deg,#ffd166,#ffb300);border-color:transparent;color:#4a3b00}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="パズルブロック並べ替え">
-    <div class="title">🧩 パズルブロック 並べ替え</div>
-    <div class="mission" id="mission">ちいさい じゅんに ならべよう！</div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 10</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="ならべかえクイズ">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧱 ならべかえクイズ</h1>
+          <p class="sub" id="qc-subtitle">ちいさい じゅんに ならべると…？</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">つぎに くる数は？</div>
+        <div class="rowNums" id="nums"></div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div class="choices" id="choices"></div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-    <div class="board" id="board"></div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
-    <div class="confetti" id="confetti"></div>
   </div>
-
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let idx=0,total=10,score=0,repeat=false;
-    let arr=[3,1,2];
-    const board=document.getElementById('board');
-    const feedback=document.getElementById('feedback');
-    const confetti=document.getElementById('confetti');
+    const numsEl=document.getElementById('nums');
+    const choicesEl=document.getElementById('choices');
 
-    init();
-    function init(){ bindUI(); start(); }
-    function bindUI(){
-      document.getElementById('checkBtn').addEventListener('click', check);
-      document.getElementById('nextBtn').addEventListener('click', nextQ);
-      document.getElementById('restartBtn').addEventListener('click', start);
-      document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
-    }
-    function start(){ idx=0; score=0; nextQ(true); }
-    function nextQ(reset){
-      if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; }
-      arr = makeSeq(); render(); idx++; updateHUD();
-    }
-    function makeSeq(){ const len=Math.floor(Math.random()*4)+3; const seq=[...Array(len).keys()].map(n=>n+1); return shuffle(seq).slice(0,len); }
-    function render(){ board.innerHTML=''; feedback.textContent='';
-      arr.forEach((n,i)=>{
-        const d=document.createElement('div'); d.className=`block a${(i%5)+1}`; d.draggable=true; d.textContent=n; d.dataset.n=n;
-        d.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', n); e.dataTransfer.effectAllowed='move'; d.classList.add('ghost');});
-        d.addEventListener('dragend',()=>d.classList.remove('ghost'));
-        d.addEventListener('dragover',e=>e.preventDefault());
-        d.addEventListener('drop',e=>{ e.preventDefault(); const from=parseInt(e.dataTransfer.getData('text/plain')); swap(from, parseInt(d.dataset.n,10));});
-        board.appendChild(d);
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function render(nums){
+      numsEl.innerHTML='';
+      nums.forEach(v=>{
+        const d=document.createElement('div');
+        d.className='num'+(v==null?' blank':'');
+        d.textContent=(v==null?'?':String(v));
+        numsEl.appendChild(d);
       });
     }
-    function swap(a,b){ const i=arr.indexOf(a), j=arr.indexOf(b); if(i<0||j<0) return; [arr[i],arr[j]]=[arr[j],arr[i]]; render(); }
-    function check(){ const ok = arr.every((v,i)=> i===0 || arr[i-1]<=v ); if(ok){ score++; feedback.className='feedback correct'; feedback.textContent='⭐ せいかい！'; stars(); setTimeout(()=>nextQ(),800);} else { feedback.className='feedback incorrect'; feedback.textContent='シャッフル！ もういちど'; arr=shuffle(arr); render(); } updateHUD(); }
-    function stars(){ const w=board.clientWidth, h=board.clientHeight; for(let i=0;i<12;i++){ const s=document.createElement('div'); s.className='star'; s.textContent='⭐'; s.style.left=(w/2)+'px'; s.style.top=(h/2)+'px'; s.style.setProperty('--dx',(Math.random()*w-w/2)+'px'); s.style.setProperty('--dy',(Math.random()*h-h/2)+'px'); confetti.appendChild(s); setTimeout(()=>s.remove(),800);} }
-    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function renderChoices(vals){
+      choicesEl.innerHTML='';
+      vals.forEach(v=>{
+        const b=document.createElement('button');
+        b.className='btn blue';
+        b.textContent=String(v);
+        b.addEventListener('click', ()=>{ document.getElementById('qc-input').value=String(v); });
+        choicesEl.appendChild(b);
+      });
+    }
+
+    QuizCore.create({
+      appId:'sort-blocks',
+      title:'🧱 ならべかえクイズ',
+      subtitle:'ちいさい じゅんに ならべると…？',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        const base = 1 + Math.floor(Math.random()*20);
+        const nums = [base, base+2, base+4, base+6];
+        // show first 3 and missing last
+        render([nums[0], nums[1], nums[2], null]);
+        const ans = nums[3];
+        const opts = new Set([ans]);
+        while(opts.size<3){
+          opts.add(ans + ([-4,-2,2,4][Math.floor(Math.random()*4)]));
+        }
+        const list=shuffle([...opts]);
+        renderChoices(list);
+        return { text: `${nums[0]}, ${nums[1]}, ${nums[2]}, ?`, answer: ans };
+      }
+    });
   </script>
 </body>
 </html>
-
-

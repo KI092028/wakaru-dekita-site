@@ -3,112 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>論理パズル探偵アドベンチャー</title>
-  <meta name="description" content="ヒントを読んで正しい答えをタップ！5問のセッション、タッチ対応、帽子チップ演出とクエスチョン演出、ヒントボタン付き。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>論理クイズ（シンプル）</title>
+  <meta name="description" content="短いヒントから答えをえらぶ論理クイズ。タップ式。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#f6d365;--bg2:#fda085;--deep:#2d3436}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:900px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .story{background:#fff7e6;border:3px solid #ffd27f;border-radius:12px;padding:10px;margin-top:8px}
-    .hint{font-weight:800}
-    .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    .choice{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;border:none;border-radius:14px;padding:12px 0;font-weight:800;font-size:1.3rem}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#55efc4,#00b894);color:#333;padding:6px 12px;border-radius:999px;font-weight:800}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#ff7675}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .detective{font-size:42px;margin-left:6px}
-    .tip{animation:tip .4s ease}
-    @keyframes tip{from{transform:rotate(0)}50%{transform:rotate(-18deg)}to{transform:rotate(0)}}
-    .question{animation:q .4s ease}
-    @keyframes q{from{transform:scale(1)}50%{transform:scale(1.15)}to{transform:scale(1)}}
+    .hint{background:#fff7e6;border:2px solid #ffd27f;border-radius:16px;padding:12px;font-weight:900;color:#2c3e50}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .choice{min-width:160px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="論理パズル探偵アドベンチャー">
-    <div class="title">🕵️‍♂️ 論理パズル 探偵アドベンチャー</div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 5</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="論理クイズ">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🕵️ 論理クイズ</h1>
+          <p class="sub" id="qc-subtitle">ヒントを よんで えらぼう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="hint" id="hint">Aは赤じゃない。Bは赤。赤はだれ？</div>
+        <div class="problem" id="qc-problem">赤は だれ？</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="choices" id="choices"></div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-    <div class="story" id="story">ヒント: あおい どうぶつ は 4 本の あし が あるよ。</div>
-    <div class="choices" id="choices"></div>
-    <div class="controls">
-      <button class="btn" id="hintBtn">ヒント</button>
-      <button class="btn" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let idx=0,total=5,score=0,repeat=false;
-    let puzzle=null; // {hint, choices:[{label,correct}]}
-    const story=document.getElementById('story');
+    const hintEl=document.getElementById('hint');
     const choicesEl=document.getElementById('choices');
-    const feedback=document.getElementById('feedback');
 
-    init();
-    function init(){ bindUI(); start(); }
-    function bindUI(){
-      document.getElementById('hintBtn').addEventListener('click',()=>{ story.classList.add('tip'); setTimeout(()=>story.classList.remove('tip'),400); });
-      document.getElementById('nextBtn').addEventListener('click', nextQ);
-      document.getElementById('restartBtn').addEventListener('click', start);
-      document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
-    }
-    function start(){ idx=0; score=0; nextQ(true); }
-    function nextQ(reset){
-      if(!reset && idx>=total){ feedback.className='feedback correct'; feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; if(repeat){ setTimeout(start,900);} return; }
-      generate(); render(); idx++; updateHUD();
-    }
-    function generate(){
-      const animals=['いぬ','ねこ','さる','ぞう','きりん'];
-      const colors=['あか','あお','きいろ'];
-      const target = animals[Math.floor(Math.random()*animals.length)];
-      const color = colors[Math.floor(Math.random()*colors.length)];
-      const legs = Math.random()<0.6?4:2; // 簡単化
-      const correctLabel = `${color} の ${target}`;
-      const choices = new Set([correctLabel]);
-      while(choices.size<3){ choices.add(`${colors[Math.floor(Math.random()*colors.length)]} の ${animals[Math.floor(Math.random()*animals.length)]}`); }
-      puzzle = { hint:`ヒント: ${color} の どうぶつ は ${legs} 本の あし。`, correct: correctLabel, legs };
-      puzzle.choices=[...choices].sort(()=>Math.random()-0.5);
-    }
-    function render(){
-      feedback.textContent=''; story.textContent=puzzle.hint + ' どれかな？';
+    function renderChoices(names){
       choicesEl.innerHTML='';
-      puzzle.choices.forEach(label=>{
-        const b=document.createElement('button'); b.className='choice'; b.textContent=label;
-        b.addEventListener('click',()=>choose(label,b)); choicesEl.appendChild(b);
+      names.forEach((n,i)=>{
+        const b=document.createElement('button');
+        b.className='btn blue choice';
+        b.textContent=n;
+        b.addEventListener('click', ()=>{ document.getElementById('qc-input').value=String(i+1); });
+        choicesEl.appendChild(b);
       });
     }
-    function choose(label,btn){
-      if(label===puzzle.correct){ score++; feedback.className='feedback correct'; feedback.textContent='🕵️‍♂️👌 せいかい！'; btn.classList.add('tip'); }
-      else { feedback.className='feedback incorrect'; feedback.textContent='❓ ちがうよ！ ヒントを もういちど よんでね。'; btn.classList.add('question'); setTimeout(()=>btn.classList.remove('question'),400); }
-      updateHUD();
-    }
-    function updateHUD(){ document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; document.getElementById('score').textContent=`スコア: ${score}`; }
+
+    const bank=[
+      {hint:'Aは赤じゃない。Bは赤。赤はだれ？', q:'赤は だれ？', names:['A','B','C'], ans:2},
+      {hint:'1つだけが正しい。A「Bが正しい」 B「Cが正しい」 C「Aが正しい」 正しいのはだれ？', q:'正しいのは？', names:['A','B','C'], ans:1},
+      {hint:'ねこは いぬじゃない。いぬは うさぎじゃない。ねこは だれ？', q:'ねこは？', names:['A','B','C'], ans:1},
+    ];
+
+    QuizCore.create({
+      appId:'logic-detective',
+      title:'🕵️ 論理クイズ',
+      subtitle:'ヒントを よんで えらぼう！',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        const it=bank[Math.floor(Math.random()*bank.length)];
+        hintEl.textContent=it.hint;
+        renderChoices(it.names);
+        return { text: it.q, answer: it.ans };
+      }
+    });
   </script>
 </body>
 </html>
-
-
