@@ -72,6 +72,7 @@
     <div class="hud">
       <div class="pill" id="round">ラウンド: 1 / 5</div>
       <div class="pill" id="score">スコア: 0</div>
+      <div class="pill" id="daily">きょう: 0 / 1</div>
       <div class="pill" id="repeat">リピート: OFF</div>
     </div>
     <div class="scene">
@@ -87,6 +88,7 @@
       <button class="btn secondary" id="nextBtn">つぎへ</button>
       <button class="btn secondary" id="restartBtn">リスタート</button>
       <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
+      <button class="btn secondary" id="soundBtn">🔊 おと: ON</button>
     </div>
     <div class="feedback" id="feedback"></div>
   </div>
@@ -96,6 +98,11 @@
     let round=0, total=5, score=0, repeat=false;
     let targetShape='circle', targetCount=3;
     let audioCtx=null;
+
+    // Settings / daily
+    let soundOn=true;
+    const DAILY_KEY='wakaru.shapehunt.daily.v1';
+    let dailyDone=0;
 
     const board = document.getElementById('board');
     const targetsEl = document.getElementById('targets');
@@ -113,17 +120,48 @@
     function setupAudio(){
       const warm=()=>{ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } window.removeEventListener('pointerdown',warm) }; window.addEventListener('pointerdown',warm,{once:true});
     }
+    function todayKey(){
+      const d=new Date();
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,'0');
+      const da=String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${da}`;
+    }
+    function loadDaily(){
+      try{
+        const raw=localStorage.getItem(DAILY_KEY);
+        const st=raw?JSON.parse(raw):{};
+        dailyDone = (st.date===todayKey() ? (st.done||0) : 0);
+      }catch(e){ dailyDone=0; }
+      updateDailyUI();
+    }
+    function saveDaily(){
+      try{ localStorage.setItem(DAILY_KEY, JSON.stringify({date: todayKey(), done: dailyDone})); }catch(e){}
+      updateDailyUI();
+    }
+    function updateDailyUI(){
+      const el=document.getElementById('daily');
+      if(el) el.textContent = `きょう: ${Math.min(dailyDone,1)} / 1`;
+    }
+
     function bindUI(){
       document.getElementById('checkBtn').addEventListener('click', checkAnswer);
       document.getElementById('nextBtn').addEventListener('click', nextRound);
       document.getElementById('restartBtn').addEventListener('click', start);
       document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
+      document.getElementById('soundBtn').addEventListener('click', ()=>{ soundOn=!soundOn; document.getElementById('soundBtn').textContent=`${soundOn?'🔊':'🔇'} おと: ${soundOn?'ON':'OFF'}`; });
     }
-    function start(){ round=0; score=0; nextRound(true); }
+    function start(){ round=0; score=0; loadDaily(); nextRound(true); }
     function nextRound(reset){
       if(!reset && round>=total){
         feedback.className='feedback correct';
         feedback.textContent=`🎉 ぜんぶ できた！ スコア: ${score} / ${total}`;
+
+        // daily clear: 1回クリア（全問正解）
+        if(score>=total && dailyDone<1){
+          dailyDone=1; saveDaily();
+        }
+
         if(repeat){ setTimeout(()=>start(),1000); }
         return;
       }
@@ -257,7 +295,7 @@
     }
     function labelOf(shape){ return shape==='circle'?'まる':shape==='square'?'しかく':'さんかく'; }
     function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-    function playTone(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
+    function playTone(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx || !soundOn) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
   </script>
 </body>
 </html>

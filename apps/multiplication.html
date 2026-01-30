@@ -281,6 +281,7 @@
     <div class="header">
         <h1 class="title">🧮 かけ算まとまりゲーム</h1>
         <p class="subtitle">マス目をドラッグして「まとまり」を作ろう！</p>
+        <p class="subtitle" id="stats">せいかい: 0　|　きょう: 0/3</p>
     </div>
 
     <div class="game-container">
@@ -326,6 +327,40 @@
         let currentColor = '#4299e1';
         let isSelecting = false;
         let startCell = null;
+
+        // せいかい数・デイリー
+        const DAILY_KEY = 'wakaru.multiplication.daily.v1';
+        let correctCount = 0;
+        let dailyGoal = 3;
+        let dailyDone = 0;
+
+        function todayKey(){
+            const d=new Date();
+            const y=d.getFullYear();
+            const m=String(d.getMonth()+1).padStart(2,'0');
+            const da=String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${da}`;
+        }
+        function loadDaily(){
+            try{
+                const raw=localStorage.getItem(DAILY_KEY);
+                const st=raw?JSON.parse(raw):{};
+                if(st.date!==todayKey()){
+                    st.date=todayKey();
+                    st.done=0;
+                }
+                dailyDone=st.done||0;
+            }catch(e){ dailyDone=0; }
+            updateStats();
+        }
+        function saveDaily(){
+            try{ localStorage.setItem(DAILY_KEY, JSON.stringify({date: todayKey(), done: dailyDone})); }catch(e){}
+            updateStats();
+        }
+        function updateStats(){
+            const el=document.getElementById('stats');
+            if(el) el.textContent = `せいかい: ${correctCount}　|　きょう: ${Math.min(dailyDone,dailyGoal)}/${dailyGoal}`;
+        }
 
         // グリッドを初期化
         function initGrid() {
@@ -596,11 +631,18 @@
                 return;
             }
             
-            // 現在のまとまりの数を計算
-            const currentGroups = document.querySelectorAll('.grouped').length;
+            // 現在の「まとまり」の数を計算（セル数ではなく、作ったグループ数）
+            const currentGroups = groups.length;
             
             if (userAnswer === currentGroups) {
-                updateResult('🎉 せいかい！ まとまりの数が あってるよ！');
+                correctCount++;
+                dailyDone = Math.min(dailyGoal, dailyDone + 1);
+                saveDaily();
+
+                updateResult(dailyDone>=dailyGoal
+                    ? '🏅 せいかい！ きょうのミッション クリア！'
+                    : '🎉 せいかい！ まとまりの数が あってるよ！'
+                );
                 input.style.borderColor = '#48bb78';
                 setTimeout(() => {
                     input.style.borderColor = '#4299e1';
@@ -620,6 +662,8 @@
             initGrid();
             setupColorPalette();
             setupInput();
+            loadDaily();
+            updateStats();
             
             // マウスアップイベントをドキュメント全体に追加
             document.addEventListener('mouseup', () => {

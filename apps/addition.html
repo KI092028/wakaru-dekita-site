@@ -499,6 +499,9 @@
                 <div class="score-item">
                     れんぞく: <span id="streak-count">0</span>
                 </div>
+                <div class="score-item">
+                    きょう: <span id="daily-progress">0/3</span>
+                </div>
             </div>
             
             <!-- 難易度選択 -->
@@ -514,6 +517,10 @@
                     <button class="difficulty-btn" onclick="setDifficulty('hard')" data-level="hard">
                         むずかしい (100まで)
                     </button>
+                </div>
+                <div style="margin-top: 0.75rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="startDaily()">🎯 きょうの3もん</button>
+                    <button class="btn btn-secondary" onclick="stopDaily()">🧸 ふつうにれんしゅう</button>
                 </div>
             </div>
             
@@ -546,6 +553,12 @@
         let difficulty = 'easy';
         let audioContext = null;
 
+        // きょうの3もん（デイリー）
+        const DAILY_KEY = 'wakaru.addition.daily.v1';
+        let dailyMode = false;
+        let dailyGoal = 3;
+        let dailyDone = 0;
+
         const encouragements = [
             "🎉 すごい！せいかい！",
             "✨ やったね！",
@@ -573,6 +586,51 @@
             "🚀 すごい ちから！",
             "🌟 きみは てんさい！"
         ];
+
+        function todayKey(){
+            const d=new Date();
+            const y=d.getFullYear();
+            const m=String(d.getMonth()+1).padStart(2,'0');
+            const da=String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${da}`;
+        }
+        function loadDaily(){
+            try{
+                const raw=localStorage.getItem(DAILY_KEY);
+                const st=raw?JSON.parse(raw):{};
+                if(st.date!==todayKey()){
+                    st.date=todayKey();
+                    st.done=0;
+                }
+                dailyDone=st.done||0;
+                updateDailyUI();
+            }catch(e){
+                dailyDone=0; updateDailyUI();
+            }
+        }
+        function saveDaily(){
+            try{ localStorage.setItem(DAILY_KEY, JSON.stringify({date: todayKey(), done: dailyDone})); }catch(e){}
+            updateDailyUI();
+        }
+        function updateDailyUI(){
+            const el=document.getElementById('daily-progress');
+            if(el) el.textContent = `${Math.min(dailyDone,dailyGoal)}/${dailyGoal}`;
+        }
+        function startDaily(){
+            dailyMode=true;
+            loadDaily();
+            generateProblem();
+            const fb=document.getElementById('feedback');
+            fb.className='feedback';
+            fb.textContent='🎯 きょうの3もん：せいかいを 3かい めざそう！';
+        }
+        function stopDaily(){
+            dailyMode=false;
+            const fb=document.getElementById('feedback');
+            fb.className='feedback';
+            fb.textContent='';
+            updateDailyUI();
+        }
 
         // 音響初期化
         function initAudio() {
@@ -733,6 +791,12 @@
                 streakCount++;
                 document.getElementById('correct-count').textContent = correctCount;
                 document.getElementById('streak-count').textContent = streakCount;
+
+                // デイリー進捗
+                if(dailyMode){
+                    dailyDone = Math.min(dailyGoal, dailyDone + 1);
+                    saveDaily();
+                }
                 
                 const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
                 feedback.textContent = randomEncouragement;
@@ -741,6 +805,14 @@
                 playSuccessSound();
                 createStars();
                 createConfetti();
+
+                // デイリー達成
+                if(dailyMode && dailyDone >= dailyGoal){
+                    const doneMsg=document.createElement('div');
+                    doneMsg.style.marginTop='0.5rem';
+                    doneMsg.textContent='🏅 きょうの3もん クリア！ また あした きてね！';
+                    feedback.appendChild(doneMsg);
+                }
                 
                 // 連続正解時の特別メッセージ
                 if (streakCount >= 3 && streakCount % 3 === 0) {
@@ -852,6 +924,9 @@
         // ユーザー操作で音響を初期化
         document.addEventListener('click', initAudio, { once: true });
         document.addEventListener('touchstart', initAudio, { once: true });
+
+        // 初回ロード
+        loadDaily();
 
         // 初回問題生成
         generateProblem();
