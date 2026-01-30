@@ -3,78 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>おもちゃ測定レース</title>
-  <meta name="description" content="トラックの長さを はかって たしざん。はたが ゆれてゴール！ タイマーつき。" />
-  
+  <title>おもちゃ測定レース（シンプル）</title>
+  <meta name="description" content="長さを比べるクイズ。見た目は楽しく、操作はシンプル。" />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#d4fc79;--bg2:#96e6a1;--deep:#2d3436}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:980px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .hud{display:flex;gap:8px;justify-content:center;margin:6px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .track-wrap{background:#eef7ff;border:4px solid #b4d4ff;border-radius:16px;padding:8px}
-    canvas{width:100%;height:260px;display:block}
-    .equation-row{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px;flex-wrap:wrap}
-    .equation{font-size:1.8rem;font-weight:800}
-    .answer{font-size:1.6rem;font-weight:800;width:120px;text-align:center;border:4px solid #74b9ff;border-radius:12px;padding:6px 10px}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .feedback{text-align:center;min-height:36px;font-weight:800}
-    .flag{position:absolute;right:14px;top:14px;font-size:28px;animation:wave .9s ease-in-out infinite alternate}
-    @keyframes wave{to{transform:rotate(12deg)}}
+    .bars{display:flex;justify-content:center;gap:12px;align-items:flex-end;margin:10px 0 6px}
+    .bar{width:120px;border-radius:14px;background:#eef6ff;border:3px solid #d7ecff;display:flex;align-items:flex-end;justify-content:center;padding:10px}
+    .stick{width:32px;border-radius:10px;background:linear-gradient(180deg,#74b9ff,#6c5ce7)}
+    .label{font-weight:900;margin-top:6px;text-align:center;color:#2c3e50}
+    .pickRow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="おもちゃ測定レース">
-    <div class="title">🏁 おもちゃ測定レース</div>
-    <div class="hud"><div class="pill" id="qinfo">もんだい: 1 / 10</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="time">タイマー: 15</div></div>
-    <div class="track-wrap" style="position:relative"><span class="flag">🚩</span><canvas id="cv"></canvas></div>
-    <div class="equation-row"><div class="equation" id="eq">コース 4 cm + 3 cm = ?</div><input id="ans" class="answer" inputmode="numeric" pattern="[0-9]*" placeholder="?" maxlength="2" /></div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn" id="nextBtn">つぎへ</button>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="おもちゃ測定レース">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🏁 おもちゃ測定レース</h1>
+          <p class="sub" id="qc-subtitle">どっちが ながい？ えらぼう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">どっちが ながい？</div>
+
+        <div class="bars" aria-label="長さの比較">
+          <div>
+            <div class="bar"><div class="stick" id="barA" style="height:120px"></div></div>
+            <div class="label">A</div>
+          </div>
+          <div>
+            <div class="bar"><div class="stick" id="barB" style="height:80px"></div></div>
+            <div class="label">B</div>
+          </div>
+        </div>
+
+        <!-- hidden input for quiz-core (answer=1 or 2) -->
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="pickRow">
+          <button class="btn blue" id="pickA">A が ながい</button>
+          <button class="btn blue" id="pickB">B が ながい</button>
+        </div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">※ きょうの1かい：ぜんぶ せいかい で クリア！</div>
+      </div>
     </div>
-    <div class="feedback" id="fb"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    const cv=document.getElementById('cv'), ctx=cv.getContext('2d'); const fb=document.getElementById('fb'); const ans=document.getElementById('ans');
-    let a=4,b=3,idx=0,total=10,score=0,time=15,timer=null;
-    function fit(){ const r=cv.getBoundingClientRect(); const s=window.devicePixelRatio||1; const w=Math.floor(r.width*s), h=Math.floor(260*s); if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; } }
-    function draw(){ ctx.clearRect(0,0,cv.width,cv.height); // track
-      ctx.fillStyle='#a3d9a5'; ctx.fillRect(20,cv.height-80,cv.width-40,40); // ruler
-      ctx.fillStyle='#2d3436'; for(let i=0;i<=10;i++){ const x=40+i*(cv.width-80)/10; ctx.fillRect(x,cv.height-90,2,20); ctx.fillText(i+'cm', x-8, cv.height-96); }
-      // segments a and b
-      const unit=(cv.width-80)/10; ctx.fillStyle='#74b9ff'; ctx.fillRect(40,cv.height-120,a*unit,20); ctx.fillStyle='#ff6b6b'; ctx.fillRect(40+a*unit,cv.height-120,b*unit,20);
-      // cars
-      ctx.font='16px Nunito'; ctx.fillStyle='#074'; ctx.fillText('🚗', 40+a*unit-14, cv.height-125); ctx.fillText('🚙', 40+(a+b)*unit-14, cv.height-125);
+    let a=12,b=8;
+    const barA=document.getElementById('barA');
+    const barB=document.getElementById('barB');
+
+    function setBars(){
+      // map cm(5..18) to px
+      barA.style.height = (a*10)+'px';
+      barB.style.height = (b*10)+'px';
     }
-    function gen(){ a=rand(1,10); b=rand(1,10); while(a+b>19){ a=rand(1,10); b=rand(1,10);} document.getElementById('eq').textContent=`コース ${a} cm + ${b} cm = ?`; ans.value=''; time=15; tick(); if(timer){ clearInterval(timer);} timer=setInterval(()=>{ time=Math.max(0,time-1); tick(); if(time===0){ clearInterval(timer); fb.textContent='⌛ じかんぎれ！'; } },1000); }
-    function tick(){ document.getElementById('time').textContent='タイマー: '+time; }
-    function check(){ const v=parseInt(ans.value.replace(/[^0-9]/g,''),10); if(Number.isNaN(v)){ fb.textContent='すうじを いれてね'; return;} if(v===a+b){ score++; fb.textContent='🏁 せいかい！'; setTimeout(next,700);} else { fb.textContent='ちがうよ！ もういちど'; } document.getElementById('score').textContent='スコア: '+score; }
-    function next(){ if(idx>=total-1){ fb.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; return;} idx++; document.getElementById('qinfo').textContent=`もんだい: ${idx+1} / ${total}`; gen(); draw(); }
-    function start(){ idx=0; score=0; document.getElementById('qinfo').textContent=`もんだい: 1 / ${total}`; gen(); fit(); draw(); }
-    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-    window.addEventListener('resize', ()=>{ fit(); draw(); });
-    document.getElementById('checkBtn').addEventListener('click', check); document.getElementById('nextBtn').addEventListener('click', next);
-    ans.addEventListener('keypress',e=>{ if(e.key==='Enter') check(); }); ans.addEventListener('input',e=>{ let v=e.target.value; v=v.replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0)); v=v.replace(/[^0-9]/g,''); e.target.value=v.slice(0,2); });
-    start();
+
+    const quiz = QuizCore.create({
+      appId:'toy-measure-race',
+      title:'🏁 おもちゃ測定レース',
+      subtitle:'どっちが ながい？ えらぼう！',
+      dailyGoal: 1,
+      buildQuestion:()=>{
+        a = 5 + Math.floor(Math.random()*14); // 5..18
+        b = 5 + Math.floor(Math.random()*14);
+        while(a===b){ b = 5 + Math.floor(Math.random()*14); }
+        setBars();
+        const ans = (a>b) ? 1 : 2;
+        return { text:'どっちが ながい？', answer: ans };
+      },
+      onInitUI:()=>{
+        document.getElementById('pickA').addEventListener('click', ()=>{ document.getElementById('qc-input').value='1'; });
+        document.getElementById('pickB').addEventListener('click', ()=>{ document.getElementById('qc-input').value='2'; });
+      }
+    });
   </script>
 </body>
 </html>
-
-

@@ -3,79 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>動物図形マッチング</title>
-  <meta name="description" content="どうぶつの かげ と かたちを あわせよう。ドラッグでフィット、正解でほえるよ。5問、タッチ対応。" />
-  
+  <title>動物図形クイズ（シンプル）</title>
+  <meta name="description" content="どうぶつと かたちのクイズ。操作はタップだけ。" />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#d4fc79;--bg2:#96e6a1}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:920px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px}
-    .title{text-align:center;font-size:1.6rem;color:#2d3436;font-weight:800}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .scene{display:grid;grid-template-columns:2fr 1fr;gap:12px}
-    .board{position:relative;min-height:320px;border:4px solid #b4d4ff;border-radius:16px;padding:10px;background:#f7fff7}
-    .slot{position:absolute;border:2px dashed #999;border-radius:12px;width:110px;height:110px;display:flex;align-items:center;justify-content:center;color:#999}
-    .palette{border:4px solid #ffd166;border-radius:16px;padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .piece{width:100px;height:100px;border-radius:12px;background:#74b9ff;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;cursor:grab;touch-action:none}
-    .piece.circle{border-radius:50%;background:#55efc4}
-    .piece.triangle{width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;border-bottom:90px solid #ff6b6b;background:transparent}
-    .roar{position:absolute;right:8px;bottom:8px;font-size:36px}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .feedback{text-align:center;min-height:36px;font-weight:800}
-    .correct{color:#2ecc71}.incorrect{color:#e17055}
+    .animals{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .animal{font-size:42px}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .choice{min-width:150px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="動物図形マッチング">
-    <div class="title">🦁 どうぶつ ずけい マッチ</div>
-    <div class="hud"><div class="pill" id="qinfo">もんだい: 1 / 5</div><div class="pill" id="score">スコア: 0</div></div>
-    <div class="scene">
-      <div class="board" id="board">
-        <div class="slot" id="slot1" style="left:20px;top:20px">からだ</div>
-        <div class="slot" id="slot2" style="left:160px;top:170px">あたま</div>
-        <div class="roar" id="roar">🦁</div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="動物図形クイズ">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🦁 どうぶつ × かたち</h1>
+          <p class="sub" id="qc-subtitle">「さんかく」「しかく」「まる」を えらぼう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
-      <div class="palette" id="palette"></div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">🦊 は どの かたち？</div>
+
+        <div class="animals" aria-label="どうぶつ">
+          <div class="animal" id="animal">🦊</div>
+        </div>
+
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="choices">
+          <button class="btn blue choice" id="pickCircle">● まる</button>
+          <button class="btn blue choice" id="pickSquare">■ しかく</button>
+          <button class="btn blue choice" id="pickTriangle">▲ さんかく</button>
+        </div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">※ タップして えらんでから「こたえる！」</div>
+      </div>
     </div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn" id="nextBtn">つぎへ</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    let idx=0,total=5,score=0; let filled={};
-    const shapes=[{type:'square',slot:'slot1',label:'からだ'},{type:'circle',slot:'slot2',label:'あたま'}];
-    const palette=document.getElementById('palette'); const fb=document.getElementById('feedback');
-    init(); function init(){ bind(); nextQ(true); }
-    function bind(){ document.getElementById('checkBtn').addEventListener('click',check); document.getElementById('nextBtn').addEventListener('click',nextQ); }
-    function nextQ(reset){ if(!reset&&idx>=total){ fb.className='feedback correct'; fb.textContent=`🎉 おわり！ スコア: ${score} / ${total}`; return;} render(); idx++; document.getElementById('qinfo').textContent=`もんだい: ${Math.min(idx+0,total)} / ${total}`; }
-    function render(){ palette.innerHTML=''; fb.textContent=''; filled={};
-      // 作るピース
-      const p1=createPiece('square'); const p2=createPiece('circle'); const p3=createPiece('triangle'); [p1,p2,p3].sort(()=>Math.random()-0.5).forEach(p=>palette.appendChild(p)); }
-    function createPiece(type){ let el; if(type==='triangle'){ el=document.createElement('div'); el.className='piece triangle'; } else { el=document.createElement('div'); el.className=`piece ${type}`; el.textContent= type==='square'?'■':'●'; }
-      el.draggable=true; el.dataset.type=type; el.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', type); }); return el; }
-    ['slot1','slot2'].forEach(id=>{ const z=document.getElementById(id); z.addEventListener('dragover',e=>e.preventDefault()); z.addEventListener('drop',e=>{ e.preventDefault(); const type=e.dataTransfer.getData('text/plain'); if((id==='slot1'&&type==='square')||(id==='slot2'&&type==='circle')){ z.textContent='OK!'; filled[id]=true; document.getElementById('roar').textContent='🦁📣'; setTimeout(()=>document.getElementById('roar').textContent='🦁',500); } else { fb.className='feedback incorrect'; fb.textContent='しっぽ じゃ ない かも？'; }
-    }); });
-    function check(){ const ok = filled['slot1']&&filled['slot2']; if(ok){ score++; fb.className='feedback correct'; fb.textContent='ガオー！ せいかい！'; } else { fb.className='feedback incorrect'; fb.textContent='まだ あってない よ'; } document.getElementById('score').textContent=`スコア: ${score}`; }
+    // Map shapes: circle=1, square=2, triangle=3
+    const animalEl=document.getElementById('animal');
+    const animals=[
+      {emoji:'🐻', shape:2},
+      {emoji:'🦊', shape:3},
+      {emoji:'🐼', shape:1},
+      {emoji:'🐯', shape:2},
+      {emoji:'🦁', shape:3},
+      {emoji:'🐰', shape:1}
+    ];
+
+    const quiz = QuizCore.create({
+      appId:'animal-shape-match',
+      title:'🦁 どうぶつ × かたち',
+      subtitle:'「さんかく」「しかく」「まる」を えらぼう！',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        const a=animals[Math.floor(Math.random()*animals.length)];
+        animalEl.textContent=a.emoji;
+        return { text:`${a.emoji} は どの かたち？`, answer: a.shape };
+      },
+      onInitUI:()=>{
+        document.getElementById('pickCircle').addEventListener('click', ()=>{ document.getElementById('qc-input').value='1'; });
+        document.getElementById('pickSquare').addEventListener('click', ()=>{ document.getElementById('qc-input').value='2'; });
+        document.getElementById('pickTriangle').addEventListener('click', ()=>{ document.getElementById('qc-input').value='3'; });
+      }
+    });
   </script>
 </body>
 </html>
-
-

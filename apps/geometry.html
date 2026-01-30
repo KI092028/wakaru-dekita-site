@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>図形クイズ（シンプル）</title>
+  <meta name="description" content="図形の辺の数クイズ。タップだけで遊べる。" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
+  <style>
+    .big{font-size:64px;text-align:center;margin:8px 0}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .choice{min-width:120px}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="図形クイズ">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧩 図形クイズ</h1>
+          <p class="sub" id="qc-subtitle">へんの数（なんぼん？）</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">さんかくは へんが なんぼん？</div>
+        <div class="big" id="shape">▲</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="choices">
+          <button class="btn blue choice" data-a="3">3</button>
+          <button class="btn blue choice" data-a="4">4</button>
+          <button class="btn blue choice" data-a="5">5</button>
+          <button class="btn blue choice" data-a="0">まる</button>
+        </div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">※ タップしてから「こたえる！」</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/quiz-core.js"></script>
+  <script>
+    const shapeEl=document.getElementById('shape');
+    const qBank=[
+      {q:'さんかくは へんが なんぼん？', icon:'▲', ans:3},
+      {q:'しかくは へんが なんぼん？', icon:'■', ans:4},
+      {q:'ごかくけいは へんが なんぼん？', icon:'⬟', ans:5},
+      {q:'ろっかくけいは へんが なんぼん？', icon:'⬢', ans:6},
+      {q:'まるは へんが なんぼん？', icon:'●', ans:0},
+    ];
+
+    QuizCore.create({
+      appId:'geometry',
+      title:'🧩 図形クイズ',
+      subtitle:'へんの数（なんぼん？）',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        const it=qBank[Math.floor(Math.random()*qBank.length)];
+        shapeEl.textContent=it.icon;
+        return { text: it.q, answer: it.ans };
+      },
+      onInitUI:()=>{
+        document.querySelectorAll('[data-a]').forEach(btn=>{
+          btn.addEventListener('click', ()=>{ document.getElementById('qc-input').value=btn.dataset.a; });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

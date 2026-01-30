@@ -778,7 +778,8 @@
             const mulDone = Math.max(readDaily('wakaru.multiplication.daily.v2'), readDaily('wakaru.multiplication.daily.v1'));
             setDailyChip('daily-addition', addDone, 3);
             setDailyChip('daily-multiplication', mulDone, 3);
-            setDailyChip('daily-shape', readDaily('wakaru.shapehunt.daily.v1'), 1);
+            const shapeDone = Math.max(readDaily('wakaru.shape-hunt.daily.v2'), readDaily('wakaru.shapehunt.daily.v1'));
+            setDailyChip('daily-shape', shapeDone, 1);
         }
 
         // 教科データ

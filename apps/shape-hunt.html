@@ -3,301 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>形探しパズルアドベンチャー</title>
-  <meta name="description" content="三角・四角・まるを見つけてドラッグ！正解で光り、間違いはヒント付き。5ラウンドのリピート練習、タッチ対応、音つき。" />
-  
+  <title>形さがし（シンプル）</title>
+  <meta name="description" content="まる・しかく・さんかくの形さがしクイズ。タップだけで遊べる。" />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root { --bg1:#b7e5ff; --bg2:#dffcc2; --pink:#ff6b6b; --blue:#74b9ff; --green:#2ecc71; --deep:#2d3436; }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:980px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;position:relative;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:var(--pink);font-weight:800;margin-bottom:6px}
-    .mission{text-align:center;font-size:1.9rem;font-weight:800;letter-spacing:1px;color:#2d3436}
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,var(--blue),#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .scene{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:10px}
-    .board{position:relative;min-height:360px;background:linear-gradient(180deg,#e8f9ff,#f7fff7);border:4px solid #a3d9a5;border-radius:16px;overflow:hidden}
-    .park{position:absolute;inset:0;background:
-      radial-gradient(circle at 10% 90%, #bff199 0 25%, transparent 26%),
-      radial-gradient(circle at 90% 85%, #ffec99 0 18%, transparent 19%),
-      radial-gradient(circle at 80% 20%, #ffd6e0 0 10%, transparent 11%);
-      opacity:.5}
-    .targets{position:absolute;inset:0}
-    .target{position:absolute;display:flex;align-items:center;justify-content:center;opacity:.7;filter:drop-shadow(0 3px 0 rgba(0,0,0,.08))}
-    .target .outline{border:4px dashed #999;border-radius:12px}
-    .target.circle .outline{border-radius:50%}
-    .target.triangle .outline{border:none;width:0;height:0;border-left:36px solid transparent;border-right:36px solid transparent;border-bottom:62px dashed #999;border-radius:0;filter:opacity(.7)}
-    .palette{background:#ffffff;border:4px solid #b4d4ff;border-radius:16px;padding:10px;display:grid;grid-template-columns:repeat(2,minmax(40px,1fr));gap:10px;align-content:start}
-    .shape{width:88px;height:88px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;position:relative;user-select:none;filter:drop-shadow(0 3px 0 rgba(0,0,0,.12));}
-    .shape:active{cursor:grabbing}
-    .shape.circle{border-radius:50%}
-    .shape.square{border-radius:16px}
-    .shape.triangle{width:0;height:0;border-left:44px solid transparent;border-right:44px solid transparent;border-bottom:76px solid var(--pink);background:transparent;border-radius:0}
-    .shape.square{background:var(--blue)}
-    .shape.circle{background:var(--green)}
-    .glow{box-shadow:0 0 18px rgba(46,204,113,.8),0 0 36px rgba(46,204,113,.5)}
-    .fade{animation:fade .5s ease forwards}
-    @keyframes fade{to{opacity:.2;transform:scale(.9)}}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#00b894}.incorrect{color:#e17055}
-    /* ドラッグのゴースト（スナップ時の演出） */
-    .snap{animation:snap .28s ease}
-    @keyframes snap{from{transform:scale(1.1)}to{transform:scale(1)}}
-    /* 星 */
-    .confetti{position:absolute;inset:0;pointer-events:none}
-    .star{position:absolute;font-size:20px;animation:boom .8s ease-out forwards}
-    @keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:0}}
-    @media (max-width:840px){.scene{grid-template-columns:1fr}.palette{grid-template-columns:repeat(3,1fr)}}
+    .grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;max-width:460px;margin:12px auto 0}
+    .tile{background:#f6fbff;border:3px solid #d7ecff;border-radius:18px;min-height:86px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;cursor:pointer;user-select:none}
+    .tile:active{transform:translateY(1px)}
+    .hint{margin-top:8px;text-align:center;color:#546e7a;font-weight:900}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="形探しパズルアドベンチャー">
-    <div class="title">🎈 形探しパズルアドベンチャー</div>
-    <div class="mission" id="mission">3つの まる を さがして！</div>
-    <div class="hud">
-      <div class="pill" id="round">ラウンド: 1 / 5</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="daily">きょう: 0 / 1</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
-    </div>
-    <div class="scene">
-      <div class="board" id="board">
-        <div class="park"></div>
-        <div class="targets" id="targets"></div>
-        <div class="confetti" id="confetti"></div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="形さがし">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🔺 形さがし</h1>
+          <p class="sub" id="qc-subtitle">おだいの形を タップ！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
-      <div class="palette" id="palette"></div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
+
+      <div class="panel">
+        <div class="problem" id="qc-problem">「まる」を さがして！</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="grid" id="grid" aria-label="形のタイル">
+          <!-- tiles injected -->
+        </div>
+
+        <div class="controls" style="margin-top:12px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="hint">※ タップしてから「こたえる！」</div>
+      </div>
     </div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-      <button class="btn secondary" id="soundBtn">🔊 おと: ON</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    const SHAPES = ['circle','square','triangle'];
-    let round=0, total=5, score=0, repeat=false;
-    let targetShape='circle', targetCount=3;
-    let audioCtx=null;
+    const grid=document.getElementById('grid');
+    const shapes=[
+      {label:'まる', icon:'●', id:1},
+      {label:'しかく', icon:'■', id:2},
+      {label:'さんかく', icon:'▲', id:3},
+    ];
 
-    // Settings / daily
-    let soundOn=true;
-    const DAILY_KEY='wakaru.shapehunt.daily.v1';
-    let dailyDone=0;
+    let target=shapes[0];
 
-    const board = document.getElementById('board');
-    const targetsEl = document.getElementById('targets');
-    const paletteEl = document.getElementById('palette');
-    const feedback = document.getElementById('feedback');
-    const confetti = document.getElementById('confetti');
-
-    init();
-    function init(){
-      setupAudio();
-      bindUI();
-      start();
-      window.addEventListener('resize', ()=>layoutTargets());
-    }
-    function setupAudio(){
-      const warm=()=>{ if(!audioCtx){ try{audioCtx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } window.removeEventListener('pointerdown',warm) }; window.addEventListener('pointerdown',warm,{once:true});
-    }
-    function todayKey(){
-      const d=new Date();
-      const y=d.getFullYear();
-      const m=String(d.getMonth()+1).padStart(2,'0');
-      const da=String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${da}`;
-    }
-    function loadDaily(){
-      try{
-        const raw=localStorage.getItem(DAILY_KEY);
-        const st=raw?JSON.parse(raw):{};
-        dailyDone = (st.date===todayKey() ? (st.done||0) : 0);
-      }catch(e){ dailyDone=0; }
-      updateDailyUI();
-    }
-    function saveDaily(){
-      try{ localStorage.setItem(DAILY_KEY, JSON.stringify({date: todayKey(), done: dailyDone})); }catch(e){}
-      updateDailyUI();
-    }
-    function updateDailyUI(){
-      const el=document.getElementById('daily');
-      if(el) el.textContent = `きょう: ${Math.min(dailyDone,1)} / 1`;
-    }
-
-    function bindUI(){
-      document.getElementById('checkBtn').addEventListener('click', checkAnswer);
-      document.getElementById('nextBtn').addEventListener('click', nextRound);
-      document.getElementById('restartBtn').addEventListener('click', start);
-      document.getElementById('repeatBtn').addEventListener('click', ()=>{repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`;});
-      document.getElementById('soundBtn').addEventListener('click', ()=>{ soundOn=!soundOn; document.getElementById('soundBtn').textContent=`${soundOn?'🔊':'🔇'} おと: ${soundOn?'ON':'OFF'}`; });
-    }
-    function start(){ round=0; score=0; loadDaily(); nextRound(true); }
-    function nextRound(reset){
-      if(!reset && round>=total){
-        feedback.className='feedback correct';
-        feedback.textContent=`🎉 ぜんぶ できた！ スコア: ${score} / ${total}`;
-
-        // daily clear: 1回クリア（全問正解）
-        if(score>=total && dailyDone<1){
-          dailyDone=1; saveDaily();
-        }
-
-        if(repeat){ setTimeout(()=>start(),1000); }
-        return;
-      }
-      feedback.textContent='';
-      generatePuzzle(); renderPuzzle(); round++; updateHUD();
-    }
-    function updateHUD(){
-      document.getElementById('round').textContent=`ラウンド: ${Math.min(round+0,total)} / ${total}`;
-      document.getElementById('score').textContent=`スコア: ${score}`;
-    }
-    function generatePuzzle(){
-      targetShape = SHAPES[Math.floor(Math.random()*SHAPES.length)];
-      targetCount = 2 + Math.floor(Math.random()*2); // 2〜3
-      document.getElementById('mission').textContent = `${targetCount}つの ${labelOf(targetShape)} を さがして！`;
-    }
-    function renderPuzzle(){
-      targetsEl.innerHTML=''; paletteEl.innerHTML='';
-      layoutTargets();
-      // パレット: 正解x targetCount + ダミー (合計6)
-      const items=[]; for(let i=0;i<targetCount;i++) items.push(targetShape);
-      while(items.length<6){
-        const s=SHAPES[Math.floor(Math.random()*SHAPES.length)];
-        items.push(s);
-      }
-      shuffle(items);
-      for(const s of items){
-        const node=createShape(s,true);
-        paletteEl.appendChild(node);
-      }
-    }
-    function layoutTargets(){
-      targetsEl.innerHTML='';
-      const rect = board.getBoundingClientRect();
-      const W = rect.width, H = rect.height;
-      const margin=24;
-      const positions=[];
-      for(let i=0;i<targetCount;i++){
-        positions.push({
-          x: margin + Math.random()*(W - margin*2 - 90),
-          y: margin + Math.random()*(H - margin*2 - 90)
-        });
-      }
-      positions.forEach(pos=>{
-        const t=document.createElement('div');
-        t.className=`target ${targetShape}`;
-        t.dataset.shape=targetShape;
-        t.style.left=pos.x+'px';
-        t.style.top=pos.y+'px';
-        const outline=document.createElement('div');
-        outline.className='outline';
-        if(targetShape==='triangle'){
-          // height/widthは三角専用
-        }else{
-          outline.style.width='86px'; outline.style.height='86px'; outline.style.borderColor='#999';
-          if(targetShape==='circle') outline.style.borderRadius='50%';
-        }
-        t.appendChild(outline);
-        targetsEl.appendChild(t);
-      });
-    }
-    function createShape(shape,draggable){
-      let el;
-      if(shape==='triangle'){
-        el=document.createElement('div'); el.className='shape triangle';
-      }else{
-        el=document.createElement('div'); el.className=`shape ${shape}`;
-      }
-      el.dataset.shape=shape;
-      if(draggable) enableDrag(el);
-      return el;
-    }
-    function enableDrag(el){
-      let dragging=false, offX=0, offY=0, startLeft=0, startTop=0, originParent=null;
-      el.addEventListener('pointerdown',e=>{
-        e.preventDefault(); dragging=true; el.setPointerCapture?.(e.pointerId||1);
-        originParent=el.parentElement; const r=el.getBoundingClientRect(); offX=e.clientX-r.left; offY=e.clientY-r.top;
-        const pr=originParent.getBoundingClientRect(); startLeft=r.left-pr.left; startTop=r.top-pr.top;
-        el.style.position='absolute'; el.style.left=startLeft+'px'; el.style.top=startTop+'px'; originParent.appendChild(el);
-      });
-      window.addEventListener('pointermove',e=>{ if(!dragging) return; const pr=originParent.getBoundingClientRect(); el.style.left=(e.clientX-pr.left-offX)+'px'; el.style.top=(e.clientY-pr.top-offY)+'px'; });
-      window.addEventListener('pointerup',e=>{ if(!dragging) return; dragging=false; drop(el); });
-      el.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
-    }
-    function drop(el){
-      const shape=el.dataset.shape; const rect=el.getBoundingClientRect();
-      const tList=[...targetsEl.children].filter(t=>!t.dataset.filled);
-      let snapped=false;
-      for(const t of tList){
-        const tr=t.getBoundingClientRect();
-        const centerX=rect.left+rect.width/2, centerY=rect.top+rect.height/2;
-        if(centerX>tr.left && centerX<tr.right && centerY>tr.top && centerY<tr.bottom){
-          if(shape===t.dataset.shape){
-            // 正解スナップ
-            t.dataset.filled='1';
-            el.classList.add('glow','snap');
-            el.style.left=(tr.left - el.parentElement.getBoundingClientRect().left + (tr.width-86)/2)+'px';
-            el.style.top=(tr.top - el.parentElement.getBoundingClientRect().top + (tr.height-86)/2)+'px';
-            playTone(880,0.1,'triangle',0.06);
-            snapped=true; break;
-          }
-        }
-      }
-      if(!snapped){
-        // ミス → フェードして元に戻す
-        el.classList.add('fade'); playTone(220,0.18,'sawtooth',0.03);
-        setTimeout(()=>{ el.classList.remove('fade'); el.style.position=''; el.style.left=''; el.style.top=''; el.parentElement.appendChild(el); },250);
-        feedback.className='feedback incorrect'; feedback.textContent='💡 ちがうよ！ 形を よく みてみよう！';
-      }else{
-        feedback.className='feedback';
-      }
-    }
-    function checkAnswer(){
-      const remain=[...targetsEl.children].filter(t=>!t.dataset.filled).length;
-      if(remain===0){
-        score++; feedback.className='feedback correct'; feedback.textContent='🎉 せいかい！';
-        popStars(); setTimeout(()=>nextRound(),900);
-      }else{
-        feedback.className='feedback incorrect'; feedback.textContent='まだ のこっている よ！';
-      }
-      document.getElementById('score').textContent=`スコア: ${score}`;
-    }
-    function popStars(){
-      const w=board.clientWidth,h=board.clientHeight;
-      for(let i=0;i<14;i++){
-        const s=document.createElement('div'); s.className='star'; s.textContent='⭐';
-        s.style.left=(w/2)+'px'; s.style.top=(h/2)+'px';
-        s.style.setProperty('--dx', (Math.random()*w - w/2)+'px');
-        s.style.setProperty('--dy', (Math.random()*h - h/2)+'px');
-        confetti.appendChild(s); setTimeout(()=>s.remove(),800);
-      }
-    }
-    function labelOf(shape){ return shape==='circle'?'まる':shape==='square'?'しかく':'さんかく'; }
     function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-    function playTone(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx || !soundOn) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
+
+    function renderTiles(){
+      grid.innerHTML='';
+      // make 9 tiles with random shapes, guarantee at least one target
+      const items=[];
+      items.push(target);
+      while(items.length<9){ items.push(shapes[Math.floor(Math.random()*shapes.length)]); }
+      shuffle(items);
+      items.forEach((s)=>{
+        const b=document.createElement('div');
+        b.className='tile';
+        b.textContent=s.icon;
+        b.dataset.shape=String(s.id);
+        b.addEventListener('click', ()=>{
+          // choose tile as answer
+          document.getElementById('qc-input').value = b.dataset.shape;
+          // highlight selection
+          [...grid.querySelectorAll('.tile')].forEach(t=>t.style.outline='');
+          b.style.outline='4px solid #66bb6a';
+        });
+        grid.appendChild(b);
+      });
+    }
+
+    QuizCore.create({
+      appId:'shape-hunt',
+      title:'🔺 形さがし',
+      subtitle:'おだいの形を タップ！',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        target=shapes[Math.floor(Math.random()*shapes.length)];
+        renderTiles();
+        // answer is the target id, but we accept any tile tap: we set input to selected tile id.
+        return { text:`「${target.label}」を さがして！`, answer: target.id };
+      }
+    });
   </script>
 </body>
 </html>
-
-
