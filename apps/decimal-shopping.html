@@ -3,290 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>小数ショッピングシミュレーション</title>
-  <meta name="description" content="ドラッグで かいもの！ 小数の たしざん・ひきざんを れんしゅう。レジ音・ビープ音つき、10ラウンド、モバイル対応。" />
-  
+  <title>小数ショッピング（シンプル）</title>
+  <meta name="description" content="小数のたし算・ひき算を、買い物のイメージで練習。UIはシンプル。" />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root{--bg1:#cfd9df;--bg2:#e2ebf0;--deep:#2d3436;--green:#2ecc71;--pink:#ff6b6b;--blue:#74b9ff}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:1040px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .equation{text-align:center;font-size:2rem;font-weight:800;color:var(--deep)}
-    
-    .answer-row {
-      display: flex;
-      justify-content: center;
-      margin-top: 8px;
-    }
-    
-    .answer-input {
-      font-size: 1.8rem;
-      font-weight: 800;
-      width: 140px;
-      text-align: center;
-      border: 4px solid var(--blue);
-      border-radius: 14px;
-      padding: 6px 10px;
-      font-family: 'Nunito', sans-serif;
-    }
-    .hud{display:flex;gap:8px;justify-content:center;margin:8px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .store{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:8px}
-    .shelf{background:#f7fbff;border:4px solid #b4d4ff;border-radius:16px;padding:10px;min-height:280px}
-    .items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .item{background:#ffffff;border:3px solid #e8eef9;border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:grab;touch-action:none}
-    .item:active{cursor:grabbing}
-    .price{background:linear-gradient(45deg,#2bcbba,#00b894);color:#fff;padding:4px 8px;border-radius:10px;font-weight:800}
-    .coupon{background:linear-gradient(45deg,#ff7675,#e17055)}
-    .cart{background:#fff;border:4px solid #ffd166;border-radius:16px;padding:10px;min-height:280px;position:relative}
-    .cart-title{font-weight:800;margin-bottom:6px}
-    .cart-line{display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:4px 0}
-    .total{font-size:1.4rem;font-weight:800;text-align:right;margin-top:8px}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.2rem;font-weight:800;margin-top:6px}
-    .correct{color:#2ecc71}.incorrect{color:#e17055}
-    @media (max-width:900px){.store{grid-template-columns:1fr}}
+    .note{margin-top:8px;text-align:center;color:#546e7a;font-weight:800}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="小数ショッピングシミュレーション">
-    <div class="title">🛒 小数ショッピング</div>
-    <div class="equation" id="equation">3.50 + 2.75 = ?</div>
-    
-    <div class="answer-row">
-      <input type="text" class="answer-input" id="answerInput" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="?" aria-label="こたえ" maxlength="6" />
-    </div>
-    <div class="hud">
-      <div class="pill" id="qinfo">ラウンド: 1 / 10</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="budget">のこり: ¥20.00</div>
-      <div class="pill" id="level">レベル: 1</div>
-      <div class="pill" id="repeat">リピート: OFF</div>
-    </div>
-    <div class="store">
-      <div class="shelf">
-        <div class="items" id="items"></div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="小数ショッピング">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🛒 小数ショッピング</h1>
+          <p class="sub" id="qc-subtitle">おかいものの計算（小数）</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
-      <div class="cart" id="cart">
-        <div class="cart-title">🧺 カート</div>
-        <div id="cartLines"></div>
-        <div class="total" id="cartTotal">¥0.00</div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="mode-badge">たし算</span>
+          <button class="btn ghost" data-mode="add">たし算</button>
+          <button class="btn ghost" data-mode="sub">ひき算（おつり）</button>
+          <button class="btn ghost" data-level="easy">やさしい</button>
+          <button class="btn ghost" data-level="hard">むずかしい</button>
+        </div>
+
+        <div class="problem" id="qc-problem">2.3 + 1.5</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="decimal" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="note">※ こたえは「小数第1位」まで</div>
       </div>
     </div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">リスタート</button>
-      <button class="btn secondary" id="repeatBtn">リピート: OFF</button>
-    </div>
-    <div class="feedback" id="feedback"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    // 状態
-    let idx=0,total=10,score=0,level=1,repeat=false;
-    let budget=20.00; // 予算
-    let a=3.50,b=2.75,coupon=0.00,op='+'; // op: '+' or '-'
-    let audioCtx=null;
-    let answerInput = document.getElementById('answerInput');
+    // quiz-core is integer-based by default. We'll map decimals to integers x10.
+    let mode='add';
+    let level='easy';
+    const badge=document.getElementById('mode-badge');
 
-    const itemsEl=document.getElementById('items');
-    const cartEl=document.getElementById('cartLines');
-    const cartTotalEl=document.getElementById('cartTotal');
-    const feedback=document.getElementById('feedback');
-
-    const PRODUCTS=[
-      { name:'🍎 りんご', base:0.75 },
-      { name:'🥐 パン', base:1.20 },
-      { name:'🥛 ミルク', base:1.35 },
-      { name:'🍫 チョコ', base:0.95 },
-      { name:'📗 ノート', base:1.80 },
-      { name:'🧸 トイ', base:2.40 }
-    ];
-
-    init();
-    function init(){
-      bind();
-      setupInput();
-      start();
-      const warm = () => { if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } window.removeEventListener('pointerdown', warm); };
-      window.addEventListener('pointerdown', warm, { once:true });
+    function upd(){
+      badge.textContent = (mode==='add'?'たし算':'ひき算（おつり）') + ' / ' + (level==='easy'?'やさしい':'むずかしい');
     }
 
-    function bind(){
-      document.getElementById('checkBtn').addEventListener('click', check);
-      document.getElementById('nextBtn').addEventListener('click', nextRound);
-      document.getElementById('restartBtn').addEventListener('click', start);
-      document.getElementById('repeatBtn').addEventListener('click', ()=>{ repeat=!repeat; document.getElementById('repeat').textContent=`リピート: ${repeat?'ON':'OFF'}`; document.getElementById('repeatBtn').textContent=`リピート: ${repeat?'ON':'OFF'}`; });
+    function rand10(min,max){ // in tenths
+      return min + Math.floor(Math.random()*(max-min+1));
     }
-    
-    function setupInput() {
-      // 入力欄のサニタイズ（全角半角対応）
-      answerInput.addEventListener('input', (e) => {
-        let v = e.target.value;
-        // 全角→半角
-        v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-        // 数字と小数点以外除去
-        v = v.replace(/[^0-9.]/g, '');
-        // 小数点は最初の1つだけ
-        const dots = v.split('.').length - 1;
-        if (dots > 1) {
-          const parts = v.split('.');
-          v = parts[0] + '.' + parts.slice(1).join('');
+
+    const quiz = QuizCore.create({
+      appId:'decimal-shopping',
+      title:'🛒 小数ショッピング',
+      subtitle:'おかいものの計算（小数）',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const hard = (level==='hard');
+        // values are in tenths (x10). easy: 0.1〜9.9, hard: 0.1〜99.9
+        const max = hard ? 999 : 99;
+        if(mode==='add'){
+          const a=rand10(1,max);
+          const b=rand10(1,max);
+          return { text: `${(a/10).toFixed(1)} + ${(b/10).toFixed(1)}`, answer: a+b };
         }
-        if (v.length > 6) v = v.slice(0,6);
-        e.target.value = v;
-      });
-      
-      // Enterキーでも回答
-      answerInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') check();
-      });
-    }
+        // change: total - price
+        const total=rand10(20,max);
+        const price=rand10(1,total);
+        return { text: `${(total/10).toFixed(1)} - ${(price/10).toFixed(1)}`, answer: total-price };
+      },
+      onInitUI:()=>{
+        upd();
+        document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;upd();quiz.newQuestion();}));
+        document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click',()=>{level=btn.dataset.level;upd();quiz.newQuestion();}));
 
-    function start(){ idx=0; score=0; level=1; budget=20.00; nextRound(true); answerInput.value = ''; }
+        // Override check to allow decimal input (x10)
+        const input=document.getElementById('qc-input');
+        input.addEventListener('input',()=>{
+          // allow digits and '.'
+          let v=input.value;
+          v=v.replace(/[０-９．]/g, ch=>{
+            const map={'．':'.'};
+            if(map[ch]) return map[ch];
+            return String.fromCharCode(ch.charCodeAt(0)-0xFEE0);
+          });
+          v=v.replace(/[^0-9.]/g,'');
+          // keep only one dot
+          const parts=v.split('.');
+          if(parts.length>2) v=parts[0]+'.'+parts.slice(1).join('');
+          // keep 1 decimal place
+          if(v.includes('.')){
+            const [i,d]=v.split('.');
+            v=i+'.'+(d||'').slice(0,1);
+          }
+          input.value=v;
+        });
 
-    function nextRound(reset){
-      if(!reset && idx>=total){
-        feedback.className='feedback correct';
-        feedback.textContent=`🎉 おわり！ スコア: ${score} / ${total}（のこり予算: ¥${fmt(budget)}）`;
-        if(repeat){ setTimeout(start, 1000); }
-        return;
+        // Patch QuizCore.check for this page only
+        const origCheck = quiz.check;
+        quiz.check = function(){
+          const v=input.value;
+          if(v==='') return origCheck();
+          // convert to x10 integer
+          const n = Math.round(parseFloat(v)*10);
+          if(Number.isNaN(n)) return origCheck();
+          // write integer into input to satisfy core check
+          input.value=String(n);
+          const r=origCheck();
+          // restore display value
+          input.value=v;
+          // also display correct answer in decimal (core shows integer)
+          // We keep it simple: core feedback is acceptable, but we'll translate when incorrect.
+          const fb=document.getElementById('qc-feedback');
+          if(fb && fb.className.includes('ng') && fb.textContent.includes('こたえは')){
+            // extract integer answer from text
+            const m=fb.textContent.match(/こたえは\s+(\d+)/);
+            if(m){
+              const dec=(Number(m[1])/10).toFixed(1);
+              fb.textContent = fb.textContent.replace(m[1], dec);
+            }
+          }
+          return r;
+        };
+        // bind our patched check
+        document.getElementById('qc-submit').onclick = ()=>quiz.check();
+        document.getElementById('qc-next').onclick = ()=>quiz.newQuestion();
       }
-      generateProblem();
-      renderStore();
-      renderCart([]);
-      answerInput.value = '';
-      idx++;
-      updateHUD();
-    }
-
-    function generateProblem(){
-      // 小数第2位までのランダム金額
-      a = rndMoney(rand(50,250)/100); // 0.50 - 2.50
-      b = rndMoney(rand(50,250)/100);
-      op = Math.random()<0.6 ? '+' : '-';
-      if(op==='-' && a<=b){ const tmp=a; a=b; b=tmp; } // 結果が負にならない
-      // レベルが上がると価格帯アップ
-      const boost = (Math.floor(score/3))*0.25;
-      a = rndMoney(a+boost);
-      b = rndMoney(b+boost);
-      coupon = op==='-' ? b : 0.00;
-      document.getElementById('equation').textContent = `${fmt(a)} ${op} ${fmt(b)} = ?`;
-    }
-
-    function renderStore(){
-      itemsEl.innerHTML='';
-      // 問題に合わせた特設アイテム（a, b, coupon）
-      const specials = [
-        { name:'スペシャルA', price:a, emoji:'🛍️' },
-        { name: op==='+' ? 'スペシャルB' : 'クーポン', price: op==='+' ? b : -b, emoji: op==='+' ? '🧺' : '🎟️' },
-      ];
-      const pool = [...specials, ...PRODUCTS.map(p=>({ name:p.name, price:rndMoney(p.base + (rand(-25,25)/100)) }))];
-      pool.forEach(prod=>itemsEl.appendChild(createItem(prod)));
-    }
-
-    function createItem(prod){
-      const el = document.createElement('div'); el.className='item'; el.draggable=true; el.dataset.price=prod.price.toFixed(2);
-      el.innerHTML = `<div>${prod.emoji||''} ${prod.name||''}</div><div class="price ${prod.price<0?'coupon':''}">¥${fmt(prod.price)}</div>`;
-      el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', el.dataset.price); });
-      // タッチ向け: タップで追加
-      el.addEventListener('click', ()=>{ addToCart({ name: prod.name, price: prod.price }); });
-      return el;
-    }
-
-    function renderCart(lines){
-      cartEl.innerHTML='';
-      let total=0;
-      lines.forEach(line=>{
-        const row=document.createElement('div'); row.className='cart-line';
-        row.innerHTML=`<span>${line.name}</span><span>¥${fmt(line.price)}</span>`;
-        cartEl.appendChild(row); total += line.price;
-      });
-      cartTotalEl.textContent = `¥${fmt(total)}`;
-      cartEl.dataset.total = total.toFixed(2);
-    }
-
-    const cartLines=[];
-    // ドロップ先
-    const cart = document.getElementById('cart');
-    cart.addEventListener('dragover', e=>e.preventDefault());
-    cart.addEventListener('drop', e=>{
-      e.preventDefault(); const price=parseFloat(e.dataTransfer.getData('text/plain'))||0; const name='アイテム'; addToCart({ name, price });
     });
-
-    function addToCart(line){ cartLines.push(line); renderCart(cartLines); playClick(); }
-
-    function check(){
-      // 入力値のチェック
-      const inputVal = answerInput.value.trim();
-      if (inputVal === '') {
-        feedback.className='feedback incorrect';
-        feedback.textContent='すうじを いれてね！';
-        return;
-      }
-      
-      const inputNum = parseFloat(inputVal);
-      if (Number.isNaN(inputNum)) {
-        feedback.className='feedback incorrect';
-        feedback.textContent='すうじを いれてね！';
-        return;
-      }
-      
-      const total = parseFloat(cartEl.dataset.total||'0');
-      const expected = op==='+' ? rndMoney(a+b) : rndMoney(a-b);
-      if(eq(inputNum, expected)){
-        score++; cashRegister();
-        // 予算から消費（割引も反映）
-        budget = rndMoney(Math.max(0, budget - expected));
-        feedback.className='feedback correct';
-        feedback.textContent='✅ せいかい！ しょうすう点を そろえて たしひき できたね';
-        nextDelay();
-      } else {
-        beep();
-        feedback.className='feedback incorrect';
-        feedback.textContent='💡 ヒント: しょうすう点を そろえて けいさんしてみよう';
-      }
-      updateHUD();
-    }
-
-    function nextDelay(){ setTimeout(()=>nextRound(), 900); }
-
-    function updateHUD(){
-      document.getElementById('qinfo').textContent=`ラウンド: ${Math.min(idx+0,total)} / ${total}`;
-      document.getElementById('score').textContent=`スコア: ${score}`;
-      document.getElementById('level').textContent=`レベル: ${1 + Math.floor(score/3)}`;
-      document.getElementById('budget').textContent=`のこり: ¥${fmt(budget)}`;
-    }
-
-    // 音
-    function cashRegister(){ playTone(880,.08,'triangle',.07); setTimeout(()=>playTone(1175,.1,'triangle',.07),90); }
-    function beep(){ playTone(220,.2,'sawtooth',.04); }
-    function playClick(){ playTone(600,.05,'sine',.03); }
-    function playTone(freq=880,dur=.18,type='sine',gain=.06){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=gain; o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur); }
-
-    // ユーティリティ
-    function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
-    function rndMoney(n){ return Math.round(n*100)/100; }
-    function eq(a,b){ return Math.abs(a-b) < 0.005; }
-    function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
   </script>
 </body>
 </html>
-
-

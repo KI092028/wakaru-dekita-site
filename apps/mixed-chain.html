@@ -3,183 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>混合計算チェーンアドベンチャー</title>
-  <meta name="description" content="小数と分数のミックス計算に挑戦！(2.5 + 1/4) × 3 などのチェーン問題。正解で道がひらく、まちがいで順序ヒント。エンドレス。" />
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ">
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <title>混合計算チェーン（シンプル）</title>
+  <meta name="description" content="足し算・引き算・かけ算の混合計算をシンプルに練習。" />
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root{--bg1:#c9ffbf;--bg2:#ffafbd;--deep:#2d3436;--good:#2ecc71;--bad:#ff7675;--path:#b2bec3}
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));display:flex;align-items:center;justify-content:center;padding:12px}
-    .app{width:100%;max-width:980px;background:#fff;border-radius:20px;box-shadow:0 22px 44px rgba(0,0,0,.12);padding:14px;overflow:hidden}
-    .title{text-align:center;font-size:1.6rem;color:#ff6b6b;font-weight:800}
-    .equation-row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
-    .equation{font-size:2rem;font-weight:800;color:var(--deep)}
-    /* 変更: 入力→選択式に */
-    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-    .choice{padding:12px;font-size:1.2rem;border:2px solid #475569;border-radius:12px;background:#fff}
-    .choice.correct{background:#166534;color:#fff;border-color:#14532d}
-    .choice.wrong{background:#991b1b;color:#fff;border-color:#7f1d1d}
-    .hud{display:flex;gap:8px;justify-content:center;margin:6px 0;flex-wrap:wrap}
-    .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;padding:6px 12px;border-radius:999px;font-weight:800}
-    .map{margin-top:8px;border:4px solid #b4d4ff;border-radius:16px;background:#eef7ff;padding:12px}
-    .grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
-    .cell{height:20px;background:#dfe6e9;border-radius:6px}
-    .cell.path{background:var(--path)}
-    .cell.open{background:linear-gradient(90deg,#55efc4,#2ecc71)}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    .btn{background:linear-gradient(45deg,#ff6b6b,#e84393);color:#fff;border:none;padding:12px 18px;font-size:1.1rem;font-weight:800;border-radius:16px}
-    .btn.secondary{background:linear-gradient(45deg,#00b894,#00cec9)}
-    .feedback{text-align:center;min-height:36px;font-size:1.1rem;font-weight:800;margin-top:6px}
-    .correct{color:var(--good)}.incorrect{color:var(--bad)}
-    .fx{position:relative;height:0}
-    .star{position:absolute;font-size:18px;animation:boom .8s ease-out forwards}
-    @keyframes boom{to{transform:translate(var(--dx),var(--dy)) scale(1.1);opacity:0}}
-    @media (max-width:560px){.equation{font-size:1.8rem}.answer{width:120px}}
-  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
-  <div class="app" role="application" aria-label="混合計算チェーンアドベンチャー">
-    <div class="title">🗺️ 混合計算 チェーン アドベンチャー</div>
-    <div class="equation-row"><div class="equation" id="eq">(2.5 + 1/4) × 3 = ?</div></div>
-    <div class="choices" id="choices"></div>
-    <div class="hud"><div class="pill" id="progress">のこり: ∞</div><div class="pill" id="score">スコア: 0</div><div class="pill" id="repeat">リピート: ON</div></div>
-    <div class="map"><div class="grid" id="grid"></div></div>
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="混合計算チェーン">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">⛓️ 混合計算チェーン</h1>
+          <p class="sub" id="qc-subtitle">れんぞくの計算を サクサク！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="mix-badge">2ステップ</span>
+          <button class="btn ghost" data-steps="2">2ステップ</button>
+          <button class="btn ghost" data-steps="3">3ステップ</button>
+          <button class="btn ghost" data-level="easy">やさしい</button>
+          <button class="btn ghost" data-level="hard">むずかしい</button>
+        </div>
+
+        <div class="problem" id="qc-problem">8 + 3 - 2</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">※ かっこは つかわない（左から じゅんに計算）</div>
+      </div>
     </div>
-    <div class="feedback" id="fb"></div>
-    <div class="fx" id="fx"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    // ラショナル表現 {n, d} with d>0
-    function rat(n,d){ if(d<0){ n=-n; d=-d; } const g=gcd(Math.abs(n),Math.abs(d)); return { n:n/g, d:d/g }; }
-    function gcd(a,b){ while(b){ const t=a%b; a=b; b=t; } return a||1; }
-    function add(x,y){ return rat(x.n*y.d + y.n*x.d, x.d*y.d); }
-    function sub(x,y){ return rat(x.n*y.d - y.n*x.d, x.d*y.d); }
-    function mul(x,y){ return rat(x.n*y.n, x.d*y.d); }
-    function div(x,y){ return rat(x.n*y.d, x.d*y.n); }
-    function fromDec(dec){ const s=String(dec); const m=s.match(/^-?\d+(?:\.(\d+))?$/); if(m){ const k=m[1]?m[1].length:0; const n=Math.round(parseFloat(dec)*Math.pow(10,k)); return rat(n, Math.pow(10,k)); } return null; }
-    function fromFrac(str){ // mixed: w a/b or a/b
-      const s=str.trim();
-      const m1=s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/); if(m1){ const w=parseInt(m1[1],10), a=parseInt(m1[2],10), b=parseInt(m1[3],10); const sign=w<0?-1:1; return rat(sign*(Math.abs(w)*b + a), b); }
-      const m2=s.match(/^(-?\d+)\/(\d+)$/); if(m2){ return rat(parseInt(m2[1],10), parseInt(m2[2],10)); }
-      return null;
-    }
-    function toDec(x){ return x.n/x.d; }
-    function eqRat(a,b){ return a.n===b.n && a.d===b.d; }
-    function parseAns(val){ val=val.replace(/[Ａ-Ｚａ-ｚ０-９／\.\s]/g, ch=>{ const c=ch.charCodeAt(0); if(c>=0xFF10 && c<=0xFF19) return String.fromCharCode(c-0xFEE0); if(ch==='／') return '/'; if(ch==='．') return '.'; return ch; }); const f=fromFrac(val); if(f) return f; const d=fromDec(val); if(d) return d; return null; }
+    let steps=2;
+    let level='easy';
+    const badge=document.getElementById('mix-badge');
+    function upd(){ badge.textContent = `${steps}ステップ / ${level==='easy'?'やさしい':'むずかしい'}`; }
 
-    // 問題生成
-    let score=0; let chainLen=8; // path length
-    let expr=''; let result=rat(0,1);
+    function r(min,max){ return min+Math.floor(Math.random()*(max-min+1)); }
 
-    function gen(){
-      // templates with parentheses
-      const int = ()=> Math.floor(Math.random()*4)+2; // 2..5
-      const dec = ()=> ((Math.floor(Math.random()*250)+25)/100).toFixed(2); // 0.25..2.74
-      const frac = ()=> `${Math.floor(Math.random()*3)+1}/${Math.floor(Math.random()*5)+2}`; // 1..3 / 2..6
-      const ops = ['×','÷'];
-      const use = Math.random()<0.5 ? `( ${dec()} + ${frac()} ) ${ops[Math.floor(Math.random()*ops.length)]} ${int()}`
-                                    : `( ${frac()} - ${dec()} ) ${ops[Math.floor(Math.random()*ops.length)]} ${int()}`;
-      expr = use.replace(/\s+/g,' ').trim();
-      document.getElementById('eq').textContent = expr + ' = ?';
-      result = evalExpr(expr);
-      buildGrid();
-    }
-
-    // 簡易パーサ: tokens then evaluate with precedence () > × ÷ > + -
-    function toRat(token){ if(token.includes('/')){ return fromFrac(token); } if(token.match(/\d/)){ return fromDec(token); } return null; }
-    function evalExpr(s){
-      // normalize
-      s=s.replace(/×/g,'*').replace(/÷/g,'/');
-      // simple recursive for parentheses
-      function evalNoParen(t){
-        // tokenize
-        const tokens = t.trim().split(/\s+/);
-        // mult/div first
-        let arr = tokens.map(x=>x);
-        for(let i=1;i<arr.length-1;){
-          if(arr[i]==='*' || arr[i]==='/'){
-            const a=toRat(arr[i-1]); const b=toRat(arr[i+1]); const r= arr[i]==='*'? mul(a,b) : div(a,b); arr.splice(i-1,3, r.n+'/'+r.d );
-          } else i+=2;
+    const quiz = QuizCore.create({
+      appId:'mixed-chain',
+      title:'⛓️ 混合計算チェーン',
+      subtitle:'れんぞくの計算を サクサク！',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const hard=(level==='hard');
+        let cur = r(1, hard?30:15);
+        let text = String(cur);
+        for(let i=0;i<steps;i++){
+          const ops = hard ? ['+','-','×'] : ['+','-'];
+          const op = ops[Math.floor(Math.random()*ops.length)];
+          const b = (op==='×') ? r(2,9) : r(1, hard?20:10);
+          text += ` ${op} ${b}`;
+          if(op==='+') cur += b;
+          if(op==='-') cur = Math.max(0, cur - b);
+          if(op==='×') cur *= b;
         }
-        // add/sub
-        let acc = toRat(arr[0]);
-        for(let i=1;i<arr.length;i+=2){ const op=arr[i]; const b=toRat(arr[i+1]); acc = op==='+'? add(acc,b) : sub(acc,b); }
-        return acc;
+        return { text, answer: cur };
+      },
+      onInitUI:()=>{
+        upd();
+        document.querySelectorAll('[data-steps]').forEach(btn=>btn.addEventListener('click',()=>{steps=Number(btn.dataset.steps);upd();quiz.newQuestion();}));
+        document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click',()=>{level=btn.dataset.level;upd();quiz.newQuestion();}));
       }
-      function evalParen(t){
-        while(t.includes('(')){
-          t = t.replace(/\(([^()]+)\)/g, (_,inner)=>{ const r=evalNoParen(inner); return r.n+'/'+r.d; });
-        }
-        return evalNoParen(t);
-      }
-      return evalParen(s);
-    }
-
-    // UI
-    const gridEl=document.getElementById('grid');
-    function buildGrid(){ gridEl.innerHTML=''; for(let i=0;i<chainLen;i++){ const c=document.createElement('div'); c.className='cell path'; gridEl.appendChild(c);} openCells(0); }
-    function openCells(n){ const cells=[...gridEl.children]; for(let i=0;i<n;i++){ if(cells[i]) cells[i].classList.add('open'); } }
-
-    function boom(){ const fx=document.getElementById('fx'); const w=gridEl.clientWidth, h=40; for(let i=0;i<12;i++){ const s=document.createElement('div'); s.className='star'; s.textContent='✨'; s.style.left=(w/2)+'px'; s.style.setProperty('--dx',(Math.random()*w - w/2)+'px'); s.style.setProperty('--dy',(-Math.random()*h - 20)+'px'); fx.appendChild(s); setTimeout(()=>s.remove(),800); } }
-
-    function buildChoices(){
-      const opts=[];
-      // 正解
-      opts.push(result);
-      // ダミーを3つ生成（近い値、同分母/同分子、四捨五入）
-      const near = rat(result.n + (Math.random()<0.5?1:-1), result.d);
-      const sameDen = rat(Math.max(0,result.n-1), result.d);
-      const rounded = fromDec(toDec(result).toFixed(2));
-      [near,sameDen,rounded].forEach(o=>{ if(o) opts.push(o); });
-      // 4つに調整
-      while(opts.length>4) opts.pop();
-      const uniq = []; const key = (x)=>x.n+'/'+x.d;
-      for(const o of opts){ if(!uniq.some(u=>key(u)===key(o))) uniq.push(o); }
-      while(uniq.length<4){ uniq.push(rat(result.n+uniq.length, result.d)); }
-      const labels = uniq.map(x=>({x, label: formatRat(x)}));
-      const shuffled = labels.sort(()=>Math.random()-0.5);
-      const wrap=document.getElementById('choices'); wrap.innerHTML='';
-      shuffled.forEach(({x,label})=>{
-        const b=document.createElement('button'); b.className='choice'; b.textContent=label; b.type='button';
-        b.addEventListener('click',()=>{
-          const ok=eqRat(x,result);
-          if(ok){ score++; good('道が ひらけた！'); const opened=[...gridEl.querySelectorAll('.open')].length; openCells(opened+1); boom(); gen(); buildChoices(); }
-          else { bad('ヒント: () → ×÷ → +- の順だよ'); }
-          updateHUD();
-        });
-        wrap.appendChild(b);
-      });
-    }
-    function formatRat(x){ if(x.d===1) return String(x.n); return `${x.n}/${x.d}`; }
-
-    function good(msg){ const fb=document.getElementById('fb'); fb.className='feedback correct'; fb.textContent=msg; }
-    function bad(msg){ const fb=document.getElementById('fb'); fb.className='feedback incorrect'; fb.textContent=msg; }
-    function updateHUD(){ document.getElementById('score').textContent=`スコア: ${score}`; document.getElementById('progress').textContent='のこり: ∞'; }
-
-    function next(){ gen(); buildChoices(); }
-
-    document.getElementById('checkBtn').addEventListener('click', next);
-    document.getElementById('nextBtn').addEventListener('click', next);
-
-    gen(); buildChoices();
+    });
   </script>
 </body>
 </html>
-
-
