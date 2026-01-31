@@ -1,85 +1,89 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>たしざん れんしゅう</title>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YSBGNQTYRZ');
-    </script>
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>たし算（改良版・シンプル）</title>
+  <meta name="description" content="たし算の練習（改良版）。UIを統一し、シンプルに計算へ集中。" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/quiz.css" />
 </head>
 <body>
-    <div class="page-wrapper">
-        <div class="container">
-            <!-- Visual Effects Containers -->
-            <div class="stars" id="stars"></div>
-            <div class="confetti-container" id="confetti"></div>
-            
-            <!-- Header -->
-            <div class="app-header">
-                <button class="back-btn" onclick="MathGame.goBack()">← もどる</button>
-                <h1 class="app-title">🌟 たしざん れんしゅう</h1>
-            </div>
-            
-            <!-- Score Display -->
-            <div class="score">
-                <div class="score-item">
-                    せいかい: <span id="correct-count">0</span>
-                </div>
-                <div class="score-item">
-                    もんだい: <span id="total-count">0</span>
-                </div>
-                <div class="score-item">
-                    れんぞく: <span id="streak-count">0</span>
-                </div>
-            </div>
-            
-            <!-- Difficulty Selector -->
-            <div class="difficulty-selector">
-                <label class="difficulty-label">むずかしさを えらんでね！</label>
-                <div class="difficulty-buttons">
-                    <button class="difficulty-btn active" onclick="MathGame.setDifficulty('easy')" data-level="easy">
-                        かんたん (10まで)
-                    </button>
-                    <button class="difficulty-btn" onclick="MathGame.setDifficulty('medium')" data-level="medium">
-                        ふつう (20まで)
-                    </button>
-                    <button class="difficulty-btn" onclick="MathGame.setDifficulty('hard')" data-level="hard">
-                        むずかしい (100まで)
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Problem Area -->
-            <div class="problem-area">
-                <div class="problem" id="problem">5 + 3</div>
-                <div class="input-area">
-                    <span class="equals">=</span>
-                    <input type="text" class="answer-input" id="answer" placeholder="?" maxlength="3" autocomplete="off">
-                </div>
-                <button class="btn btn-primary" id="submit-btn" onclick="MathGame.checkAnswer()">こたえる！</button>
-            </div>
-            
-            <!-- Feedback Area -->
-            <div class="feedback" id="feedback"></div>
-            
-            <!-- Encouragement Message (for streak achievements) -->
-            <div class="encouragement-box hidden" id="encouragement">
-                🔥 すごい！れんぞく せいかい！
-            </div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="たし算（改良版）">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">✨ たし算（改良版）</h1>
+          <p class="sub" id="qc-subtitle">UIをシンプルに。れんしゅうに集中！</p>
         </div>
-    </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+      <div class="pills" aria-label="スコア">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="difficulty-badge">かんたん（10まで）</span>
+          <button class="btn ghost" id="diff-e">かんたん</button>
+          <button class="btn ghost" id="diff-m">ふつう</button>
+          <button class="btn ghost" id="diff-h">むずかしい</button>
+        </div>
+
+        <div class="problem" id="qc-problem">5 + 3</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
+
+      <div class="small">※ 進みぐあいは このスマホ/PCに きろくされます</div>
+    </div>
+  </div>
+
+  <script src="../../js/quiz-core.js"></script>
+  <script>
+    let difficulty='easy';
+    const badge=document.getElementById('difficulty-badge');
+    function range(){ return (difficulty==='easy')?10:(difficulty==='medium'?20:100); }
+    function updateBadge(){ badge.textContent = difficulty==='easy' ? 'かんたん（10まで）' : (difficulty==='medium' ? 'ふつう（20まで）' : 'むずかしい（100まで）'); }
+
+    const quiz = QuizCore.create({
+      appId:'refactored-addition',
+      title:'✨ たし算（改良版）',
+      subtitle:'UIをシンプルに。れんしゅうに集中！',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const max=range();
+        const a=Math.floor(Math.random()*max)+1;
+        const b=Math.floor(Math.random()*max)+1;
+        return { text:`${a} + ${b}`, answer:a+b };
+      },
+      onInitUI:()=>{
+        updateBadge();
+        document.getElementById('diff-e').addEventListener('click', ()=>{ difficulty='easy'; updateBadge(); quiz.newQuestion(); });
+        document.getElementById('diff-m').addEventListener('click', ()=>{ difficulty='medium'; updateBadge(); quiz.newQuestion(); });
+        document.getElementById('diff-h').addEventListener('click', ()=>{ difficulty='hard'; updateBadge(); quiz.newQuestion(); });
+      }
+    });
+  </script>
 </body>
 </html>

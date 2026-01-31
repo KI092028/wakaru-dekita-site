@@ -1,117 +1,113 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>図形探検 - みんなで図形をおぼえよう！</title>
-    <meta name="description" content="子どもたちが楽しく図形を学べる教育ゲーム">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>図形探検アドベンチャー（シンプル）</title>
+  <meta name="description" content="図形のクイズをシンプルに。タップ中心で学べる。" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/quiz.css" />
+  <style>
+    .map{height:84px;border-radius:16px;background:linear-gradient(90deg,#dbeafe,#fef9c3);border:2px solid #c7d2fe;position:relative;overflow:hidden;margin-bottom:10px}
+    .path{position:absolute;left:12px;right:12px;top:50%;height:6px;background:#93c5fd;transform:translateY(-50%);border-radius:6px}
+    .hero{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:#86efac;border:2px solid #16a34a;display:grid;place-items:center;font-weight:900;color:#065f46;left:8px;transition:left .3s ease}
+    .big{font-size:64px;text-align:center;margin:8px 0}
+    .choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .choice{min-width:140px}
+  </style>
 </head>
 <body>
-    <!-- メインコンテナ -->
-    <div class="main-container">
-        <!-- ヘッダー -->
-        <header class="header">
-            <h1 class="title">
-                <span class="title-main">図形探検</span>
-                <span class="title-sub">かたちを みつけよう！</span>
-            </h1>
-            <div class="score-board">
-                <div class="score-item">
-                    <span class="score-label">せいかい</span>
-                    <span class="score-value" id="correct-count">0</span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">もんだい</span>
-                    <span class="score-value" id="total-count">0</span>
-                </div>
-                <div class="score-item">
-                    <span class="score-label">れんぞく</span>
-                    <span class="score-value" id="streak-count">0</span>
-                </div>
-            </div>
-        </header>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="図形探検アドベンチャー">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🗺️ 図形探検</h1>
+          <p class="sub" id="qc-subtitle">へんの数を たのしく おぼえよう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
 
-        <!-- ゲームエリア -->
-        <main class="game-area">
-            <!-- 難易度選択画面 -->
-            <div class="difficulty-screen" id="difficulty-screen">
-                <h2 class="screen-title">なんいどを えらんでね</h2>
-                <div class="difficulty-buttons">
-                    <button class="difficulty-btn easy" onclick="ShapeGame.startGame('easy')">
-                        <span class="difficulty-title">かんたん</span>
-                        <span class="difficulty-desc">きほんの かたち</span>
-                    </button>
-                    <button class="difficulty-btn medium" onclick="ShapeGame.startGame('medium')">
-                        <span class="difficulty-title">ふつう</span>
-                        <span class="difficulty-desc">いろんな かたち</span>
-                    </button>
-                    <button class="difficulty-btn hard" onclick="ShapeGame.startGame('hard')">
-                        <span class="difficulty-title">むずかしい</span>
-                        <span class="difficulty-desc">ふくざつな かたち</span>
-                    </button>
-                </div>
-            </div>
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/1</div>
+      </div>
 
-            <!-- ゲーム画面 -->
-            <div class="game-screen hidden" id="game-screen">
-                <!-- 問題表示エリア -->
-                <div class="question-area">
-                    <h2 class="question-title">この かたちは なんでしょう？</h2>
-                    <div class="shape-display" id="shape-display">
-                        <!-- 図形がここに表示される -->
-                    </div>
-                </div>
+      <div class="panel">
+        <div class="map" aria-hidden="true"><div class="path"></div><div class="hero" id="hero">🧭</div></div>
+        <div class="big" id="shape">▲</div>
+        <div class="problem" id="qc-problem">さんかくは へんが なんぼん？</div>
 
-                <!-- 選択肢エリア -->
-                <div class="choices-area" id="choices-area">
-                    <!-- 選択肢ボタンがここに生成される -->
-                </div>
+        <input class="input" id="qc-input" style="display:none" />
 
-                <!-- コントロールボタン -->
-                <div class="control-buttons">
-                    <button class="control-btn back-btn" onclick="ShapeGame.backToDifficulty()">
-                        もどる
-                    </button>
-                    <button class="control-btn hint-btn" onclick="ShapeGame.showHint()">
-                        ヒント
-                    </button>
-                    <button class="control-btn next-btn hidden" onclick="ShapeGame.nextProblem()" id="next-btn">
-                        つぎへ
-                    </button>
-                </div>
-            </div>
-
-            <!-- フィードバック表示 -->
-            <div class="feedback" id="feedback"></div>
-            
-            <!-- ヒント表示 -->
-            <div class="hint-display hidden" id="hint-display">
-                <div class="hint-content">
-                    <h3 class="hint-title">ヒント</h3>
-                    <p class="hint-text" id="hint-text"></p>
-                    <button class="hint-close-btn" onclick="ShapeGame.closeHint()">とじる</button>
-                </div>
-            </div>
-        </main>
-
-        <!-- 効果エリア -->
-        <div class="effects-area">
-            <div class="stars-container" id="stars"></div>
-            <div class="confetti-container" id="confetti"></div>
+        <div class="choices">
+          <button class="btn blue choice" data-a="0">0</button>
+          <button class="btn blue choice" data-a="3">3</button>
+          <button class="btn blue choice" data-a="4">4</button>
+          <button class="btn blue choice" data-a="5">5</button>
+          <button class="btn blue choice" data-a="6">6</button>
         </div>
 
-        <!-- 励ましメッセージ -->
-        <div class="encouragement hidden" id="encouragement"></div>
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
+  </div>
 
-    <!-- 音声設定 -->
-    <div class="audio-controls">
-        <button class="audio-toggle" onclick="ShapeGame.toggleAudio()" id="audio-toggle">
-            🔊
-        </button>
-    </div>
+  <script src="../../js/quiz-core.js"></script>
+  <script>
+    const shapeEl=document.getElementById('shape');
+    const hero=document.getElementById('hero');
+    const bank=[
+      {q:'さんかくは へんが なんぼん？', icon:'▲', ans:3},
+      {q:'しかくは へんが なんぼん？', icon:'■', ans:4},
+      {q:'ごかくけいは へんが なんぼん？', icon:'⬟', ans:5},
+      {q:'ろっかくけいは へんが なんぼん？', icon:'⬢', ans:6},
+      {q:'まるは へんが なんぼん？', icon:'●', ans:0},
+    ];
 
-    <script src="script.js"></script>
+    const quiz = QuizCore.create({
+      appId:'shape-explorer',
+      title:'🗺️ 図形探検',
+      subtitle:'へんの数を たのしく おぼえよう！',
+      dailyGoal:1,
+      buildQuestion:()=>{
+        const it=bank[Math.floor(Math.random()*bank.length)];
+        shapeEl.textContent=it.icon;
+        return { text: it.q, answer: it.ans };
+      },
+      onInitUI:()=>{
+        document.querySelectorAll('[data-a]').forEach(btn=>btn.addEventListener('click', ()=>{ document.getElementById('qc-input').value=btn.dataset.a; }));
+        function updateHero(){
+          let done=0;
+          try{
+            const raw=localStorage.getItem('wakaru.shape-explorer.daily.v2');
+            const st=raw?JSON.parse(raw):{};
+            const d=new Date();
+            const tk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            done=(st.date===tk)?(Number(st.done||0)||0):0;
+          }catch(e){}
+          const pct=Math.min(done/1,1);
+          hero.style.left=(8 + pct*(100-16))+'%';
+        }
+        setInterval(updateHero, 1200);
+        window.addEventListener('focus', updateHero);
+        updateHero();
+      }
+    });
+  </script>
 </body>
 </html>
