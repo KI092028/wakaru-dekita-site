@@ -50,6 +50,7 @@
           <button class="btn blue choice" id="pickCircle">● まる</button>
           <button class="btn blue choice" id="pickSquare">■ しかく</button>
           <button class="btn blue choice" id="pickTriangle">▲ さんかく</button>
+          <button class="btn blue choice" id="pickStar">★ ほし</button>
         </div>
 
         <div class="controls" style="margin-top:10px;">
@@ -68,7 +69,7 @@
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    // Map shapes: circle=1, square=2, triangle=3
+    // Map shapes: circle=1, square=2, triangle=3, star=4
     const animalEl=document.getElementById('animal');
     const animals=[
       {emoji:'🐻', shape:2},
@@ -76,7 +77,8 @@
       {emoji:'🐼', shape:1},
       {emoji:'🐯', shape:2},
       {emoji:'🦁', shape:3},
-      {emoji:'🐰', shape:1}
+      {emoji:'🐰', shape:1},
+      {emoji:'🦄', shape:4}
     ];
 
     const quiz = QuizCore.create({
@@ -93,6 +95,7 @@
         document.getElementById('pickCircle').addEventListener('click', ()=>{ document.getElementById('qc-input').value='1'; });
         document.getElementById('pickSquare').addEventListener('click', ()=>{ document.getElementById('qc-input').value='2'; });
         document.getElementById('pickTriangle').addEventListener('click', ()=>{ document.getElementById('qc-input').value='3'; });
+        document.getElementById('pickStar').addEventListener('click', ()=>{ document.getElementById('qc-input').value='4'; });
       }
     });
   </script>

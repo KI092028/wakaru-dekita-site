@@ -100,7 +100,7 @@
         const ans = arr[missIndex];
         renderSeq(arr, missIndex);
         const opts=new Set([ans]);
-        while(opts.size<3){
+        while(opts.size<4){
           const cand = ans + ([-2,-1,1,2][Math.floor(Math.random()*4)]);
           if(cand>0) opts.add(cand);
         }

@@ -3,28 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>フルーツ たしざん（シンプル）</title>
-  <meta name="description" content="フルーツのイメージで、たし算をシンプルにれんしゅう。" />
+  <title>🍎 フルーツ たしざん</title>
+  <meta name="description" content="フルーツを たして 4つから！" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    .fruits{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
-    .fruit{font-size:36px}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="フルーツ たしざん">
+    <div class="card" role="application" aria-label="🍎 フルーツ たしざん">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🍎 フルーツ たしざん</h1>
-          <p class="sub" id="qc-subtitle">フルーツを たして こたえよう！</p>
+          <p class="sub" id="qc-subtitle">フルーツを たして 4つから！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -36,13 +31,13 @@
       </div>
 
       <div class="panel">
-        <div class="fruits" id="fruits"></div>
-        <div class="problem" id="qc-problem">3 + 2</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -52,34 +47,44 @@
         </div>
         <div class="feedback" id="qc-feedback"></div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    const fruitsEl=document.getElementById('fruits');
-    const icons=['🍎','🍊','🍌','🍇','🍓'];
 
-    function renderFruits(a,b){
-      fruitsEl.innerHTML='';
-      const icon=icons[Math.floor(Math.random()*icons.length)];
-      for(let i=0;i<a;i++){ const s=document.createElement('span'); s.className='fruit'; s.textContent=icon; fruitsEl.appendChild(s); }
-      const plus=document.createElement('span'); plus.className='fruit'; plus.textContent='+'; fruitsEl.appendChild(plus);
-      for(let i=0;i<b;i++){ const s=document.createElement('span'); s.className='fruit'; s.textContent=icon; fruitsEl.appendChild(s); }
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
     }
 
     QuizCore.create({
       appId:'addition-fruits',
       title:'🍎 フルーツ たしざん',
-      subtitle:'フルーツを たして こたえよう！',
+      subtitle:'フルーツを たして 4つから！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
-        const a=1+Math.floor(Math.random()*9);
-        const b=1+Math.floor(Math.random()*9);
-        renderFruits(a,b);
-        return { text:`${a} + ${b}`, answer:a+b };
+        const a=Math.floor(Math.random()*10)+1;
+        const b=Math.floor(Math.random()*10)+1;
+        const ans=a+b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?x+1:v;
+        });
+        return {text:`${a} + ${b}`, answer:ans, choices};
       }
     });
+
   </script>
 </body>
 </html>

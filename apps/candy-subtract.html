@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>キャンディーひきざん（シンプル）</title>
-  <meta name="description" content="キャンディーでひきざん。見た目はたのしく、操作はシンプル。" />
+  <title>🍬 キャンディー ひきざん</title>
+  <meta name="description" content="キャンディーが へるよ！ 4つから えらぼう！" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="キャンディーひきざん">
+    <div class="card" role="application" aria-label="🍬 キャンディー ひきざん">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🍬 キャンディー ひきざん</h1>
-          <p class="sub" id="qc-subtitle">キャンディーが へるよ！こたえは いくつ？</p>
+          <p class="sub" id="qc-subtitle">キャンディーが へるよ！ 4つから えらぼう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -29,12 +31,13 @@
       </div>
 
       <div class="panel">
-        <div class="problem" id="qc-problem">9 - 3</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -43,25 +46,45 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-        <div class="small">🍬 のこりの数を かぞえる イメージで！</div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    let maxN=10;
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
+    }
+
     QuizCore.create({
       appId:'candy-subtract',
       title:'🍬 キャンディー ひきざん',
-      subtitle:'キャンディーが へるよ！こたえは いくつ？',
+      subtitle:'キャンディーが へるよ！ 4つから えらぼう！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
-        const a=Math.floor(Math.random()*maxN)+1;
-        const b=Math.floor(Math.random()*(a+1));
-        return {text:`${a} - ${b}`, answer:a-b};
+        const a=3+Math.floor(Math.random()*8);
+        const b=1+Math.floor(Math.random()*a);
+        const ans=a-b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-6,-3,-2,-1,1,2,3,6][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return {text:`${a} - ${b}`, answer:ans, choices};
       }
     });
+
   </script>
 </body>
 </html>

@@ -92,7 +92,7 @@
         render([nums[0], nums[1], nums[2], null]);
         const ans = nums[3];
         const opts = new Set([ans]);
-        while(opts.size<3){
+        while(opts.size<4){
           opts.add(ans + ([-4,-2,2,4][Math.floor(Math.random()*4)]));
         }
         const list=shuffle([...opts]);

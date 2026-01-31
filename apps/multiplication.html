@@ -3,47 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>かけ算九九（シンプル）</title>
-  <meta name="description" content="九九の計算練習。段をえらんで、毎日の3問チャレンジ。" />
+  <title>🧮 かけ算九九</title>
+  <meta name="description" content="4つから えらんで こたえよう！" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);} 
-    gtag('js', new Date());
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    /* light game flavor: "stamps" */
-    .stamps{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px}
-    .stamp{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid #d7ecff;background:#f6fbff;color:#1e88e5}
-    .stamp.on{background:linear-gradient(45deg,#00b894,#00cec9);color:#fff;border-color:transparent}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="かけ算九九（シンプル）">
+    <div class="card" role="application" aria-label="🧮 かけ算九九">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🧮 かけ算九九</h1>
-          <p class="sub" id="qc-subtitle">えらんだ「だん」を 3もん クリア！</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
 
-      <div class="pills" aria-label="スコア">
+      <div class="pills">
         <div class="pill" id="qc-correct">せいかい: 0</div>
         <div class="pill muted" id="qc-total">もんだい: 0</div>
         <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
 
       <div class="panel">
-        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+        
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
           <span class="badge" id="dan-badge">だん：ぜんぶ</span>
           <button class="btn ghost" data-dan="all">ぜんぶ</button>
           <button class="btn ghost" data-dan="2">2</button>
@@ -56,12 +45,12 @@
           <button class="btn ghost" data-dan="9">9</button>
         </div>
 
-        <div class="problem" id="qc-problem">2 × 3</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -70,73 +59,55 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-
-        <div class="small" style="margin-top:6px;">きょうのスタンプ</div>
-        <div class="stamps" id="stamps" aria-label="今日のスタンプ">
-          <div class="stamp" data-i="1">1</div>
-          <div class="stamp" data-i="2">2</div>
-          <div class="stamp" data-i="3">3</div>
-        </div>
       </div>
 
-      <div class="small">※ 進みぐあいは このスマホ/PCに きろくされます</div>
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    let dan = 'all';
-    const badge = document.getElementById('dan-badge');
-    const stamps = document.getElementById('stamps');
 
-    function updateBadge(){
-      badge.textContent = `だん：${dan==='all'?'ぜんぶ':dan}`;
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
     }
-    function updateStamps(){
-      // QuizCore uses key wakaru.multiplication.daily.v2
-      let done=0;
-      try{
-        const raw=localStorage.getItem('wakaru.multiplication.daily.v2');
-        const st=raw?JSON.parse(raw):{};
-        const d=new Date();
-        const y=d.getFullYear();
-        const m=String(d.getMonth()+1).padStart(2,'0');
-        const da=String(d.getDate()).padStart(2,'0');
-        const tk=`${y}-${m}-${da}`;
-        done = (st.date===tk) ? (Number(st.done||0)||0) : 0;
-      }catch(e){ done=0; }
-      [...stamps.querySelectorAll('.stamp')].forEach(el=>{
-        const i=Number(el.dataset.i);
-        el.classList.toggle('on', i<=done);
-      });
-    }
+
+    let dan='all';
+    const badge=document.getElementById('dan-badge');
+    function updateBadge(){ badge.textContent = `だん：${dan==='all'?'ぜんぶ':dan}`; }
 
     const quiz = QuizCore.create({
-      appId: 'multiplication',
-      title: '🧮 かけ算九九',
-      subtitle: 'えらんだ「だん」を 3もん クリア！',
-      dailyGoal: 3,
-      buildQuestion: () => {
+      appId:'multiplication',
+      title:'🧮 かけ算九九',
+      subtitle:'4つから えらんで こたえよう！',
+      dailyGoal:3,
+      choiceMode:true,
+      buildQuestion:()=>{
         const a = (dan==='all') ? (2 + Math.floor(Math.random()*8)) : Number(dan);
         const b = 1 + Math.floor(Math.random()*9);
-        return { text: `${a} × ${b}`, answer: a*b };
+        const ans=a*b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-a, -2, -1, 1, 2, a, a*2][Math.floor(Math.random()*7)];
+          const v=x+delta;
+          return v<0?x+1:v;
+        });
+        return { text:`${a} × ${b}`, answer: ans, choices };
       },
-      onInitUI: (state) => {
+      onInitUI:()=>{
         updateBadge();
-        updateStamps();
         document.querySelectorAll('[data-dan]').forEach(btn=>{
           btn.addEventListener('click', ()=>{ dan=btn.dataset.dan; updateBadge(); quiz.newQuestion(); });
         });
-        // refresh stamps when coming back
-        window.addEventListener('focus', updateStamps);
-        // patch into daily save by polling (simple + safe)
-        setInterval(updateStamps, 1500);
       }
     });
 
-    // also update stamps after each check
-    document.getElementById('qc-submit').addEventListener('click', ()=>setTimeout(updateStamps, 80));
-    document.getElementById('qc-next').addEventListener('click', ()=>setTimeout(updateStamps, 80));
   </script>
 </body>
 </html>

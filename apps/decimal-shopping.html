@@ -3,27 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>小数ショッピング（シンプル）</title>
-  <meta name="description" content="小数のたし算・ひき算を、買い物のイメージで練習。UIはシンプル。" />
+  <title>🛒 小数ショッピング</title>
+  <meta name="description" content="4つから えらんで こたえよう！（小数第1位）" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    .note{margin-top:8px;text-align:center;color:#546e7a;font-weight:800}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="小数ショッピング">
+    <div class="card" role="application" aria-label="🛒 小数ショッピング">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🛒 小数ショッピング</h1>
-          <p class="sub" id="qc-subtitle">おかいものの計算（小数）</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！（小数第1位）</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -35,7 +31,8 @@
       </div>
 
       <div class="panel">
-        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+        
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
           <span class="badge" id="mode-badge">たし算</span>
           <button class="btn ghost" data-mode="add">たし算</button>
           <button class="btn ghost" data-mode="sub">ひき算（おつり）</button>
@@ -43,12 +40,12 @@
           <button class="btn ghost" data-level="hard">むずかしい</button>
         </div>
 
-        <div class="problem" id="qc-problem">2.3 + 1.5</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="decimal" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -57,103 +54,62 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-        <div class="note">※ こたえは「小数第1位」まで</div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    // quiz-core is integer-based by default. We'll map decimals to integers x10.
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){ s.add(makeWrong(correct)); guard++; }
+      return shuffle([...s]);
+    }
+
     let mode='add';
     let level='easy';
     const badge=document.getElementById('mode-badge');
-
-    function upd(){
-      badge.textContent = (mode==='add'?'たし算':'ひき算（おつり）') + ' / ' + (level==='easy'?'やさしい':'むずかしい');
-    }
-
-    function rand10(min,max){ // in tenths
-      return min + Math.floor(Math.random()*(max-min+1));
-    }
+    function upd(){ badge.textContent = (mode==='add'?'たし算':'ひき算（おつり）') + ' / ' + (level==='easy'?'やさしい':'むずかしい'); }
+    function rand10(min,max){ return min + Math.floor(Math.random()*(max-min+1)); }
 
     const quiz = QuizCore.create({
       appId:'decimal-shopping',
       title:'🛒 小数ショッピング',
-      subtitle:'おかいものの計算（小数）',
+      subtitle:'4つから えらんで こたえよう！（小数第1位）',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
-        const hard = (level==='hard');
-        // values are in tenths (x10). easy: 0.1〜9.9, hard: 0.1〜99.9
-        const max = hard ? 999 : 99;
+        const hard=(level==='hard');
+        const max = hard ? 999 : 99; // tenths
+        let a,b,ans,text;
         if(mode==='add'){
-          const a=rand10(1,max);
-          const b=rand10(1,max);
-          return { text: `${(a/10).toFixed(1)} + ${(b/10).toFixed(1)}`, answer: a+b };
+          a=rand10(1,max); b=rand10(1,max); ans=a+b;
+          text = `${(a/10).toFixed(1)} + ${(b/10).toFixed(1)}`;
+        }else{
+          const total=rand10(20,max);
+          const price=rand10(1,total);
+          ans=total-price;
+          text = `${(total/10).toFixed(1)} - ${(price/10).toFixed(1)}`;
         }
-        // change: total - price
-        const total=rand10(20,max);
-        const price=rand10(1,total);
-        return { text: `${(total/10).toFixed(1)} - ${(price/10).toFixed(1)}`, answer: total-price };
+        const choicesRaw=uniqChoices(ans, (x)=>{
+          const delta=[-30,-20,-10,-5,5,10,20,30][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        const choices = choicesRaw.map(v=>({value:v, label:(v/10).toFixed(1)}));
+        return { text, answer: ans, choices };
       },
       onInitUI:()=>{
         upd();
         document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;upd();quiz.newQuestion();}));
         document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click',()=>{level=btn.dataset.level;upd();quiz.newQuestion();}));
-
-        // Override check to allow decimal input (x10)
-        const input=document.getElementById('qc-input');
-        input.addEventListener('input',()=>{
-          // allow digits and '.'
-          let v=input.value;
-          v=v.replace(/[０-９．]/g, ch=>{
-            const map={'．':'.'};
-            if(map[ch]) return map[ch];
-            return String.fromCharCode(ch.charCodeAt(0)-0xFEE0);
-          });
-          v=v.replace(/[^0-9.]/g,'');
-          // keep only one dot
-          const parts=v.split('.');
-          if(parts.length>2) v=parts[0]+'.'+parts.slice(1).join('');
-          // keep 1 decimal place
-          if(v.includes('.')){
-            const [i,d]=v.split('.');
-            v=i+'.'+(d||'').slice(0,1);
-          }
-          input.value=v;
-        });
-
-        // Patch QuizCore.check for this page only
-        const origCheck = quiz.check;
-        quiz.check = function(){
-          const v=input.value;
-          if(v==='') return origCheck();
-          // convert to x10 integer
-          const n = Math.round(parseFloat(v)*10);
-          if(Number.isNaN(n)) return origCheck();
-          // write integer into input to satisfy core check
-          input.value=String(n);
-          const r=origCheck();
-          // restore display value
-          input.value=v;
-          // also display correct answer in decimal (core shows integer)
-          // We keep it simple: core feedback is acceptable, but we'll translate when incorrect.
-          const fb=document.getElementById('qc-feedback');
-          if(fb && fb.className.includes('ng') && fb.textContent.includes('こたえは')){
-            // extract integer answer from text
-            const m=fb.textContent.match(/こたえは\s+(\d+)/);
-            if(m){
-              const dec=(Number(m[1])/10).toFixed(1);
-              fb.textContent = fb.textContent.replace(m[1], dec);
-            }
-          }
-          return r;
-        };
-        // bind our patched check
-        document.getElementById('qc-submit').onclick = ()=>quiz.check();
-        document.getElementById('qc-next').onclick = ()=>quiz.newQuestion();
       }
     });
+
   </script>
 </body>
 </html>

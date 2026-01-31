@@ -4,20 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>おもちゃ測定レース（シンプル）</title>
-  <meta name="description" content="長さを比べるクイズ。見た目は楽しく、操作はシンプル。" />
-
-  <!-- Google tag (gtag.js) -->
+  <meta name="description" content="長さをはかるクイズ。タップで4択。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
-
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    .bars{display:flex;justify-content:center;gap:12px;align-items:flex-end;margin:10px 0 6px}
-    .bar{width:120px;border-radius:14px;background:#eef6ff;border:3px solid #d7ecff;display:flex;align-items:flex-end;justify-content:center;padding:10px}
-    .stick{width:32px;border-radius:10px;background:linear-gradient(180deg,#74b9ff,#6c5ce7)}
-    .label{font-weight:900;margin-top:6px;text-align:center;color:#2c3e50}
-    .pickRow{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .meter{max-width:560px;margin:10px auto 0;background:#eef6ff;border:3px solid #d7ecff;border-radius:18px;padding:14px}
+    .bar{height:22px;border-radius:12px;background:linear-gradient(90deg,#74b9ff,#6c5ce7)}
+    .ticks{display:flex;justify-content:space-between;color:#546e7a;font-weight:900;margin-top:8px}
   </style>
 </head>
 <body>
@@ -27,7 +22,7 @@
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🏁 おもちゃ測定レース</h1>
-          <p class="sub" id="qc-subtitle">どっちが ながい？ えらぼう！</p>
+          <p class="sub" id="qc-subtitle">ながさは なんcm？（4たく）</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -39,26 +34,14 @@
       </div>
 
       <div class="panel">
-        <div class="problem" id="qc-problem">どっちが ながい？</div>
-
-        <div class="bars" aria-label="長さの比較">
-          <div>
-            <div class="bar"><div class="stick" id="barA" style="height:120px"></div></div>
-            <div class="label">A</div>
-          </div>
-          <div>
-            <div class="bar"><div class="stick" id="barB" style="height:80px"></div></div>
-            <div class="label">B</div>
-          </div>
+        <div class="problem" id="qc-problem">この棒は なんcm？</div>
+        <div class="meter">
+          <div class="bar" id="bar" style="width:50%"></div>
+          <div class="ticks"><span>0</span><span>10</span><span>20</span></div>
         </div>
 
-        <!-- hidden input for quiz-core (answer=1 or 2) -->
         <input class="input" id="qc-input" style="display:none" />
-
-        <div class="pickRow">
-          <button class="btn blue" id="pickA">A が ながい</button>
-          <button class="btn blue" id="pickB">B が ながい</button>
-        </div>
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
 
         <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
@@ -68,41 +51,37 @@
           <button class="btn blue" id="qc-daily-btn">🎯 きょうの1かい</button>
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
-
         <div class="feedback" id="qc-feedback"></div>
-        <div class="small">※ きょうの1かい：ぜんぶ せいかい で クリア！</div>
       </div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    let a=12,b=8;
-    const barA=document.getElementById('barA');
-    const barB=document.getElementById('barB');
-
-    function setBars(){
-      // map cm(5..18) to px
-      barA.style.height = (a*10)+'px';
-      barB.style.height = (b*10)+'px';
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct){
+      const s=new Set([correct]);
+      while(s.size<4){
+        const d=[-4,-2,2,4,6,-6][Math.floor(Math.random()*6)];
+        const v=correct+d;
+        if(v>=2 && v<=20) s.add(v);
+      }
+      return shuffle([...s]);
     }
 
-    const quiz = QuizCore.create({
+    const barEl=document.getElementById('bar');
+
+    QuizCore.create({
       appId:'toy-measure-race',
       title:'🏁 おもちゃ測定レース',
-      subtitle:'どっちが ながい？ えらぼう！',
-      dailyGoal: 1,
+      subtitle:'ながさは なんcm？（4たく）',
+      dailyGoal:1,
+      choiceMode:true,
       buildQuestion:()=>{
-        a = 5 + Math.floor(Math.random()*14); // 5..18
-        b = 5 + Math.floor(Math.random()*14);
-        while(a===b){ b = 5 + Math.floor(Math.random()*14); }
-        setBars();
-        const ans = (a>b) ? 1 : 2;
-        return { text:'どっちが ながい？', answer: ans };
-      },
-      onInitUI:()=>{
-        document.getElementById('pickA').addEventListener('click', ()=>{ document.getElementById('qc-input').value='1'; });
-        document.getElementById('pickB').addEventListener('click', ()=>{ document.getElementById('qc-input').value='2'; });
+        const ans = 2 + Math.floor(Math.random()*19); // 2..20
+        barEl.style.width = (ans/20*100)+'%';
+        const choices = uniqChoices(ans);
+        return { text:'この棒は なんcm？', answer: ans, choices };
       }
     });
   </script>

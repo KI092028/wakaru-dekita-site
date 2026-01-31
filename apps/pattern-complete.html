@@ -58,7 +58,7 @@
   <script>
     const seqEl=document.getElementById('seq');
     const choicesEl=document.getElementById('choices');
-    const shapes=[{id:1,icon:'●'},{id:2,icon:'■'},{id:3,icon:'▲'}];
+    const shapes=[{id:1,icon:'●'},{id:2,icon:'■'},{id:3,icon:'▲'},{id:4,icon:'◆'}];
 
     function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -93,11 +93,11 @@
         let pattern;
         if(type==='ab'){
           const a=shapes[Math.floor(Math.random()*3)];
-          let b=shapes[Math.floor(Math.random()*3)];
-          while(b.id===a.id) b=shapes[Math.floor(Math.random()*3)];
+          let b=shapes[Math.floor(Math.random()*4)];
+          while(b.id===a.id) b=shapes[Math.floor(Math.random()*4)];
           pattern=[a,b,a,b,a];
         }else{
-          pattern=[shapes[0],shapes[1],shapes[2],shapes[0],shapes[1]];
+          pattern=[shapes[0],shapes[1],shapes[2],shapes[3],shapes[0]];
           // shuffle mapping sometimes
           const perm=shuffle([...shapes]);
           pattern=pattern.map(s=>perm[s.id-1]);

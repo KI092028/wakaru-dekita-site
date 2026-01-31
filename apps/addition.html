@@ -3,53 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>たしざん れんしゅう</title>
-  <meta name="description" content="たし算の計算練習。毎日のチャレンジで3問クリアを目指そう。" />
+  <title>🌟 たしざん れんしゅう</title>
+  <meta name="description" content="4つから えらんで こたえよう！" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);} 
-    gtag('js', new Date());
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="たしざん れんしゅう">
+    <div class="card" role="application" aria-label="🌟 たしざん れんしゅう">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🌟 たしざん れんしゅう</h1>
-          <p class="sub" id="qc-subtitle">かんたんに、はやく、まいにち つづけよう！</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
 
-      <div class="pills" aria-label="スコア">
+      <div class="pills">
         <div class="pill" id="qc-correct">せいかい: 0</div>
         <div class="pill muted" id="qc-total">もんだい: 0</div>
         <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
 
       <div class="panel">
-        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+        
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
           <span class="badge" id="difficulty-badge">かんたん（10まで）</span>
           <button class="btn ghost" id="diff-e">かんたん</button>
           <button class="btn ghost" id="diff-m">ふつう</button>
           <button class="btn ghost" id="diff-h">むずかしい</button>
         </div>
 
-        <div class="problem" id="qc-problem">5 + 3</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -60,42 +55,55 @@
         <div class="feedback" id="qc-feedback"></div>
       </div>
 
-      <div class="small">※ 進みぐあいは このスマホ/PCに きろくされます</div>
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    let difficulty = 'easy';
-    const badge = document.getElementById('difficulty-badge');
 
-    function range(){
-      if(difficulty==='easy') return 10;
-      if(difficulty==='medium') return 20;
-      return 100;
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
     }
-    function updateBadge(){
-      badge.textContent = difficulty==='easy' ? 'かんたん（10まで）' : (difficulty==='medium' ? 'ふつう（20まで）' : 'むずかしい（100まで）');
-    }
+
+    let difficulty='easy';
+    const badge=document.getElementById('difficulty-badge');
+    function range(){ return (difficulty==='easy')?10:(difficulty==='medium'?20:100); }
+    function updateBadge(){ badge.textContent = difficulty==='easy' ? 'かんたん（10まで）' : (difficulty==='medium' ? 'ふつう（20まで）' : 'むずかしい（100まで）'); }
 
     const quiz = QuizCore.create({
-      appId: 'addition',
-      title: '🌟 たしざん れんしゅう',
-      subtitle: 'かんたんに、はやく、まいにち つづけよう！',
-      dailyGoal: 3,
-      buildQuestion: () => {
-        const max = range();
-        const a = Math.floor(Math.random()*max) + 1;
-        const b = Math.floor(Math.random()*max) + 1;
-        return { text: `${a} + ${b}`, answer: a + b };
+      appId:'addition',
+      title:'🌟 たしざん れんしゅう',
+      subtitle:'4つから えらんで こたえよう！',
+      dailyGoal:3,
+      choiceMode:true,
+      buildQuestion:()=>{
+        const max=range();
+        const a=Math.floor(Math.random()*max)+1;
+        const b=Math.floor(Math.random()*max)+1;
+        const ans=a+b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?x+1:v;
+        });
+        return { text:`${a} + ${b}`, answer: ans, choices };
       },
-      onInitUI: () => {
+      onInitUI:()=>{
         updateBadge();
         document.getElementById('diff-e').addEventListener('click', ()=>{ difficulty='easy'; updateBadge(); quiz.newQuestion(); });
         document.getElementById('diff-m').addEventListener('click', ()=>{ difficulty='medium'; updateBadge(); quiz.newQuestion(); });
         document.getElementById('diff-h').addEventListener('click', ()=>{ difficulty='hard'; updateBadge(); quiz.newQuestion(); });
       }
     });
+
   </script>
 </body>
 </html>

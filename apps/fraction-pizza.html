@@ -3,28 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>分数ピザ（シンプル）</title>
-  <meta name="description" content="分数をピザのイメージで練習。UIはシンプルに、計算に集中。" />
+  <title>🍕 分数ピザ</title>
+  <meta name="description" content="4つから えらんで こたえよう！" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    .chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-    .chip{border-radius:999px;padding:6px 10px;background:#fff3e0;border:2px solid #ffe0b2;font-weight:900}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="分数ピザ">
+    <div class="card" role="application" aria-label="🍕 分数ピザ">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🍕 分数ピザ</h1>
-          <p class="sub" id="qc-subtitle">「〜の 〜/〜 は？」を こたえよう！</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -36,16 +31,13 @@
       </div>
 
       <div class="panel">
-        <div class="chips">
-          <span class="chip">🍕 ピザを わける イメージ</span>
-          <span class="chip">こたえは すうじ（整数）</span>
-        </div>
+        
+        <div class="problem" id="qc-problem">…</div>
 
-        <div class="problem" id="qc-problem">12 の 3/4 は？</div>
-        <div class="row">
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -54,36 +46,50 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-        <div class="small">※ わりきれる もんだい だけ だすよ</div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
+    }
+
     function pickFrac(){
       const fracs=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
       return fracs[Math.floor(Math.random()*fracs.length)];
     }
-    function lcm(a,b){
-      const g=(x,y)=>y?g(y,x%y):x;
-      return (a*b)/g(a,b);
-    }
-
-    QuizCore.create({
+    const quiz = QuizCore.create({
       appId:'fraction-pizza',
       title:'🍕 分数ピザ',
-      subtitle:'「〜の 〜/〜 は？」を こたえよう！',
+      subtitle:'4つから えらんで こたえよう！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
         const [n,d]=pickFrac();
-        // choose base as multiple of d, keep within 60
-        const k = 2 + Math.floor(Math.random()*8); // 2..9
+        const k = 2 + Math.floor(Math.random()*8);
         const base = d*k;
         const ans = (base*n)/d;
-        return { text: `${base} の ${n}/${d} は？`, answer: ans };
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-6,-3,-2,-1,1,2,3,6][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return { text: `${base} の ${n}/${d} は？`, answer: ans, choices };
       }
     });
+
   </script>
 </body>
 </html>

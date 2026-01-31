@@ -3,43 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ブロック ひきざん（シンプル）</title>
-  <meta name="description" content="ブロックがへるイメージで、ひき算をシンプルにれんしゅう。" />
+  <title>🧱 ブロック ひきざん</title>
+  <meta name="description" content="ブロックが へるよ。4つから！" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    .blocks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .block{width:34px;height:34px;border-radius:10px;background:linear-gradient(45deg,#74b9ff,#6c5ce7)}
-    .minus{font-size:34px;font-weight:900;color:#2c3e50;margin:0 6px}
-    .empty{opacity:.15}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="ブロック ひきざん">
+    <div class="card" role="application" aria-label="🧱 ブロック ひきざん">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🧱 ブロック ひきざん</h1>
-          <p class="sub" id="qc-subtitle">ブロックが へるよ。のこりは？</p>
+          <p class="sub" id="qc-subtitle">ブロックが へるよ。4つから！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
+
       <div class="pills">
         <div class="pill" id="qc-correct">せいかい: 0</div>
         <div class="pill muted" id="qc-total">もんだい: 0</div>
         <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
+
       <div class="panel">
-        <div class="blocks" id="blocks"></div>
-        <div class="problem" id="qc-problem">8 - 3</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -49,33 +47,44 @@
         </div>
         <div class="feedback" id="qc-feedback"></div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    const blocksEl=document.getElementById('blocks');
-    function renderBlocks(a,b){
-      blocksEl.innerHTML='';
-      for(let i=0;i<a;i++){
-        const d=document.createElement('div');
-        d.className='block'+(i>=a-b?' empty':'');
-        blocksEl.appendChild(d);
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
       }
+      return shuffle([...s]);
     }
 
     QuizCore.create({
       appId:'subtraction-blocks',
       title:'🧱 ブロック ひきざん',
-      subtitle:'ブロックが へるよ。のこりは？',
+      subtitle:'ブロックが へるよ。4つから！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
-        const a=3+Math.floor(Math.random()*8); // 3..10
+        const a=3+Math.floor(Math.random()*8);
         const b=1+Math.floor(Math.random()*a);
-        renderBlocks(a,b);
-        return {text:`${a} - ${b}`, answer:a-b};
+        const ans=a-b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-6,-3,-2,-1,1,2,3,6][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return {text:`${a} - ${b}`, answer:ans, choices};
       }
     });
+
   </script>
 </body>
 </html>

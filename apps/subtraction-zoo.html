@@ -3,42 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>どうぶつ ひきざん（シンプル）</title>
-  <meta name="description" content="どうぶつがにげるイメージで、ひき算をシンプルにれんしゅう。" />
+  <title>🐒 どうぶつ ひきざん</title>
+  <meta name="description" content="にげた どうぶつの あとは？ 4つから！" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
-  <style>
-    .zoo{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .animal{font-size:36px}
-    .gone{opacity:.25;filter:grayscale(1)}
-  </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="どうぶつ ひきざん">
+    <div class="card" role="application" aria-label="🐒 どうぶつ ひきざん">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🐒 どうぶつ ひきざん</h1>
-          <p class="sub" id="qc-subtitle">にげた どうぶつの あとは？</p>
+          <p class="sub" id="qc-subtitle">にげた どうぶつの あとは？ 4つから！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
+
       <div class="pills">
         <div class="pill" id="qc-correct">せいかい: 0</div>
         <div class="pill muted" id="qc-total">もんだい: 0</div>
         <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
+
       <div class="panel">
-        <div class="zoo" id="zoo"></div>
-        <div class="problem" id="qc-problem">9 - 4</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -48,36 +47,44 @@
         </div>
         <div class="feedback" id="qc-feedback"></div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
-    const zooEl=document.getElementById('zoo');
-    const icons=['🐵','🐶','🐱','🐰','🦁','🐼'];
-    function renderZoo(a,b){
-      zooEl.innerHTML='';
-      const icon=icons[Math.floor(Math.random()*icons.length)];
-      for(let i=0;i<a;i++){
-        const s=document.createElement('span');
-        s.className='animal'+(i>=a-b?' gone':'');
-        s.textContent=icon;
-        zooEl.appendChild(s);
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
       }
+      return shuffle([...s]);
     }
 
     QuizCore.create({
       appId:'subtraction-zoo',
       title:'🐒 どうぶつ ひきざん',
-      subtitle:'にげた どうぶつの あとは？',
+      subtitle:'にげた どうぶつの あとは？ 4つから！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
         const a=3+Math.floor(Math.random()*8);
         const b=1+Math.floor(Math.random()*a);
-        renderZoo(a,b);
-        return {text:`${a} - ${b}`, answer:a-b};
+        const ans=a-b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-6,-3,-2,-1,1,2,3,6][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return {text:`${a} - ${b}`, answer:ans, choices};
       }
     });
+
   </script>
 </body>
 </html>

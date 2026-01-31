@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>魚つり たしざん（シンプル）</title>
-  <meta name="description" content="魚つり気分でたし算。操作はシンプルに、計算に集中。" />
+  <title>🐟 魚つり たしざん</title>
+  <meta name="description" content="つれた魚を たしてみよう！ 4つから！" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="魚つり たしざん">
+    <div class="card" role="application" aria-label="🐟 魚つり たしざん">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🐟 魚つり たしざん</h1>
-          <p class="sub" id="qc-subtitle">つれた魚を たしてみよう！</p>
+          <p class="sub" id="qc-subtitle">つれた魚を たしてみよう！ 4つから！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -29,12 +31,13 @@
       </div>
 
       <div class="panel">
-        <div class="problem" id="qc-problem">4 + 6</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -43,24 +46,45 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-        <div class="small">🐟 たし算ができたら だいりょう！</div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
+    }
+
     QuizCore.create({
       appId:'fish-addition',
       title:'🐟 魚つり たしざん',
-      subtitle:'つれた魚を たしてみよう！',
+      subtitle:'つれた魚を たしてみよう！ 4つから！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
         const a=Math.floor(Math.random()*10)+1;
         const b=Math.floor(Math.random()*10)+1;
-        return {text:`${a} + ${b}`, answer:a+b};
+        const ans=a+b;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?x+1:v;
+        });
+        return {text:`${a} + ${b}`, answer:ans, choices};
       }
     });
+
   </script>
 </body>
 </html>

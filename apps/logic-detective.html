@@ -70,11 +70,12 @@
       });
     }
 
-    const bank=[
-      {hint:'Aは赤じゃない。Bは赤。赤はだれ？', q:'赤は だれ？', names:['A','B','C'], ans:2},
-      {hint:'1つだけが正しい。A「Bが正しい」 B「Cが正しい」 C「Aが正しい」 正しいのはだれ？', q:'正しいのは？', names:['A','B','C'], ans:1},
-      {hint:'ねこは いぬじゃない。いぬは うさぎじゃない。ねこは だれ？', q:'ねこは？', names:['A','B','C'], ans:1},
+        const bank=[
+      {hint:'Aは赤じゃない。Bは赤。赤はだれ？', q:'赤は だれ？', names:['A','B','C','D'], ans:2},
+      {hint:'Aは○。Bは×。Cは○。Dは×。○はだれ？', q:'○は だれ？', names:['A','B','C','D'], ans:1},
+      {hint:'ねこはBじゃない。いぬはC。うさぎはA。ねこはだれ？', q:'ねこは だれ？', names:['A','B','C','D'], ans:4},
     ];
+
 
     QuizCore.create({
       appId:'logic-detective',

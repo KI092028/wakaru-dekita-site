@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>忍者 足し引きミックス（シンプル）</title>
-  <meta name="description" content="忍者修行で足し算・引き算。シンプルにテンポ良く。" />
+  <title>🥷 忍者 ミックス修行</title>
+  <meta name="description" content="4つから えらんで こたえよう！" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/quiz.css" />
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="忍者 足し引きミックス">
+    <div class="card" role="application" aria-label="🥷 忍者 ミックス修行">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">🥷 忍者 ミックス修行</h1>
-          <p class="sub" id="qc-subtitle">たしざん / ひきざん を きりかえて しゅぎょう！</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -29,19 +31,13 @@
       </div>
 
       <div class="panel">
-        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
-          <span class="badge" id="mix-badge">ミックス</span>
-          <button class="btn ghost" data-mode="mix">ミックス</button>
-          <button class="btn ghost" data-mode="add">たしざん</button>
-          <button class="btn ghost" data-mode="sub">ひきざん</button>
-        </div>
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;"><span class="badge" id="mix-badge">ミックス</span><button class="btn ghost" data-mode="mix">ミックス</button><button class="btn ghost" data-mode="add">たしざん</button><button class="btn ghost" data-mode="sub">ひきざん</button></div>
+        <div class="problem" id="qc-problem">…</div>
 
-        <div class="problem" id="qc-problem">6 + 1</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -51,11 +47,25 @@
         </div>
         <div class="feedback" id="qc-feedback"></div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
+    }
+
     let mode='mix';
     const badge=document.getElementById('mix-badge');
     function upd(){ badge.textContent = (mode==='mix'?'ミックス':(mode==='add'?'たしざん':'ひきざん')); }
@@ -63,23 +73,29 @@
     const quiz = QuizCore.create({
       appId:'ninja-mix',
       title:'🥷 忍者 ミックス修行',
-      subtitle:'たしざん / ひきざん を きりかえて しゅぎょう！',
+      subtitle:'4つから えらんで こたえよう！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
         const pick = (mode==='mix') ? (Math.random()<0.5?'add':'sub') : mode;
         const a=Math.floor(Math.random()*10)+1;
         const b=Math.floor(Math.random()*10)+1;
-        if(pick==='add') return {text:`${a} + ${b}`, answer:a+b};
-        const hi=Math.max(a,b), lo=Math.min(a,b);
-        return {text:`${hi} - ${lo}`, answer:hi-lo};
+        let text, ans;
+        if(pick==='add'){ text=`${a} + ${b}`; ans=a+b; }
+        else { const hi=Math.max(a,b), lo=Math.min(a,b); text=`${hi} - ${lo}`; ans=hi-lo; }
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return {text, answer:ans, choices};
       },
       onInitUI:()=>{
         upd();
-        document.querySelectorAll('[data-mode]').forEach(btn=>{
-          btn.addEventListener('click', ()=>{ mode=btn.dataset.mode; upd(); quiz.newQuestion(); });
-        });
+        document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click', ()=>{ mode=btn.dataset.mode; upd(); quiz.newQuestion(); }));
       }
     });
+
   </script>
 </body>
 </html>

@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>混合計算チェーン（シンプル）</title>
-  <meta name="description" content="足し算・引き算・かけ算の混合計算をシンプルに練習。" />
+  <title>⛓️ 混合計算チェーン</title>
+  <meta name="description" content="4つから えらんで こたえよう！" />
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
@@ -15,12 +14,12 @@
 </head>
 <body>
   <div class="wrapper">
-    <div class="card" role="application" aria-label="混合計算チェーン">
+    <div class="card" role="application" aria-label="⛓️ 混合計算チェーン">
       <div class="header">
         <button class="btn secondary" id="qc-back">← もどる</button>
         <div class="titleBox">
           <h1 class="h1" id="qc-title">⛓️ 混合計算チェーン</h1>
-          <p class="sub" id="qc-subtitle">れんぞくの計算を サクサク！</p>
+          <p class="sub" id="qc-subtitle">4つから えらんで こたえよう！</p>
         </div>
         <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
       </div>
@@ -32,7 +31,8 @@
       </div>
 
       <div class="panel">
-        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+        
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
           <span class="badge" id="mix-badge">2ステップ</span>
           <button class="btn ghost" data-steps="2">2ステップ</button>
           <button class="btn ghost" data-steps="3">3ステップ</button>
@@ -40,12 +40,12 @@
           <button class="btn ghost" data-level="hard">むずかしい</button>
         </div>
 
-        <div class="problem" id="qc-problem">8 + 3 - 2</div>
-        <div class="row">
-          <span style="font-weight:900;font-size:2.2rem;">=</span>
-          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
-        </div>
-        <div class="controls">
+        <div class="problem" id="qc-problem">…</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+        <div id="qc-choices" class="controls" style="margin-top:12px;"></div>
+
+        <div class="controls" style="margin-top:10px;">
           <button class="btn primary" id="qc-submit">こたえる！</button>
           <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
@@ -54,13 +54,26 @@
           <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
         <div class="feedback" id="qc-feedback"></div>
-        <div class="small">※ かっこは つかわない（左から じゅんに計算）</div>
       </div>
+
+      <div class="small">※ まず こたえを タップ → 「こたえる！」</div>
     </div>
   </div>
 
   <script src="../js/quiz-core.js"></script>
   <script>
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function uniqChoices(correct, makeWrong){
+      const s=new Set([correct]);
+      let guard=0;
+      while(s.size<4 && guard<200){
+        s.add(makeWrong(correct));
+        guard++;
+      }
+      return shuffle([...s]);
+    }
+
     let steps=2;
     let level='easy';
     const badge=document.getElementById('mix-badge');
@@ -71,8 +84,9 @@
     const quiz = QuizCore.create({
       appId:'mixed-chain',
       title:'⛓️ 混合計算チェーン',
-      subtitle:'れんぞくの計算を サクサク！',
+      subtitle:'4つから えらんで こたえよう！',
       dailyGoal:3,
+      choiceMode:true,
       buildQuestion:()=>{
         const hard=(level==='hard');
         let cur = r(1, hard?30:15);
@@ -86,14 +100,21 @@
           if(op==='-') cur = Math.max(0, cur - b);
           if(op==='×') cur *= b;
         }
-        return { text, answer: cur };
+        const ans=cur;
+        const choices=uniqChoices(ans, (x)=>{
+          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
+          const v=x+delta;
+          return v<0?0:v;
+        });
+        return { text, answer: ans, choices };
       },
       onInitUI:()=>{
         upd();
-        document.querySelectorAll('[data-steps]').forEach(btn=>btn.addEventListener('click',()=>{steps=Number(btn.dataset.steps);upd();quiz.newQuestion();}));
-        document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click',()=>{level=btn.dataset.level;upd();quiz.newQuestion();}));
+        document.querySelectorAll('[data-steps]').forEach(btn=>btn.addEventListener('click', ()=>{ steps=Number(btn.dataset.steps); upd(); quiz.newQuestion(); }));
+        document.querySelectorAll('[data-level]').forEach(btn=>btn.addEventListener('click', ()=>{ level=btn.dataset.level; upd(); quiz.newQuestion(); }));
       }
     });
+
   </script>
 </body>
 </html>
