@@ -52,7 +52,77 @@
 
   function byId(id){ return document.getElementById(id); }
 
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  function unique4(correct, gen){
+    const s=new Set([Number(correct)]);
+    let guard=0;
+    while(s.size<4 && guard<200){
+      const v=Number(gen(Number(correct)));
+      if(Number.isFinite(v)) s.add(v);
+      guard++;
+    }
+    return shuffle([...s]);
+  }
+
+  // Generate 4 choices for arithmetic questions with plausible wrong answers
+  function makeArithmeticChoices({a,b,op,answer,allowNegative=false}){
+    const A=Number(a), B=Number(b), ans=Number(answer);
+    const cand=[];
+
+    function push(v){
+      v=Math.trunc(Number(v));
+      if(!Number.isFinite(v)) return;
+      if(!allowNegative && v<0) return;
+      if(v===ans) return;
+      cand.push(v);
+    }
+
+    // generic near values
+    [-2,-1,1,2,5,-5,10,-10].forEach(d=>push(ans+d));
+
+    if(op==='+'){
+      push(A); push(B);
+      push((A+1)+B); push((A-1)+B);
+    }else if(op==='-'){
+      push(B-A);
+      // "borrow" style common slip (rough approximation)
+      push(ans+10);
+    }else if(op==='*'){
+      push(A*(B+1)); push(A*(B-1));
+      push((A+1)*B); push((A-1)*B);
+      push(ans+A); push(ans-A);
+      push(ans+B); push(ans-B);
+    }else if(op==='/'){
+      if(B!==0){
+        push(Math.trunc((A+B)/B));
+        push(Math.trunc((A-B)/B));
+        push(Math.trunc(A/(B+1)));
+        push(Math.trunc(A/(B-1)));
+      }
+    }
+
+    // pick unique 4
+    const s=new Set([ans]);
+    for(const v of cand){
+      if(s.size>=4) break;
+      s.add(v);
+    }
+    // if still not enough, random near
+    let guard=0;
+    while(s.size<4 && guard<200){
+      const d=[-3,-2,-1,1,2,3,4,-4,7,-7,11,-11][Math.floor(Math.random()*12)];
+      const v=ans+d;
+      if(allowNegative || v>=0) s.add(v);
+      guard++;
+    }
+    return shuffle([...s]);
+  }
+
   window.QuizCore = {
+    makeArithmeticChoices: makeArithmeticChoices,
+    unique4: unique4,
+    shuffle: shuffle,
     create: function(config){
       const {
         appId,
@@ -301,7 +371,19 @@
       const api = { state, newQuestion, startDaily, startPractice, check };
       if(typeof onInitUI==='function') onInitUI(state, api);
 
-      newQuestion();
+      // Auto-start daily mode when opened from top daily links
+      const sp = new URLSearchParams(location.search);
+      const autoDaily = (sp.get('mode')==='daily' || sp.get('daily')==='1');
+      if(autoDaily){
+        if(state.dailyDone>=state.dailyGoal){
+          setFeedback('✅ きょうのミッションは もうクリア！ ふつうに れんしゅうしよう。', true);
+          startPractice();
+        }else{
+          startDaily();
+        }
+      }else{
+        newQuestion();
+      }
       return api;
     }
   };

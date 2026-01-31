@@ -55,17 +55,6 @@
   <script src="../js/quiz-core.js"></script>
   <script>
 
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-    function uniqChoices(correct, makeWrong){
-      const s=new Set([correct]);
-      let guard=0;
-      while(s.size<4 && guard<200){
-        s.add(makeWrong(correct));
-        guard++;
-      }
-      return shuffle([...s]);
-    }
-
     let mode='mix';
     const badge=document.getElementById('mix-badge');
     function upd(){ badge.textContent = (mode==='mix'?'ミックス':(mode==='add'?'たしざん':'ひきざん')); }
@@ -76,20 +65,27 @@
       subtitle:'4つから えらんで こたえよう！',
       dailyGoal:3,
       choiceMode:true,
-      buildQuestion:()=>{
-        const pick = (mode==='mix') ? (Math.random()<0.5?'add':'sub') : mode;
-        const a=Math.floor(Math.random()*10)+1;
-        const b=Math.floor(Math.random()*10)+1;
-        let text, ans;
-        if(pick==='add'){ text=`${a} + ${b}`; ans=a+b; }
-        else { const hi=Math.max(a,b), lo=Math.min(a,b); text=`${hi} - ${lo}`; ans=hi-lo; }
-        const choices=uniqChoices(ans, (x)=>{
-          const delta=[-10,-5,-2,-1,1,2,5,10][Math.floor(Math.random()*8)];
-          const v=x+delta;
-          return v<0?0:v;
-        });
-        return {text, answer:ans, choices};
-      },
+      
+buildQuestion:()=>{
+  const pick = (mode==='mix') ? (Math.random()<0.5?'add':'sub') : mode;
+  const a=Math.floor(Math.random()*10)+1;
+  const b=Math.floor(Math.random()*10)+1;
+  let text, ans, a1, b1, opChar;
+  if(pick==='add'){
+    opChar='+'; a1=a; b1=b;
+    text=`${a1} + ${b1}`;
+    ans=a1+b1;
+  }else{
+    opChar='-';
+    const hi=Math.max(a,b), lo=Math.min(a,b);
+    a1=hi; b1=lo;
+    text=`${a1} - ${b1}`;
+    ans=a1-b1;
+  }
+  const choices = QuizCore.makeArithmeticChoices({a:a1,b:b1,op:opChar,answer:ans});
+  return {text, answer:ans, choices};
+},
+
       onInitUI:()=>{
         upd();
         document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click', ()=>{ mode=btn.dataset.mode; upd(); quiz.newQuestion(); }));

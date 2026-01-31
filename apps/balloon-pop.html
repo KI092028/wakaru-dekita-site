@@ -54,15 +54,6 @@
 
   <script src="../js/quiz-core.js"></script>
   <script>
-
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-    function uniqChoices(correct, makeWrong){
-      const s=new Set([correct]);
-      let guard=0;
-      while(s.size<4 && guard<200){
-        s.add(makeWrong(correct));
-        guard++;
-      }
       return shuffle([...s]);
     }
 
@@ -76,11 +67,7 @@
         const a=3+Math.floor(Math.random()*8);
         const b=1+Math.floor(Math.random()*a);
         const ans=a-b;
-        const choices=uniqChoices(ans, (x)=>{
-          const delta=[-6,-3,-2,-1,1,2,3,6][Math.floor(Math.random()*8)];
-          const v=x+delta;
-          return v<0?0:v;
-        });
+        const choices = QuizCore.makeArithmeticChoices({a,b,op:'-',answer:ans});
         return {text:`${a} - ${b}`, answer:ans, choices};
       }
     });

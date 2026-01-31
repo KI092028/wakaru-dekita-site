@@ -643,21 +643,21 @@
                     🎯 きょうのチャレンジ
                 </h2>
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
-                    <a href="apps/addition.html" class="subject-card" style="text-decoration:none;" aria-label="たしざん きょうの3もん">
+                    <a href="apps/addition.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="たしざん きょうの3もん">
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
                             <div style="font-weight:800; color:#2c3e50;">➕ たしざん</div>
                             <div id="daily-addition" style="font-weight:800; color:#546e7a;">0/3</div>
                         </div>
                         <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（1〜2年生）</div>
                     </a>
-                    <a href="apps/multiplication.html" class="subject-card" style="text-decoration:none;" aria-label="かけざん きょうの3もん">
+                    <a href="apps/multiplication.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="かけざん きょうの3もん">
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
                             <div style="font-weight:800; color:#2c3e50;">🧮 かけざん</div>
                             <div id="daily-multiplication" style="font-weight:800; color:#546e7a;">0/3</div>
                         </div>
                         <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（2〜3年生）</div>
                     </a>
-                    <a href="apps/shape-hunt.html" class="subject-card" style="text-decoration:none;" aria-label="かたち きょうの1かい">
+                    <a href="apps/shape-hunt.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="かたち きょうの1かい">
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
                             <div style="font-weight:800; color:#2c3e50;">🔺 かたち</div>
                             <div id="daily-shape" style="font-weight:800; color:#546e7a;">0/1</div>
@@ -815,7 +815,8 @@
         ];
 
         // アプリデータと状態
-        let apps = [];
+        let apps = [];// loaded from data/apps.json
+        let categories = [];
         let currentSubject = null;
 
         // 教科カードを生成する関数
@@ -834,8 +835,15 @@
         }
 
         // アプリカードを生成する関数
+        // カテゴリIDを表示名に変換（日本語優先）
+        function categoryLabel(cat){
+            if(!cat) return '';
+            const found = (categories||[]).find(c=>String(c.id).toLowerCase()===String(cat).toLowerCase());
+            return found ? found.name : cat;
+        }
+
         function createAppCard(app) {
-            const tags = [getAppField(app,'grade'), app.category].filter(Boolean);
+            const tags = [getAppField(app,'grade'), categoryLabel(app.category)].filter(Boolean);
             const tagBadges = tags.map(tag => 
                 `<span class="app-badge category">${tag}</span>`
             ).join('');
@@ -856,7 +864,7 @@
 
         // 新しいアプリカードを生成する関数
         function createNewAppCard(app) {
-            const tags = [getAppField(app,'grade'), app.category].filter(Boolean);
+            const tags = [getAppField(app,'grade'), categoryLabel(app.category)].filter(Boolean);
             const tagBadges = tags.map(tag => 
                 `<span class="app-badge category">${tag}</span>`
             ).join('');
@@ -940,25 +948,21 @@
         // 特定教科のアプリを表示
         function showApps(subjectName) {
             currentSubject = subjectName;
-            
-            // カテゴリーに基づいてアプリをフィルタリング
+
+            const subjectToCategories = {
+                '算数': ['basic','multiplication','division','geometry'],
+                '国語': ['language'],
+                // 理科・社会は将来追加用（現状はアプリ未登録）
+                '理科': ['science'],
+                '社会': ['social']
+            };
+
+            const allowed = (subjectToCategories[subjectName] || []).map(s=>String(s).toLowerCase());
             const filteredApps = apps.filter(app => {
-                const appCategory = app.category.toLowerCase();
-                const searchCategory = subjectName.toLowerCase();
-                
-                // 基本計算（たし算・ひき算）を算数カテゴリーに含める
-                if (searchCategory === "算数") {
-                    return appCategory === "basic" || 
-                           appCategory === "multiplication" || 
-                           appCategory === "division" ||
-                           appCategory === "geometry";
-                }
-                
-                // その他の教科は完全一致で検索
-                return app.category === subjectName;
+                const appCategory = String(app.category||'').toLowerCase();
+                return allowed.includes(appCategory);
             });
 
-            // フィルタリングされたアプリを表示
             document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
             document.getElementById('subjects-section').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
@@ -1000,6 +1004,7 @@
                 }
                 const data = await response.json();
                 apps = data.apps;
+                categories = data.categories || [];
                 console.log('読み込まれたアプリ:', apps);
                 return true;
             } catch (error) {

@@ -32,6 +32,7 @@ body{margin:0;font-family:var(--font);color:var(--text);background:var(--bg)}
 .btn.primary{background:linear-gradient(45deg,var(--accent2),#4caf50);color:#fff}
 .btn.blue{background:linear-gradient(45deg,var(--accent),#1e88e5);color:#fff}
 .btn.ghost{background:#eef6ff;color:var(--text);box-shadow:none;border:2px solid #d7ecff}
+.btn.ghost.selected{outline:4px solid #e53935; outline-offset:2px; box-shadow:0 10px 26px rgba(229,57,53,.18)}
 .pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0 14px}
 .pill{background:linear-gradient(45deg,#74b9ff,#6c5ce7);color:#fff;border-radius:999px;padding:6px 12px;font-weight:900}
 .pill.muted{background:linear-gradient(45deg,#90a4ae,#607d8b)}

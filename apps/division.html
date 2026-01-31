@@ -61,17 +61,6 @@
   <script src="../js/quiz-core.js"></script>
   <script>
 
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-    function uniqChoices(correct, makeWrong){
-      const s=new Set([correct]);
-      let guard=0;
-      while(s.size<4 && guard<200){
-        s.add(makeWrong(correct));
-        guard++;
-      }
-      return shuffle([...s]);
-    }
-
     let maxDan=9;
     const badge=document.getElementById('div-badge');
     function upd(){ badge.textContent = `2〜${maxDan}のだん`; }
@@ -87,11 +76,7 @@
         const a = 1 + Math.floor(Math.random()*9);
         const dividend=a*b;
         const ans=a;
-        const choices=uniqChoices(ans, (x)=>{
-          const delta=[-3,-2,-1,1,2,3][Math.floor(Math.random()*6)];
-          const v=x+delta;
-          return v<0?0:v;
-        });
+        const choices = QuizCore.makeArithmeticChoices({a:dividend,b,op:'/',answer:ans});
         return { text:`${dividend} ÷ ${b}`, answer: ans, choices };
       },
       onInitUI:()=>{

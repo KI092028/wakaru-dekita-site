@@ -85,7 +85,17 @@
       grade=g;
       badge.textContent = g.replace('grade','')+'年';
       pool=(kanjiData[g]||kanjiData.grade1).slice();
+      updateGradeButtons();
       quiz.newQuestion();
+    }
+
+
+    function updateGradeButtons(){
+      document.querySelectorAll('[data-grade]').forEach(btn=>{
+        const on = btn.dataset.grade===grade;
+        btn.classList.toggle('selected', on);
+        btn.setAttribute('aria-pressed', on?'true':'false');
+      });
     }
 
     function renderChoices(opts){
@@ -123,6 +133,7 @@
     });
 
     document.querySelectorAll('[data-grade]').forEach(btn=>btn.addEventListener('click', ()=>setGrade(btn.dataset.grade)));
+    updateGradeButtons();
   </script>
 </body>
 </html>
