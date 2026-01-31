@@ -3,374 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>漢字れんしゅう（1〜6年）</title>
-  
-  <!-- Google tag (gtag.js) -->
+  <title>漢字れんしゅう（シンプル）</title>
+  <meta name="description" content="漢字のよみをシンプルに練習。学年をえらんで4択。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root {
-      --blue: #007bff;
-      --green: #28a745;
-      --orange: #fd7e14;
-      --gray: #f4f6f8;
-      --text: #222;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'メイリオ', Meiryo, Arial, sans-serif;
-      background: #ffffff;
-      color: #111827;
-    }
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: clamp(12px, 3vw, 20px);
-    }
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 1.6rem;
-      color: var(--blue);
-    }
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      align-items: center;
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    }
-    label { font-size: 1rem; }
-    select, button {
-      font-size: 1.1rem;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 2px solid #cbd5e1;
-      background: #fff;
-    }
-    button.primary { background: var(--green); color: #fff; border-color: var(--green); }
-    button.secondary { background: var(--blue); color: #fff; border-color: var(--blue); }
-    button.ghost { background: #fff; color: var(--blue); border-color: var(--blue); }
-    button:disabled { opacity: 0.6; }
-    .panel {
-      margin-top: 12px;
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .status {
-      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-      margin: 8px 0 0;
-      font-size: 1rem;
-    }
-    .status .score-label { font-weight: 600; }
-    #score { font-size: 1.8rem; font-weight: 800; color: #0ea5e9; }
-    .big-kanji {
-      font-size: clamp(84px, 18vw, 180px);
-      text-align: center;
-      line-height: 1;
-      margin: 8px 0 16px;
-      user-select: none;
-      font-weight: 900;
-      color: #111827;
-      -webkit-text-stroke: 1px rgba(0,0,0,0.06);
-      text-rendering: optimizeLegibility;
-    }
-    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .choice-btn {
-      padding: 14px 16px;
-      font-size: 1.35rem;
-      border: 2px solid #475569;
-      border-radius: 12px;
-      background: #ffffff;
-      color: #111827;
-      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-    }
-    .choice-btn:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
-    .choice-btn.correct { background: #166534; color: #ffffff; border-color: #14532d; }
-    .choice-btn.wrong { background: #991b1b; color: #ffffff; border-color: #7f1d1d; }
-    .feedback { font-size: 1.25rem; height: 1.6em; margin-top: 8px; color: #111827; }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .grow { flex: 1; }
-    /* 書き練習 */
-    .trace-wrap { position: relative; width: 100%; aspect-ratio: 1/1; max-width: 520px; margin: 0 auto; }
-    .trace-hint {
-      position: absolute; inset: 0; display: grid; place-items: center; color: #94a3b8;
-      font-size: clamp(72px, 16vw, 160px); opacity: 0.3; pointer-events: none; user-select: none;
-    }
-    canvas { width: 100%; height: 100%; background: #fff; border-radius: 12px; border: none; box-shadow: inset 0 0 0 1px rgba(100,116,139,0.25); }
-    .legend { font-size: 0.95rem; color: #64748b; text-align: center; margin-top: 6px; }
-
-    @media (max-width: 420px) {
-      .choices { grid-template-columns: 1fr; }
-    }
+    .big{font-size: clamp(84px, 18vw, 180px); text-align:center; font-weight:900; margin: 8px 0 12px}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:0 auto}
+    @media(max-width:420px){.choices{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>漢字れんしゅう（1〜6年）</h1>
-      <p style="margin:0 0 10px;color:#475569">学年をえらんで、モードをえらんでね。</p>
-    </header>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="漢字れんしゅう">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">✍️ 漢字れんしゅう</h1>
+          <p class="sub" id="qc-subtitle">よみを えらぼう（4たく）</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
 
-    <section class="controls" aria-label="コントロール">
-      <div>
-        <label for="gradeSelect">学年</label>
-        <select id="gradeSelect" aria-label="学年を選ぶ">
-          <option value="grade1">1年</option>
-          <option value="grade2">2年</option>
-          <option value="grade3">3年</option>
-          <option value="grade4">4年</option>
-          <option value="grade5">5年</option>
-          <option value="grade6">6年</option>
-        </select>
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
-      <div>
-        <label for="modeSelect">モード</label>
-        <select id="modeSelect" aria-label="モードを選ぶ">
-          <option value="reading">読み練習（4択）</option>
-          <option value="writing">書き練習（なぞり）</option>
-        </select>
-      </div>
-      <div class="row">
-        <button id="startBtn" class="primary grow" aria-label="はじめる">はじめる</button>
-        <button id="nextBtn" class="secondary grow" aria-label="つぎへ" disabled>つぎへ</button>
-      </div>
-    </section>
 
-    <section class="panel" id="quizPanel" aria-live="polite">
-      <div class="status">
-        <div>のこり: <span id="remain">10</span></div>
-        <div><span class="score-label">スコア:</span> <span id="score">0</span></div>
-        <div id="modeHint" style="color:#64748b"></div>
-      </div>
-      <div id="readingView" style="display:none">
-        <div class="big-kanji" id="questionKanji">漢</div>
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="grade-badge">1年</span>
+          <button class="btn ghost" data-grade="grade1">1年</button>
+          <button class="btn ghost" data-grade="grade2">2年</button>
+          <button class="btn ghost" data-grade="grade3">3年</button>
+          <button class="btn ghost" data-grade="grade4">4年</button>
+          <button class="btn ghost" data-grade="grade5">5年</button>
+          <button class="btn ghost" data-grade="grade6">6年</button>
+        </div>
+
+        <div class="big" id="kanji">一</div>
+        <input class="input" id="qc-input" style="display:none" />
         <div class="choices" id="choices"></div>
-        <div class="feedback" id="feedback"></div>
-      </div>
-      <div id="writingView" style="display:none">
-        <div class="trace-wrap">
-          <canvas id="traceCanvas"></canvas>
-          <div class="trace-hint" id="traceHint">漢</div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
         </div>
-        <div class="row" style="margin-top:10px">
-          <button id="clearBtn" class="ghost grow">クリア</button>
-          <button id="doneBtn" class="secondary grow">かんせい！</button>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
         </div>
-        <div class="legend">うすい字の上を なぞろう。タッチでも えんぴつでもOK。</div>
+
+        <div class="feedback" id="qc-feedback"></div>
+        <div class="small">※ かく れんしゅう（手書き）は、あとで 追加できます</div>
       </div>
-    </section>
+    </div>
   </div>
 
   <script type="module">
     import { kanjiData } from '../kanjiData.js';
+    import '../js/quiz-core.js';
 
-    // 要素参照
-    const gradeSelect = document.getElementById('gradeSelect');
-    const modeSelect = document.getElementById('modeSelect');
-    const startBtn = document.getElementById('startBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const remainEl = document.getElementById('remain');
-    const scoreEl = document.getElementById('score');
-    const modeHint = document.getElementById('modeHint');
+    const kanjiEl=document.getElementById('kanji');
+    const choicesEl=document.getElementById('choices');
+    const badge=document.getElementById('grade-badge');
 
-    // 読みモード要素
-    const readingView = document.getElementById('readingView');
-    const questionKanji = document.getElementById('questionKanji');
-    const choicesWrap = document.getElementById('choices');
-    const feedbackEl = document.getElementById('feedback');
+    let grade='grade1';
+    let pool=(kanjiData[grade]||kanjiData.grade1).slice();
 
-    // 書きモード要素
-    const writingView = document.getElementById('writingView');
-    const traceCanvas = document.getElementById('traceCanvas');
-    const traceHint = document.getElementById('traceHint');
-    const clearBtn = document.getElementById('clearBtn');
-    const doneBtn = document.getElementById('doneBtn');
-
-    // 状態
-    let pool = []; // 選択学年の漢字配列
-    let current = null; // 現在の出題 {kanji, reading}
-    let remain = 10;
-    let score = 0;
-    let answered = false;
-
-    // 効果音（正解時）
-    let audioCtx;
-    function playCorrectSfx() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = 'sine';
-        o.frequency.setValueAtTime(880, audioCtx.currentTime);
-        g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
-        o.connect(g).connect(audioCtx.destination);
-        o.start();
-        o.stop(audioCtx.currentTime + 0.28);
-      } catch(e) { /* no-op */ }
-    }
-
-    function setModeHint() {
-      const mode = modeSelect.value;
-      if (mode === 'reading') modeHint.textContent = 'よみかたを えらんでね。';
-      else if (mode === 'writing') modeHint.textContent = 'なぞって かこう。';
-      else modeHint.textContent = '';
-    }
-
-    function sampleRandom(arr, n, exceptValue) {
-      const candidates = arr.filter(x => x.reading !== exceptValue);
-      const result = [];
-      while (result.length < Math.min(n, candidates.length)) {
-        const x = candidates[Math.floor(Math.random() * candidates.length)];
-        if (!result.includes(x)) result.push(x);
-      }
-      return result;
-    }
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-    function pickQuestion() {
-      current = pool[Math.floor(Math.random() * pool.length)];
-    }
-
-    function renderReading() {
-      readingView.style.display = 'block';
-      writingView.style.display = 'none';
-      feedbackEl.textContent = '';
-      questionKanji.textContent = current.kanji;
-      const distractors = sampleRandom(pool, 3, current.reading).map(x => x.reading);
-      const opts = shuffle([current.reading, ...distractors]);
-      choicesWrap.innerHTML = '';
-      opts.forEach(reading => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.type = 'button';
-        btn.textContent = reading;
-        btn.addEventListener('click', () => onChoose(btn, reading));
-        choicesWrap.appendChild(btn);
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+    function renderChoices(opts){
+      choicesEl.innerHTML='';
+      opts.forEach((t,i)=>{
+        const b=document.createElement('button');
+        b.className='btn blue';
+        b.textContent=t;
+        b.addEventListener('click', ()=>{ document.getElementById('qc-input').value=String(i+1); });
+        choicesEl.appendChild(b);
       });
-      answered = false;
-      nextBtn.disabled = true;
     }
 
-    function onChoose(btn, selected) {
-      if (answered) return;
-      answered = true;
-      const isCorrect = selected === current.reading;
-      if (isCorrect) {
-        score += 1;
-        btn.classList.add('correct');
-        feedbackEl.textContent = 'せいかい！';
-        playCorrectSfx();
-      } else {
-        btn.classList.add('wrong');
-        // 正解もハイライト
-        Array.from(choicesWrap.children).forEach(ch => {
-          if (ch.textContent === current.reading) ch.classList.add('correct');
-        });
-        feedbackEl.textContent = 'ざんねん…';
+    function setGrade(g){
+      grade=g;
+      badge.textContent = g.replace('grade','')+'年';
+      pool=(kanjiData[g]||kanjiData.grade1).slice();
+      quiz.newQuestion();
+    }
+
+    const quiz = window.QuizCore.create({
+      appId:'kanji-practice',
+      title:'✍️ 漢字れんしゅう',
+      subtitle:'よみを えらぼう（4たく）',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        if(!pool.length) pool=(kanjiData.grade1||[]).slice();
+        const item=pool[Math.floor(Math.random()*pool.length)];
+        kanjiEl.textContent=item.kanji;
+        const correct=item.reading;
+        const opts=new Set([correct]);
+        const all=(kanjiData[grade]||kanjiData.grade1)||[];
+        while(opts.size<4){
+          const p=all[Math.floor(Math.random()*all.length)];
+          if(p && p.reading) opts.add(p.reading);
+        }
+        const list=shuffle([...opts]);
+        renderChoices(list);
+        return { text:item.kanji, answer: list.indexOf(correct)+1 };
       }
-      scoreEl.textContent = String(score);
-      nextBtn.disabled = false;
-    }
+    });
 
-    // 書き練習: シンプルなお絵かき（筆圧なし）
-    let ctx, drawing = false, last = null;
-    function setupCanvas() {
-      const dpr = window.devicePixelRatio || 1;
-      const rect = traceCanvas.getBoundingClientRect();
-      traceCanvas.width = Math.round(rect.width * dpr);
-      traceCanvas.height = Math.round(rect.height * dpr);
-      ctx = traceCanvas.getContext('2d');
-      ctx.scale(dpr, dpr);
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.strokeStyle = '#111827';
-      ctx.lineWidth = Math.max(4, rect.width * 0.02);
-      ctx.clearRect(0, 0, rect.width, rect.height);
-    }
-    function canvasPos(e){
-      const rect = traceCanvas.getBoundingClientRect();
-      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-      return { x, y };
-    }
-    function bindCanvas() {
-      ['mousedown','touchstart'].forEach(ev => traceCanvas.addEventListener(ev, e => { drawing = true; last = canvasPos(e); e.preventDefault(); }));
-      ['mousemove','touchmove'].forEach(ev => traceCanvas.addEventListener(ev, e => {
-        if (!drawing) return; const p = canvasPos(e); const r = traceCanvas.getBoundingClientRect();
-        ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; e.preventDefault();
-      }));
-      ['mouseup','mouseleave','touchend','touchcancel'].forEach(ev => traceCanvas.addEventListener(ev, () => { drawing = false; }));
-      window.addEventListener('resize', () => { const saved = traceCanvas.toDataURL(); setupCanvas(); /* 背景描画のみ再構成 */ });
-      clearBtn.addEventListener('click', () => setupCanvas());
-      doneBtn.addEventListener('click', () => { feedbackEl.textContent = 'よくできた！'; });
-    }
-
-    function renderWriting() {
-      readingView.style.display = 'none';
-      writingView.style.display = 'block';
-      traceHint.textContent = current.kanji;
-      setupCanvas();
-    }
-
-    function nextQuestion() {
-      if (remain <= 0) {
-        feedbackEl.textContent = `おわり！ スコア: ${score}/10`;
-        nextBtn.disabled = true;
-        return;
-      }
-      pickQuestion();
-      setModeHint();
-      const mode = modeSelect.value;
-      if (mode === 'reading') renderReading();
-      else renderWriting();
-    }
-
-    function startSession() {
-      const key = gradeSelect.value;
-      pool = (kanjiData[key] || []).slice();
-      // フォールバック: もし対象学年が空なら1年から
-      if (!pool.length) pool = (kanjiData.grade1 || []).slice();
-      remain = 10; score = 0; answered = false;
-      remainEl.textContent = String(remain);
-      scoreEl.textContent = String(score);
-      nextBtn.disabled = true;
-      nextQuestion();
-    }
-
-    // イベント
-    startBtn.addEventListener('click', () => { startSession(); });
-    nextBtn.addEventListener('click', () => { remain -= 1; remainEl.textContent = String(remain); nextQuestion(); });
-    modeSelect.addEventListener('change', () => setModeHint());
-    setModeHint();
-
-    // 書きモードキャンバス初期化
-    bindCanvas();
-    // 初回レイアウトでキャンバスサイズを設定
-    requestAnimationFrame(setupCanvas);
+    document.querySelectorAll('[data-grade]').forEach(btn=>btn.addEventListener('click', ()=>setGrade(btn.dataset.grade)));
   </script>
 </body>
 </html>
-
-

@@ -3,476 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>おもちゃ たしざん（トイボックス）</title>
-  <meta name="description" content="小学校低学年向けのたし算ゲーム。ブロックやくるまをかぞえて、グループをたして答えよう！タップでカウント、花火とバッジでほめられるよ。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>おもちゃ たしざん（シンプル）</title>
+  <meta name="description" content="おもちゃのイメージで、たし算をシンプルにれんしゅう。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root {
-      --bg1: #d4fc79; --bg2: #96e6a1;
-      --pink: #ff6b6b; --blue: #74b9ff; --green: #2ecc71; --yellow: #f9ca24; --deep: #2d3436;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0; font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      display: flex; align-items: center; justify-content: center; padding: 12px; overflow: hidden;
-    }
-    .app {
-      width: 100%; max-width: 960px; background: #fff; border-radius: 20px; box-shadow: 0 22px 44px rgba(0,0,0,0.12);
-      padding: 14px; position: relative; overflow: hidden;
-    }
-    .title { text-align: center; font-size: 1.6rem; color: var(--pink); font-weight: 800; margin-bottom: 6px; }
-    .equation-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    .equation { text-align: center; font-size: 2.1rem; font-weight: 800; letter-spacing: 2px; color: var(--deep); }
-    .answer-input { font-size: 2rem; font-weight: 800; width: 120px; text-align: center; border: 4px solid var(--blue); border-radius: 14px; padding: 6px 10px; font-family: 'Nunito', sans-serif; }
-    .subnote { text-align: center; color: #666; font-weight: 700; margin-top: 2px; }
-    .hud { display: flex; gap: 8px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
-    .pill { background: linear-gradient(45deg, var(--blue), #6c5ce7); color: #fff; padding: 6px 12px; border-radius: 999px; font-weight: 800; box-shadow: 0 8px 18px rgba(108,92,231,0.25); }
-    .progress { height: 14px; background: #ecf0f1; border-radius: 10px; overflow: hidden; border: 2px solid #dfe6e9; margin-top: 8px; }
-    .bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), #27ae60); transition: width 0.4s ease; }
-
-    .stage { margin-top: 10px; display: grid; grid-template-columns: 1fr; gap: 10px; }
-    .canvas-wrap { background: linear-gradient(180deg, #fefefe, #f7fff7); border-radius: 18px; padding: 8px; position: relative; }
-    canvas { width: 100%; height: 280px; display: block; border-radius: 12px; background: #ffffff; }
-
-
-    .controls { margin-top: 8px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .btn { background: linear-gradient(45deg, var(--pink), #e84393); color: #fff; border: none; padding: 12px 18px; font-size: 1.2rem; font-weight: 800; border-radius: 16px; box-shadow: 0 10px 24px rgba(232,67,147,0.3); }
-    .btn.secondary { background: linear-gradient(45deg, var(--blue), #6c5ce7); box-shadow: 0 10px 24px rgba(108,92,231,0.3); }
-    .toggle { background: #fff; color: #333; border: 3px solid #ccc; }
-
-    .feedback { margin-top: 6px; min-height: 36px; font-size: 1.2rem; font-weight: 800; text-align: center; }
-    .correct { color: #00b894; } .incorrect { color: #e17055; }
-
-    .badges { margin-top: 6px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
-    .badge { font-size: 1.5rem; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.08)); }
-
-    .confetti-container { pointer-events: none; position: absolute; inset: 0; overflow: hidden; }
-    .confetti { position: absolute; width: 10px; height: 14px; background: red; opacity: 0.9; transform: translateY(-20px) rotate(0deg); animation: fall 1.2s ease-out forwards; border-radius: 2px; }
-    @keyframes fall { to { transform: translateY(120vh) rotate(720deg); opacity: 0.2; } }
-
-    /* ソフトキーボード */
-    .softpad { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; }
-    .key { background: #ffffff; color: #2d3436; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 900; font-size: 1.4rem; padding: 12px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
-    .key:active { transform: translateY(1px); }
-    .key.wide { grid-column: span 2; }
-    @media (max-width: 520px) { .softpad { grid-template-columns: repeat(3, 28vw); } }
-    @media (max-width: 760px) { .equation { font-size: 1.9rem; } .num { font-size: 1.1rem; } canvas { height: 240px; } }
-    @media (max-width: 520px) { .equation { font-size: 1.7rem; } .num { font-size: 1rem; } canvas { height: 220px; } }
+    .toys{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .toy{font-size:40px}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="おもちゃ たしざん">
-    <div class="title">🧸 おもちゃ たしざん 🚗</div>
-    <div class="equation-row">
-      <div class="equation" id="equation">4 + 2 =</div>
-      <input type="text" class="answer-input" id="answerInput" inputmode="numeric" pattern="[0-9]*" placeholder="?" aria-label="こたえ" maxlength="2" />
-    </div>
-    <div class="subnote" id="subnote">タップで かぞえよう！（合計は20まで）</div>
-    <div class="hud">
-      <div class="pill" id="sessionInfo">もんだい: 1 / 8</div>
-      <div class="pill" id="scoreInfo">スコア: 0</div>
-      <div class="pill" id="countInfo">かぞえた: 0</div>
-    </div>
-    <div class="progress" aria-label="しんちょくバー"><div class="bar" id="bar"></div></div>
-
-    <div class="stage">
-      <div class="canvas-wrap">
-        <canvas id="toyCanvas" width="600" height="360" aria-label="おもちゃの ならび"></canvas>
-        <div class="confetti-container" id="confetti"></div>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="おもちゃ たしざん">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧸 おもちゃ たしざん</h1>
+          <p class="sub" id="qc-subtitle">おもちゃを たして こたえよう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+      <div class="panel">
+        <div class="toys" id="toys"></div>
+        <div class="problem" id="qc-problem">4 + 3</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
       </div>
     </div>
-
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="retryBtn" style="display:none">やりなおす</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn toggle" id="repeatBtn" aria-pressed="false">リピート: OFF</button>
-      <button class="btn secondary" id="restartBtn">セッション リスタート</button>
-    </div>
-      <!-- ソフトキーボード -->
-      <div class="softpad" id="softpad" aria-label="ソフトキーボード">
-        <button class="key">1</button>
-        <button class="key">2</button>
-        <button class="key">3</button>
-        <button class="key">4</button>
-        <button class="key">5</button>
-        <button class="key">6</button>
-        <button class="key">7</button>
-        <button class="key">8</button>
-        <button class="key">9</button>
-        <button class="key wide">0</button>
-        <button class="key" data-action="back">⌫</button>
-      </div>
-
-    <div class="feedback" id="feedback" aria-live="polite"></div>
-    <div class="badges" id="badges" aria-label="バッジ"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    // トイモデル
-    const COLORS = [
-      { name: 'あか', hex: '#ff6b6b' },
-      { name: 'あお', hex: '#74b9ff' },
-      { name: 'みどり', hex: '#2ecc71' },
-      { name: 'きいろ', hex: '#f9ca24' },
-    ];
-    const TOYS = [
-      { type: 'block', emoji: '🧱' },
-      { type: 'car', emoji: '🚗' },
-    ];
+    const toysEl=document.getElementById('toys');
+    const icons=['🚗','🧱','🪀','🧸','🚂'];
 
-    // セッション状態
-    let sessionLen = 8; // 5〜10のランダム
-    let idx = 0; let score = 0; let repeatMode = false; let counted = 0; let selectedAnswer = null;
-    let audioCtx = null;
-    let toys = []; // {x,y,r,type,color,counted,pop}
-    let problem = { a: 4, b: 2, sum: 6, toy: TOYS[0], c1: COLORS[0], c2: COLORS[1] };
-    let raf = null;
-
-    // 要素参照
-    const cvs = document.getElementById('toyCanvas');
-    const ctx = cvs.getContext('2d');
-    const eqEl = document.getElementById('equation');
-    const subEl = document.getElementById('subnote');
-    const sessionEl = document.getElementById('sessionInfo');
-    const scoreEl = document.getElementById('scoreInfo');
-    const countEl = document.getElementById('countInfo');
-    const barEl = document.getElementById('bar');
-    const answerInput = document.getElementById('answerInput');
-    const feedbackEl = document.getElementById('feedback');
-    const badgesEl = document.getElementById('badges');
-    const confettiEl = document.getElementById('confetti');
-
-    // 初期化
-    init();
-
-    function init() {
-      setupAudioWarmup();
-      bindUI();
-      fitCanvas(); // 先に実サイズへ
-      startSession();
-      loop();
-      window.addEventListener('resize', () => {
-        fitCanvas();
-        // リサイズ後に現在の問題で再配置
-        if (problem) layoutToys(problem);
-      });
+    function renderToys(a,b){
+      toysEl.innerHTML='';
+      const icon=icons[Math.floor(Math.random()*icons.length)];
+      for(let i=0;i<a;i++){ const s=document.createElement('span'); s.className='toy'; s.textContent=icon; toysEl.appendChild(s); }
+      const plus=document.createElement('span'); plus.className='toy'; plus.textContent='+'; toysEl.appendChild(plus);
+      for(let i=0;i<b;i++){ const s=document.createElement('span'); s.className='toy'; s.textContent=icon; toysEl.appendChild(s); }
     }
 
-    function setupAudioWarmup() {
-      const warm = () => {
-        if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
-        window.removeEventListener('pointerdown', warm);
-        window.removeEventListener('touchstart', warm);
-      };
-      window.addEventListener('pointerdown', warm, { once: true });
-      window.addEventListener('touchstart', warm, { once: true });
-    }
-
-    function bindUI() {
-      document.getElementById('checkBtn').addEventListener('click', checkAnswer);
-      document.getElementById('retryBtn').addEventListener('click', retryProblem);
-      document.getElementById('nextBtn').addEventListener('click', nextProblem);
-      document.getElementById('restartBtn').addEventListener('click', startSession);
-      const rep = document.getElementById('repeatBtn');
-      rep.addEventListener('click', () => {
-        repeatMode = !repeatMode;
-        rep.textContent = `リピート: ${repeatMode ? 'ON' : 'OFF'}`;
-        rep.setAttribute('aria-pressed', repeatMode);
-      });
-      cvs.addEventListener('pointerdown', onTapCanvas);
-      cvs.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
-      // 入力欄のサニタイズ
-      answerInput.addEventListener('input', (e) => {
-        let v = e.target.value;
-        // 全角→半角
-        v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-        // 数字以外除去
-        v = v.replace(/[^0-9]/g, '');
-        if (v.length > 2) v = v.slice(0,2);
-        e.target.value = v;
-        selectedAnswer = v === '' ? null : parseInt(v, 10);
-      });
-      answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
-
-      // ソフトキーボード
-      const soft = document.getElementById('softpad');
-      soft.addEventListener('click', (e) => {
-        const btn = e.target.closest('.key'); if (!btn) return;
-        const action = btn.getAttribute('data-action');
-        if (action === 'back') {
-          answerInput.value = answerInput.value.slice(0, -1);
-        } else {
-          const ch = btn.textContent.trim();
-          // 2桁まで
-          if (answerInput.value.length < 2) answerInput.value += ch;
-        }
-        // 入力反映
-        const val = answerInput.value;
-        selectedAnswer = val === '' ? null : parseInt(val, 10);
-      });
-    }
-
-    function startSession() {
-      sessionLen = 5 + Math.floor(Math.random() * 6); // 5..10
-      idx = 0; score = 0; badgesEl.innerHTML = '';
-      nextProblem();
-    }
-
-    function nextProblem() {
-      feedbackEl.textContent = '';
-      document.getElementById('retryBtn').style.display = 'none';
-      if (idx >= sessionLen) {
-        // セッション終了
-        feedbackEl.className = 'feedback correct';
-        feedbackEl.textContent = `🎉 せっしょん おわり！ スコア: ${score} / ${sessionLen}`;
-        if (repeatMode) { setTimeout(startSession, 1000); }
-        return;
+    QuizCore.create({
+      appId:'addition-toybox',
+      title:'🧸 おもちゃ たしざん',
+      subtitle:'おもちゃを たして こたえよう！',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const a=1+Math.floor(Math.random()*9);
+        const b=1+Math.floor(Math.random()*9);
+        renderToys(a,b);
+        return {text:`${a} + ${b}`, answer:a+b};
       }
-      // 問題生成（合計 < 20）
-      problem = makeProblem();
-      counted = 0; selectedAnswer = null; answerInput.value = '';
-      fitCanvas();
-      layoutToys(problem);
-      renderEquation();
-      updateHUD();
-      idx++;
-    }
-
-    function retryProblem() {
-      counted = 0; selectedAnswer = null; answerInput.value = '';
-      fitCanvas();
-      layoutToys(problem);
-      feedbackEl.textContent = '';
-      document.getElementById('retryBtn').style.display = 'none';
-      updateHUD();
-    }
-
-    function makeProblem() {
-      // choose toy
-      const toy = TOYS[Math.floor(Math.random() * TOYS.length)];
-      const c1 = COLORS[Math.floor(Math.random() * COLORS.length)];
-      let c2; do { c2 = COLORS[Math.floor(Math.random() * COLORS.length)]; } while (c2 === c1);
-      let a, b; do {
-        a = 1 + Math.floor(Math.random() * 10);
-        b = 1 + Math.floor(Math.random() * 10);
-      } while (a + b > 19);
-      return { a, b, sum: a + b, toy, c1, c2 };
-    }
-
-    function renderEquation() {
-      const { a, b } = problem;
-      eqEl.textContent = `${a} + ${b} =`;
-      subEl.textContent = 'タップで かぞえよう！（合計は20まで）';
-    }
-
-    function updateHUD() {
-      sessionEl.textContent = `もんだい: ${Math.min(idx + 0, sessionLen)} / ${sessionLen}`;
-      scoreEl.textContent = `スコア: ${score}`;
-      countEl.textContent = `かぞえた: ${counted}`;
-      barEl.style.width = `${Math.floor((idx) / sessionLen * 100)}%`;
-    }
-
-    function fitCanvas() {
-      const rect = cvs.getBoundingClientRect();
-      const scale = window.devicePixelRatio || 1;
-      const w = Math.floor(rect.width * scale);
-      const h = Math.floor(rect.height * scale);
-      if (cvs.width !== w || cvs.height !== h) {
-        cvs.width = w; cvs.height = h;
-      }
-    }
-
-    function layoutToys(p) {
-      toys = [];
-      const w = cvs.width, h = cvs.height;
-      const dpr = (window.devicePixelRatio || 1);
-      const margin = 32 * dpr; // 枠を廃止して余白を調整
-      const leftArea = { x: margin, y: margin, w: (w/2 - margin*1.2), h: h - margin*2 };
-      const rightArea = { x: w/2 + margin*0.2, y: margin, w: (w/2 - margin*1.2), h: h - margin*2 };
-      placeGroup(leftArea, p.a, p.toy, p.c1);
-      placeGroup(rightArea, p.b, p.toy, p.c2);
-    }
-
-    function placeGroup(area, count, toy, color) {
-      const dpr = (window.devicePixelRatio || 1);
-      const gap = 8 * dpr; // セル内の余白を調整
-      // グリッド計算（確実に count 個）
-      let cols = Math.ceil(Math.sqrt(count));
-      let rows = Math.ceil(count / cols);
-      const cellW = area.w / cols;
-      const cellH = area.h / rows;
-      const safeR = Math.max(8 * dpr, Math.min(cellW, cellH) * 0.32 - gap * 0.5);
-      for (let i = 0; i < count; i++) {
-        const r = Math.floor(i / cols);
-        const c = i % cols;
-        const x = area.x + c * cellW + cellW / 2;
-        const y = area.y + r * cellH + cellH / 2;
-        toys.push({ x, y, r: safeR, type: toy.type, color: color.hex, counted: false, pop: 0 });
-      }
-    }
-
-    function jitter(a,b){ return 0; } // 整列優先のためジッター無効
-
-    function onTapCanvas(e) {
-      const rect = cvs.getBoundingClientRect();
-      const scale = window.devicePixelRatio || 1;
-      const px = (e.clientX - rect.left) * scale;
-      const py = (e.clientY - rect.top) * scale;
-      // 近い順に検索
-      let minD = Infinity, target = null, ti = -1;
-      for (let i = 0; i < toys.length; i++) {
-        const t = toys[i];
-        const dx = t.x - px, dy = t.y - py;
-        const d2 = dx*dx + dy*dy;
-        const hitR = t.r * 1.25; // タップしやすいよう判定半径を少し拡大
-        if (d2 < (hitR*hitR) && d2 < minD) { minD = d2; target = t; ti = i; }
-      }
-      if (target) {
-        if (!target.counted) {
-          target.counted = true; target.pop = 1; counted++; selectedAnswer = counted; answerInput.value = String(counted); playPop();
-        } else {
-          // もう一度タップでカウント解除
-          target.counted = false; target.pop = 1; counted = Math.max(0, counted - 1); selectedAnswer = counted; answerInput.value = String(counted || ''); playTick();
-        }
-        updateHUD();
-      }
-    }
-
-    // 描画ループ
-    function loop() {
-      draw();
-      raf = requestAnimationFrame(loop);
-    }
-
-    function draw() {
-      const w = cvs.width, h = cvs.height;
-      ctx.clearRect(0,0,w,h);
-      for (const t of toys) {
-        const s = 1 + (t.pop > 0 ? 0.15 * t.pop : 0);
-        const alpha = 1;
-        ctx.save();
-        ctx.translate(t.x, t.y);
-        ctx.scale(s, s);
-        // 形
-        if (t.type === 'block') drawBlock(ctx, 0, 0, t.r*1.6, t.r*1.2, t.color, alpha, t.counted);
-        else drawCar(ctx, 0, 0, t.r*1.8, t.r, t.color, alpha, t.counted);
-        ctx.restore();
-        if (t.pop > 0) t.pop = Math.max(0, t.pop - 0.1);
-      }
-    }
-
-    function drawBlock(ctx, cx, cy, w, h, color, alpha, counted) {
-      const r = Math.min(w,h) * 0.25;
-      ctx.globalAlpha = alpha;
-      roundRect(ctx, cx - w/2, cy - h/2, w, h, r);
-      ctx.fillStyle = color; ctx.fill();
-      if (counted) { ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.stroke(); }
-      // studs
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
-      for (let i = -1; i <= 1; i++) ctx.fillRect(cx - 12 + i*12, cy - h/2 + 6, 8, 6);
-    }
-
-    function drawCar(ctx, cx, cy, w, h, color, alpha, counted) {
-      ctx.globalAlpha = alpha;
-      roundRect(ctx, cx - w/2, cy - h/2, w, h, 10);
-      ctx.fillStyle = color; ctx.fill();
-      // windows
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      roundRect(ctx, cx - w*0.2, cy - h*0.2, w*0.3, h*0.35, 6); ctx.fill();
-      // wheels
-      ctx.fillStyle = '#333';
-      ctx.beginPath(); ctx.arc(cx - w*0.25, cy + h*0.45, h*0.3, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + w*0.25, cy + h*0.45, h*0.3, 0, Math.PI*2); ctx.fill();
-      if (counted) { ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.stroke(); }
-    }
-
-    function roundRect(ctx, x, y, w, h, r) {
-      const rr = Math.min(r, w/2, h/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr, y);
-      ctx.arcTo(x+w, y, x+w, y+h, rr);
-      ctx.arcTo(x+w, y+h, x, y+h, rr);
-      ctx.arcTo(x, y+h, x, y, rr);
-      ctx.arcTo(x, y, x+w, y, rr);
-      ctx.closePath();
-    }
-
-    function checkAnswer() {
-      // 安全チェック: 表示個数が問題の合計と一致しない場合は再配置
-      const expected = problem.sum;
-      if (toys.length !== expected) {
-        layoutToys(problem);
-      }
-      const sum = problem.sum;
-      const ans = (answerInput.value === '' ? null : parseInt(answerInput.value, 10));
-      if (ans == null || Number.isNaN(ans)) { feedbackEl.className = 'feedback incorrect'; feedbackEl.textContent = 'すうじを いれてね！'; playHint(); return; }
-      if (ans === sum) {
-        score++;
-        feedbackEl.className = 'feedback correct';
-        feedbackEl.textContent = '🎉 せいかい！やったね！';
-        addBadge(); popConfetti(50); playSuccess();
-        updateHUD();
-      } else {
-        feedbackEl.className = 'feedback incorrect';
-        feedbackEl.textContent = `${explain()} もういちど ためしてみよう！`;
-        document.getElementById('retryBtn').style.display = 'inline-block';
-        playHint();
-      }
-    }
-
-    function explain() {
-      const { a, b, c1, c2, toy } = problem;
-      const toyName = toy.type === 'block' ? 'ブロック' : 'くるま';
-      return `${c1.name}${toyName}が ${a} こ と、${c2.name}${toyName}が ${b} こ あるから、${a} + ${b} = ${a+b} だよ！`;
-    }
-
-    function addBadge() {
-      const { toy } = problem;
-      const span = document.createElement('span');
-      span.className = 'badge';
-      span.textContent = toy.type === 'block' ? '🧱' : '🚗';
-      badgesEl.appendChild(span);
-    }
-
-    function popConfetti(n = 40) {
-      const colors = ['#ff4757','#ffa502','#2ed573','#1e90ff','#5352ed','#ff6b81','#70a1ff','#7bed9f'];
-      const w = confettiEl.clientWidth || window.innerWidth;
-      for (let i = 0; i < n; i++) {
-        const c = document.createElement('div'); c.className = 'confetti';
-        c.style.left = Math.random() * w + 'px';
-        c.style.background = colors[Math.floor(Math.random() * colors.length)];
-        c.style.animationDelay = (Math.random() * 0.2) + 's';
-        c.style.transform = `translateY(-20px) rotate(${Math.random()*360}deg)`;
-        confettiEl.appendChild(c); setTimeout(() => c.remove(), 1600);
-      }
-    }
-
-    // サウンド
-    function playTone(freq = 880, dur = 0.18, type = 'sine', gain = 0.06) {
-      if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-      o.type = type; o.frequency.value = freq; g.gain.value = gain; o.connect(g).connect(audioCtx.destination);
-      o.start(); o.stop(audioCtx.currentTime + dur);
-    }
-    function playSuccess() { if (!audioCtx) return; const seq = [ {f:659,d:0.12},{f:784,d:0.12},{f:988,d:0.18} ]; let t=0; for (const s of seq){ setTimeout(()=>playTone(s.f,s.d,'triangle',0.07), t*1000); t+=s.d*0.75; } }
-    function playPop() { playTone(500, 0.06, 'sine', 0.05); }
-    function playHint() { playTone(220, 0.18, 'sawtooth', 0.03); }
-    function playTick() { playTone(740, 0.05, 'sine', 0.03); }
+    });
   </script>
 </body>
 </html>
-
-

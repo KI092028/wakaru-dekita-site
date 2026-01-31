@@ -3,376 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ブロック ひきざん（スタック）</title>
-  <meta name="description" content="小学校1-3年生向けのひき算練習。カラフルなブロックが消えるアニメで 7 - 4 = ? を体感！数字ボタンで回答、正解でお花が咲きます。8問リピート、レベルとタイマー付き。" />
-  
-  <!-- Google tag (gtag.js) -->
+  <title>ブロック ひきざん（シンプル）</title>
+  <meta name="description" content="ブロックがへるイメージで、ひき算をシンプルにれんしゅう。" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root {
-      --bg1: #c9ffbf; --bg2: #ffafbd;
-      --pink: #ff6b6b; --blue: #74b9ff; --green: #2ecc71; --yellow: #f9ca24; --deep: #2d3436;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0; font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      display: flex; align-items: center; justify-content: center; padding: 12px; overflow: hidden;
-    }
-    .app { width: 100%; max-width: 960px; background: #fff; border-radius: 20px; box-shadow: 0 22px 44px rgba(0,0,0,0.12); padding: 14px; position: relative; overflow: hidden; }
-    .title { text-align: center; font-size: 1.6rem; color: var(--pink); font-weight: 800; margin-bottom: 6px; }
-    .equation-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-    .equation { text-align: center; font-size: 2.1rem; font-weight: 800; letter-spacing: 2px; color: var(--deep); }
-    .answer-input { font-size: 2rem; font-weight: 800; width: 120px; text-align: center; border: 4px solid var(--blue); border-radius: 14px; padding: 6px 10px; font-family: 'Nunito', sans-serif; }
-    .hud { display: flex; gap: 8px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
-    .pill { background: linear-gradient(45deg, var(--blue), #6c5ce7); color: #fff; padding: 6px 12px; border-radius: 999px; font-weight: 800; box-shadow: 0 8px 18px rgba(108,92,231,0.25); }
-
-    .level-row { display: flex; gap: 8px; justify-content: center; margin-top: 6px; }
-    .level-btn { background: linear-gradient(45deg, var(--yellow), #f1c40f); color: #333; border: none; padding: 8px 12px; border-radius: 999px; font-weight: 800; box-shadow: 0 8px 18px rgba(241,196,15,0.25); }
-    .level-btn.active { outline: 3px solid rgba(0,0,0,0.15); filter: brightness(1.05); }
-
-    .timer-wrap { margin-top: 8px; background: #ecf0f1; border-radius: 10px; overflow: hidden; border: 2px solid #dfe6e9; height: 14px; }
-    .timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), #27ae60); transition: width 0.1s linear; }
-
-    .stage { margin-top: 10px; }
-    .stack-wrap { background: linear-gradient(180deg, #fefefe, #f7fff7); border-radius: 18px; padding: 12px; position: relative; min-height: 280px; }
-    .blocks { display: grid; grid-template-columns: repeat(10, minmax(24px, 1fr)); grid-auto-rows: 36px; gap: 8px; align-content: center; justify-items: center; }
-    .block { width: 100%; max-width: 52px; height: 100%; border-radius: 10px; box-shadow: 0 3px 0 rgba(0,0,0,0.1); }
-    .b1 { background: #ff7675; } .b2 { background: #74b9ff; } .b3 { background: #55efc4; } .b4 { background: #ffeaa7; } .b5 { background: #a29bfe; }
-    .vanish { animation: vanish 0.6s ease forwards; }
-    @keyframes vanish { 40% { transform: translateY(-8px) scale(1.05); opacity: 0.7; } 100% { transform: translateY(-24px) scale(0.2); opacity: 0; } }
-
-     .pad { margin-top: 10px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-     /* 追加: ソフトキーボード */
-     .softpad { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 80px); gap: 8px; justify-content: center; }
-     .key { background: #ffffff; color: #2d3436; border: 2px solid #cbd5e1; border-radius: 12px; font-weight: 900; font-size: 1.4rem; padding: 12px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.06); }
-     .key:active { transform: translateY(1px); }
-     .key.wide { grid-column: span 2; }
-     @media (max-width: 520px) { .softpad { grid-template-columns: repeat(3, 28vw); } }
-    .num { background: linear-gradient(45deg, var(--blue), #6c5ce7); border: none; color: #fff; font-weight: 900; font-size: 1.3rem; padding: 12px 0; border-radius: 14px; box-shadow: 0 8px 18px rgba(108,92,231,0.3); transition: transform 0.12s ease, box-shadow 0.12s ease; }
-    .num:active { transform: translateY(1px); }
-    .num.selected { outline: 4px solid rgba(255,255,255,0.85); transform: translateY(-1px) scale(1.05); box-shadow: 0 12px 24px rgba(108,92,231,0.45); }
-
-    .controls { margin-top: 8px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .btn { background: linear-gradient(45deg, var(--pink), #e84393); color: #fff; border: none; padding: 12px 18px; font-size: 1.2rem; font-weight: 800; border-radius: 16px; box-shadow: 0 10px 24px rgba(232,67,147,0.3); }
-    .btn.secondary { background: linear-gradient(45deg, var(--blue), #6c5ce7); box-shadow: 0 10px 24px rgba(108,92,231,0.3); }
-    .toggle { background: #fff; color: #333; border: 3px solid #ccc; }
-
-    .feedback { margin-top: 6px; min-height: 36px; font-size: 1.2rem; font-weight: 800; text-align: center; }
-    .correct { color: #00b894; } .incorrect { color: #e17055; }
-    .shake { animation: shake 0.4s ease; }
-    @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-6px); } 40%, 60% { transform: translateX(6px); } }
-
-    .flowers { position: absolute; inset: 0; pointer-events: none; }
-    .flower { position: absolute; font-size: 24px; animation: bloom 0.9s ease-out forwards; transform-origin: center bottom; }
-    @keyframes bloom { from { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } to { transform: scale(1); opacity: 1; } }
-
-    @media (max-width: 760px) { .equation { font-size: 1.9rem; } .num { font-size: 1.15rem; } .blocks { grid-auto-rows: 34px; } }
-    @media (max-width: 520px) { .equation { font-size: 1.7rem; } .num { font-size: 1.05rem; } .blocks { grid-auto-rows: 32px; } }
+    .blocks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .block{width:34px;height:34px;border-radius:10px;background:linear-gradient(45deg,#74b9ff,#6c5ce7)}
+    .minus{font-size:34px;font-weight:900;color:#2c3e50;margin:0 6px}
+    .empty{opacity:.15}
   </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="ブロック ひきざん">
-    <div class="title">🧱 ブロック ひきざん</div>
-    <div class="equation-row">
-      <div class="equation" id="equation">7 - 4 =</div>
-      <input type="text" class="answer-input" id="answerInput" inputmode="numeric" pattern="[0-9]*" placeholder="?" aria-label="こたえ" maxlength="2" />
-    </div>
-    <div class="hud">
-      <div class="pill" id="qinfo">もんだい: 1 / 8</div>
-      <div class="pill" id="score">スコア: 0</div>
-      <div class="pill" id="levelText">レベル: かんたん</div>
-    </div>
-    <div class="level-row">
-      <button class="level-btn active" id="lv-easy">かんたん</button>
-      <button class="level-btn" id="lv-medium">ふつう</button>
-      <button class="level-btn" id="lv-hard">むずかしい</button>
-    </div>
-    <div class="timer-wrap" aria-label="タイマー"><div class="timer-bar" id="timerBar"></div></div>
-
-    <div class="stage">
-      <div class="stack-wrap" id="stackWrap">
-        <div class="blocks" id="blocks"></div>
-        <div class="flowers" id="flowers"></div>
-      </div>
-        <div class="pad" id="pad"></div>
-        <div class="softpad" id="softpad" aria-label="ソフトキーボード">
-          <button class="key">1</button>
-          <button class="key">2</button>
-          <button class="key">3</button>
-          <button class="key">4</button>
-          <button class="key">5</button>
-          <button class="key">6</button>
-          <button class="key">7</button>
-          <button class="key">8</button>
-          <button class="key">9</button>
-          <button class="key wide">0</button>
-          <button class="key" data-action="back">⌫</button>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="ブロック ひきざん">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">🧱 ブロック ひきざん</h1>
+          <p class="sub" id="qc-subtitle">ブロックが へるよ。のこりは？</p>
         </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
+      </div>
+      <div class="panel">
+        <div class="blocks" id="blocks"></div>
+        <div class="problem" id="qc-problem">8 - 3</div>
+        <div class="row">
+          <span style="font-weight:900;font-size:2.2rem;">=</span>
+          <input class="input" id="qc-input" inputmode="numeric" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+        <div class="feedback" id="qc-feedback"></div>
+      </div>
     </div>
-
-    <div class="controls">
-      <button class="btn" id="checkBtn">こたえる！</button>
-      <button class="btn secondary" id="hintBtn">ヒント</button>
-      <button class="btn secondary" id="nextBtn">つぎへ</button>
-      <button class="btn secondary" id="restartBtn">セッション リスタート</button>
-      <button class="btn toggle" id="repeatBtn" aria-pressed="false">リピート: OFF</button>
-    </div>
-
-    <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
 
+  <script src="../js/quiz-core.js"></script>
   <script>
-    // レベル設定
-    const LEVELS = {
-      easy:   { aMin: 3, aMax: 10, time: 15 },
-      medium: { aMin: 5, aMax: 12, time: 12 },
-      hard:   { aMin: 7, aMax: 15, time: 10 }
-    };
-
-    // 状態
-    let level = 'easy';
-    let a = 7, b = 4, ans = 3;
-    let idx = 0, sessionLen = 8, score = 0;
-    let selected = null;
-    let timerDur = LEVELS[level].time; // 秒
-    let timerRemain = timerDur;
-    let timerId = null;
-    let repeatMode = false;
-    let hintShown = false;
-    let vanishIdxs = [];
-
-    const eqEl = document.getElementById('equation');
-    const blocksEl = document.getElementById('blocks');
-    const flowersEl = document.getElementById('flowers');
-    const feedbackEl = document.getElementById('feedback');
-    const qinfoEl = document.getElementById('qinfo');
-    const scoreEl = document.getElementById('score');
-    const levelTextEl = document.getElementById('levelText');
-    const timerBar = document.getElementById('timerBar');
-    const stackWrap = document.getElementById('stackWrap');
-    const padEl = document.getElementById('pad');
-    const answerInput = document.getElementById('answerInput');
-
-    init();
-
-    function init() {
-      buildPad();
-      bindUI();
-      startSession();
-    }
-
-    function bindUI() {
-      document.getElementById('lv-easy').addEventListener('click', () => setLevel('easy'));
-      document.getElementById('lv-medium').addEventListener('click', () => setLevel('medium'));
-      document.getElementById('lv-hard').addEventListener('click', () => setLevel('hard'));
-      document.getElementById('checkBtn').addEventListener('click', checkAnswer);
-      document.getElementById('hintBtn').addEventListener('click', showHintAnimation);
-      document.getElementById('nextBtn').addEventListener('click', nextProblem);
-      document.getElementById('restartBtn').addEventListener('click', startSession);
-      const rep = document.getElementById('repeatBtn');
-      rep.addEventListener('click', () => { repeatMode = !repeatMode; rep.textContent = `リピート: ${repeatMode ? 'ON' : 'OFF'}`; rep.setAttribute('aria-pressed', repeatMode); });
-      window.addEventListener('resize', () => layoutBlocks(a));
-      // 入力欄: 全角→半角、数字のみ、Enterで判定
-      // 入力欄のサニタイズ（全角半角対応）
-      answerInput.addEventListener('input', (e) => {
-        let v = e.target.value;
-        // 全角→半角
-        v = v.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
-        // 数字以外除去
-        v = v.replace(/[^0-9]/g, '');
-        if (v.length > 2) v = v.slice(0,2);
-        e.target.value = v;
-        selected = v === '' ? null : parseInt(v, 10);
-        highlightPad();
-      });
-      
-      // Enterキーでも回答
-      answerInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') checkAnswer();
-      });
-      // ソフトキーボード
-      const soft = document.getElementById('softpad');
-      soft.addEventListener('click', (e) => {
-        const btn = e.target.closest('.key'); if (!btn) return;
-        const action = btn.getAttribute('data-action');
-        if (action === 'back') {
-          answerInput.value = answerInput.value.slice(0, -1);
-        } else {
-          const ch = btn.textContent.trim();
-          if (answerInput.value.length < 2) answerInput.value += ch;
-        }
-        const val = answerInput.value;
-        selected = val === '' ? null : parseInt(val, 10);
-        highlightPad();
-      });
-    }
-
-    function setLevel(lv) {
-      level = lv; timerDur = LEVELS[level].time; levelTextEl.textContent = `レベル: ${lvLabel(lv)}`;
-      document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`lv-${lv}`).classList.add('active');
-      nextProblem(true);
-    }
-
-    function lvLabel(lv) { return lv === 'easy' ? 'かんたん' : lv === 'medium' ? 'ふつう' : 'むずかしい'; }
-
-    function buildPad() {
-      padEl.innerHTML = '';
-      for (let n = 0; n <= 10; n++) {
-        const btn = document.createElement('button');
-        btn.className = 'num'; btn.textContent = n;
-        btn.addEventListener('click', () => { selected = n; highlightPad(); playTick(); });
-        padEl.appendChild(btn);
-      }
-    }
-
-    function highlightPad() {
-      const children = [...padEl.querySelectorAll('.num')];
-      children.forEach(b => b.classList.remove('selected'));
-      if (selected != null && selected >= 0 && selected < children.length) {
-        children[selected].classList.add('selected');
-      }
-    }
-
-    function startSession() {
-      idx = 0; score = 0; feedbackEl.textContent = '';
-      nextProblem(true);
-    }
-
-    function nextProblem(reset = false) {
-      if (!reset && idx >= sessionLen) {
-        feedbackEl.className = 'feedback correct';
-        feedbackEl.textContent = `🎉 せっしょん おわり！ スコア: ${score} / ${sessionLen}`;
-        if (repeatMode) { setTimeout(startSession, 1000); }
-        return;
-      }
-      generateProblem();
-      selected = null; answerInput.value = ''; highlightPad();
-      renderEquation(); layoutBlocks(a);
-      updateHUD();
-      idx++;
-      startTimer();
-    }
-
-    function generateProblem() {
-      const cfg = LEVELS[level];
-      while (true) {
-        a = randInt(cfg.aMin, cfg.aMax);
-        b = randInt(1, Math.min(a - 1, 10));
-        ans = a - b;
-        if (ans >= 1 && ans <= 10) break;
-      }
-    }
-
-    function renderEquation() { eqEl.textContent = `${a} - ${b} =`; }
-
-    function layoutBlocks(total) {
-      blocksEl.innerHTML = '';
-      flowersEl.innerHTML = '';
-      const colors = ['b1','b2','b3','b4','b5'];
-      // 問題ごとに単色を選ぶ
-      const colorClass = colors[Math.floor(Math.random() * colors.length)];
-      for (let i = 0; i < total; i++) {
-        const d = document.createElement('div');
-        d.className = `block ${colorClass}`;
+    const blocksEl=document.getElementById('blocks');
+    function renderBlocks(a,b){
+      blocksEl.innerHTML='';
+      for(let i=0;i<a;i++){
+        const d=document.createElement('div');
+        d.className='block'+(i>=a-b?' empty':'');
         blocksEl.appendChild(d);
       }
-      // ヒントで消す位置を準備（まだ消さない）
-      vanishIdxs = shuffle([...Array(total).keys()]).slice(0, b);
-      hintShown = false;
     }
 
-    function showHintAnimation() {
-      if (hintShown) return;
-      hintShown = true;
-      for (const i of vanishIdxs) {
-        const el = blocksEl.children[i];
-        if (!el) continue;
-        el.classList.add('vanish');
-        el.addEventListener('animationend', () => el.remove(), { once: true });
+    QuizCore.create({
+      appId:'subtraction-blocks',
+      title:'🧱 ブロック ひきざん',
+      subtitle:'ブロックが へるよ。のこりは？',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        const a=3+Math.floor(Math.random()*8); // 3..10
+        const b=1+Math.floor(Math.random()*a);
+        renderBlocks(a,b);
+        return {text:`${a} - ${b}`, answer:a-b};
       }
-    }
-
-    function startTimer() {
-      stopTimer();
-      timerRemain = timerDur;
-      updateTimerBar();
-      timerId = setInterval(() => {
-        timerRemain -= 0.1;
-        if (timerRemain <= 0) {
-          timerRemain = 0; updateTimerBar(); stopTimer();
-          // タイムアップ
-          wrongFeedback('⌛ じかんぎれ！ のこりのブロックを かぞえてみよう！');
-        } else {
-          updateTimerBar();
-        }
-      }, 100);
-    }
-
-    function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
-    function updateTimerBar() { const p = Math.max(0, Math.min(1, timerRemain / timerDur)); timerBar.style.width = `${p * 100}%`; }
-
-    function checkAnswer() {
-      if (selected == null) { wrongFeedback('すうじを いれてね！'); return; }
-      if (selected === ans) {
-        score++; rightFeedback();
-      } else {
-        wrongFeedback('ちがうよ！ のこりのブロックを もういちど かぞえてみよう！');
-      }
-      updateHUD();
-    }
-
-    function rightFeedback() {
-      stopTimer();
-      feedbackEl.className = 'feedback correct';
-      feedbackEl.textContent = '🌸 せいかい！ すごいね！';
-      popFlowers();
-      setTimeout(() => nextProblem(), 1000);
-    }
-
-    function wrongFeedback(msg) {
-      stopTimer();
-      feedbackEl.className = 'feedback incorrect';
-      feedbackEl.textContent = msg;
-      stackWrap.classList.add('shake');
-      setTimeout(() => { stackWrap.classList.remove('shake'); startTimer(); }, 400);
-    }
-
-    function popFlowers() {
-      const rect = stackWrap.getBoundingClientRect();
-      const w = rect.width, h = rect.height;
-      for (let i = 0; i < 10; i++) {
-        const f = document.createElement('div');
-        f.className = 'flower';
-        f.textContent = ['🌸','🌼','🌺','🌻'][i % 4];
-        f.style.left = (Math.random() * w) + 'px';
-        f.style.top = (Math.random() * h * 0.6 + h * 0.2) + 'px';
-        flowersEl.appendChild(f);
-        setTimeout(() => f.remove(), 1000);
-      }
-    }
-
-    function updateHUD() {
-      qinfoEl.textContent = `もんだい: ${Math.min(idx + 0, sessionLen)} / ${sessionLen}`;
-      scoreEl.textContent = `スコア: ${score}`;
-    }
-
-    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-    function playTick() { /* 簡易フィードバック用。必要ならWebAudio追加可 */ }
+    });
   </script>
 </body>
 </html>
-
-

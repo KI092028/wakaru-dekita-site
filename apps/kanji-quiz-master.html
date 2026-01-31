@@ -3,210 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>学年別漢字読みクイズマスター</title>
-  
+  <title>漢字よみクイズ（シンプル）</title>
+  <meta name="description" content="漢字の読みを4択でえらぶ。UIはシンプル、操作はタップだけ。" />
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YSBGNQTYRZ');</script>
 
-    gtag('config', 'G-YSBGNQTYRZ');
-  </script>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/quiz.css" />
   <style>
-    :root { --blue:#2563eb; --green:#16a34a; --red:#b91c1c; --gray:#111827; --border:#94a3b8; }
-    *, *::before, *::after { box-sizing: border-box; }
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Noto Sans JP','メイリオ',Meiryo,Arial,sans-serif; background:#ffffff; color:#111827; }
-    .container { max-width: 960px; margin: 0 auto; padding: clamp(12px, 3vw, 20px); }
-    header h1 { margin:0 0 6px; color: var(--blue); font-size: 1.6rem; }
-    .meta { color:#64748b; margin-bottom: 10px; }
-    .controls { display:grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items:center; background:#fff; border-radius:12px; padding:12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
-    label { font-size: 1rem; }
-    select, button, input[type="checkbox"] { font-size:1.05rem; }
-    select { padding: 8px 12px; border:2px solid #cbd5e1; border-radius:8px; background:#fff; }
-    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .btn { padding:10px 14px; border-radius:10px; border:2px solid #2563eb; background:#2563eb; color:#fff; font-size:1.05rem; }
-    .panel { margin-top:12px; background:#fff; border-radius:12px; padding:16px; position:relative; overflow:hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    .status { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
-    .status .score-label { font-weight:700; }
-    #score { font-size:1.8rem; font-weight:800; color:#0ea5e9; }
-    .big { font-size: clamp(84px, 18vw, 180px); line-height:1; text-align:center; margin: 8px 0 12px; user-select:none; font-weight:900; color:#111827; -webkit-text-stroke:1px rgba(0,0,0,0.06); text-rendering: optimizeLegibility; }
-    .choices { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .choice { padding: 14px 16px; font-size: 1.35rem; border:none; border-radius: 12px; background:#ffffff; color:#111827; box-shadow:0 1px 0 rgba(0,0,0,0.04), 0 0 0 1px #475569 inset; }
-    .choice:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
-    .choice.correct { background:#166534; color:#ffffff; border-color:#14532d; }
-    .choice.wrong { background:#991b1b; color:#ffffff; border-color:#7f1d1d; }
-    .feedback { min-height:1.6em; font-size:1.15rem; color:#111827; margin-top:6px; }
-    .footer { display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap; }
-    .confetti-area { pointer-events:none; position:absolute; inset:0; overflow:hidden; }
-    .confetti { position:absolute; width:8px; height:12px; opacity:0; animation: fall 900ms ease-out forwards; }
-    @keyframes fall { 0%{ transform: translate(var(--x,0), -20px) rotate(0deg) scale(1); opacity:0 } 10%{opacity:1} 100%{ transform: translate(var(--x,0), 120vh) rotate(540deg) scale(1); opacity:0 } }
-    @media (max-width: 420px){ .choices { grid-template-columns: 1fr; } .controls { grid-template-columns: 1fr; } }
+    .big{font-size: clamp(84px, 18vw, 180px); line-height:1; text-align:center; margin: 8px 0 12px; user-select:none; font-weight:900;}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:0 auto}
+    .choice{min-height:56px}
+    @media (max-width: 420px){.choices{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>学年別漢字読みクイズマスター</h1>
-      <div class="meta">学年をえらんで 4択クイズ。せいかいで紙吹雪！ まちがいは正解を表示。弱点を優先してくり返します。</div>
-    </header>
+  <div class="wrapper">
+    <div class="card" role="application" aria-label="漢字よみクイズ">
+      <div class="header">
+        <button class="btn secondary" id="qc-back">← もどる</button>
+        <div class="titleBox">
+          <h1 class="h1" id="qc-title">📚 漢字よみクイズ</h1>
+          <p class="sub" id="qc-subtitle">4つから えらぼう！</p>
+        </div>
+        <button class="btn ghost" id="qc-sound-btn">🔊 おと: ON</button>
+      </div>
 
-    <section class="controls" aria-label="コントロール">
-      <div>
-        <label for="gradeSel">学年</label>
-        <select id="gradeSel" aria-label="学年を選ぶ">
-          <option value="grade1">1年</option>
-          <option value="grade2">2年</option>
-          <option value="grade3">3年</option>
-          <option value="grade4">4年</option>
-          <option value="grade5">5年</option>
-          <option value="grade6">6年</option>
-        </select>
+      <div class="pills">
+        <div class="pill" id="qc-correct">せいかい: 0</div>
+        <div class="pill muted" id="qc-total">もんだい: 0</div>
+        <div class="pill warn" id="qc-daily">きょう: 0/3</div>
       </div>
-      <div class="row" role="group" aria-label="弱点優先">
-        <input id="weakMode" type="checkbox" checked />
-        <label for="weakMode">弱点を優先</label>
-      </div>
-      <div class="row">
-        <button id="startBtn" class="btn">はじめる</button>
-      </div>
-    </section>
 
-    <section class="panel" aria-live="polite">
-      <div class="status">
-        <div><span class="score-label">スコア:</span> <span id="score">0</span></div>
-        <div>出題数: <span id="count">0</span></div>
+      <div class="panel">
+        <div class="row" style="justify-content:center; gap:8px; margin-bottom:10px;">
+          <span class="badge" id="grade-badge">1年</span>
+          <button class="btn ghost" data-grade="grade1">1年</button>
+          <button class="btn ghost" data-grade="grade2">2年</button>
+          <button class="btn ghost" data-grade="grade3">3年</button>
+          <button class="btn ghost" data-grade="grade4">4年</button>
+          <button class="btn ghost" data-grade="grade5">5年</button>
+          <button class="btn ghost" data-grade="grade6">6年</button>
+        </div>
+
+        <div class="big" id="kanji">一</div>
+
+        <input class="input" id="qc-input" style="display:none" />
+
+        <div class="choices" id="choices"></div>
+
+        <div class="controls" style="margin-top:10px;">
+          <button class="btn primary" id="qc-submit">こたえる！</button>
+          <button class="btn blue" id="qc-next" style="display:none;">つぎへ</button>
+        </div>
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn blue" id="qc-daily-btn">🎯 きょうの3もん</button>
+          <button class="btn secondary" id="qc-practice-btn">🧸 ふつうにれんしゅう</button>
+        </div>
+
+        <div class="feedback" id="qc-feedback"></div>
       </div>
-      <div class="big" id="kanji">漢</div>
-      <div class="choices" id="choices"></div>
-      <div class="feedback" id="feedback"></div>
-      <div class="footer">
-        <button id="nextBtn" class="btn">つぎへ</button>
-      </div>
-      <div class="confetti-area" id="confetti"></div>
-    </section>
+    </div>
   </div>
 
   <script type="module">
     import { kanjiData } from '../kanjiData.js';
+    import '../js/quiz-core.js';
 
-    // 要素
-    const gradeSel = document.getElementById('gradeSel');
-    const weakMode = document.getElementById('weakMode');
-    const startBtn = document.getElementById('startBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const kanjiEl = document.getElementById('kanji');
-    const choicesEl = document.getElementById('choices');
-    const feedbackEl = document.getElementById('feedback');
-    const scoreEl = document.getElementById('score');
-    const countEl = document.getElementById('count');
-    const confettiEl = document.getElementById('confetti');
+    const kanjiEl=document.getElementById('kanji');
+    const choicesEl=document.getElementById('choices');
+    const badge=document.getElementById('grade-badge');
 
-    // 状態
-    let pool = [];           // {kanji, reading}[]
-    let stats = new Map();   // key: kanji, value: {correct:number, wrong:number}
-    let current = null;      // 現在の問題
-    let score = 0;           // 累積スコア
-    let count = 0;           // 出題数（エンドレス）
-    let answered = false;
+    let grade='grade1';
+    let pool = kanjiData[grade].slice();
 
-    function loadPool() {
-      const key = gradeSel.value;
-      pool = (kanjiData[key] || []).slice();
-      if (!pool.length) pool = (kanjiData.grade1 || []).slice();
-      // 統計初期化
-      stats = new Map(pool.map(k => [k.kanji, { correct: 0, wrong: 0 }]));
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function setGrade(g){
+      grade=g;
+      badge.textContent = g.replace('grade','')+'年';
+      pool=(kanjiData[g]||kanjiData.grade1).slice();
+      quiz.newQuestion();
     }
 
-    function weightOf(item) {
-      const s = stats.get(item.kanji) || { correct: 0, wrong: 0 };
-      // 基本1 + 誤答数*2 - 正答数*0.5（下限1）
-      const w = Math.max(1, 1 + s.wrong * 2 - s.correct * 0.5);
-      return w;
-    }
-
-    function pickWeighted() {
-      if (!weakMode.checked) return pool[Math.floor(Math.random() * pool.length)];
-      const weights = pool.map(weightOf);
-      const sum = weights.reduce((a,b)=>a+b,0);
-      let r = Math.random() * sum;
-      for (let i=0; i<pool.length; i++) {
-        if ((r -= weights[i]) <= 0) return pool[i];
-      }
-      return pool[pool.length - 1];
-    }
-
-    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-    function sampleWrong(n, exceptReading){
-      const c = pool.filter(x => x.reading !== exceptReading);
-      const r = [];
-      while (r.length < Math.min(n, c.length)) {
-        const x = c[Math.floor(Math.random() * c.length)];
-        if (!r.some(e => e.reading === x.reading)) r.push(x);
-      }
-      return r.map(x => x.reading);
-    }
-
-    function showConfetti(){
-      confettiEl.innerHTML = '';
-      const colors = ['#f97316','#22c55e','#06b6d4','#a855f7','#f43f5e','#eab308'];
-      for (let i=0; i<60; i++){
-        const d = document.createElement('div');
-        d.className = 'confetti';
-        d.style.background = colors[i % colors.length];
-        d.style.left = Math.random()*100 + '%';
-        d.style.setProperty('--x', (Math.random()*200-100) + 'px');
-        confettiEl.appendChild(d);
-        requestAnimationFrame(()=>{ d.style.opacity = '1'; });
-        setTimeout(()=> d.remove(), 1000);
-      }
-    }
-
-    function render(){
-      answered = false;
-      feedbackEl.textContent = '';
-      current = pickWeighted();
-      if (!current) return;
-      kanjiEl.textContent = current.kanji;
-      const opts = shuffle([current.reading, ...sampleWrong(3, current.reading)]);
-      choicesEl.innerHTML = '';
-      opts.forEach(reading => {
-        const b = document.createElement('button');
-        b.className = 'choice'; b.type = 'button'; b.textContent = reading;
-        b.addEventListener('click', () => choose(b, reading));
+    function renderChoices(opts){
+      choicesEl.innerHTML='';
+      opts.forEach((t,i)=>{
+        const b=document.createElement('button');
+        b.className='btn blue choice';
+        b.textContent=t;
+        b.addEventListener('click', ()=>{ document.getElementById('qc-input').value=String(i+1); });
         choicesEl.appendChild(b);
       });
-      nextBtn.disabled = true;
     }
 
-    function choose(btn, selected){
-      if (answered) return; answered = true; count += 1; countEl.textContent = String(count);
-      if (selected === current.reading) {
-        score += 1; scoreEl.textContent = String(score); btn.classList.add('correct');
-        feedbackEl.textContent = 'せいかい！';
-        const s = stats.get(current.kanji); if (s) s.correct += 1; else stats.set(current.kanji, {correct:1, wrong:0});
-        showConfetti();
-      } else {
-        btn.classList.add('wrong');
-        // 正解の選択肢を強調
-        Array.from(choicesEl.children).forEach(c => { if (c.textContent === current.reading) c.classList.add('correct'); });
-        feedbackEl.textContent = `せいかい: ${current.reading}`;
-        const s = stats.get(current.kanji); if (s) s.wrong += 1; else stats.set(current.kanji, {correct:0, wrong:1});
+    const quiz = window.QuizCore.create({
+      appId:'kanji-quiz-master',
+      title:'📚 漢字よみクイズ',
+      subtitle:'4つから えらぼう！',
+      dailyGoal:3,
+      buildQuestion:()=>{
+        if(!pool.length) pool=(kanjiData.grade1||[]).slice();
+        const item = pool[Math.floor(Math.random()*pool.length)];
+        kanjiEl.textContent=item.kanji;
+        const correct=item.reading;
+        const opts=new Set([correct]);
+        const all=(kanjiData[grade]||kanjiData.grade1)||[];
+        while(opts.size<4){
+          const pick = all[Math.floor(Math.random()*all.length)];
+          if(pick && pick.reading) opts.add(pick.reading);
+        }
+        const list=shuffle([...opts]);
+        renderChoices(list);
+        const ansIndex=list.indexOf(correct)+1;
+        return { text: item.kanji, answer: ansIndex };
       }
-      nextBtn.disabled = false;
-    }
+    });
 
-    function start(){ score = 0; count = 0; scoreEl.textContent = '0'; countEl.textContent = '0'; loadPool(); render(); }
-    gradeSel.addEventListener('change', () => start());
-    startBtn.addEventListener('click', () => start());
-    nextBtn.addEventListener('click', () => render());
-
-    // 初期
-    start();
+    document.querySelectorAll('[data-grade]').forEach(btn=>btn.addEventListener('click', ()=>setGrade(btn.dataset.grade)));
   </script>
 </body>
 </html>
-
-
