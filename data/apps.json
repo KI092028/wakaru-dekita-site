@@ -1,308 +1,84 @@
 {
-    "apps": [
-        {
-            "id": "kanji-practice",
-            "name": "漢字れんしゅう（シンプル）",
-            "category": "language",
-            "description": "学年をえらんで 漢字の よみ4択 と なぞり書き。1年はシンプル、6年は音訓や語でチャレンジ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=kanji-practice",
-            "difficulty": "初級〜上級",
-            "grade": "1-6年生"
-        },
-        {
-            "id": "kanji-quiz-master",
-            "name": "漢字よみクイズ（シンプル）",
-            "category": "language",
-            "description": "学年をえらんで 4択クイズ。正解で紙吹雪！ まちがいは正解表示。弱点を優先して出題。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=kanji-quiz-master",
-            "difficulty": "初級〜中級",
-            "grade": "1-6年生"
-        },
-        {
-            "id": "kanji-reading-adventure",
-            "name": "漢字よみアドベンチャー（シンプル）",
-            "category": "language",
-            "description": "1年生の80字から ランダム10問。4択クイズ、せいかいでスター！ まちがいはローマ字ヒント。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=kanji-reading-adventure",
-            "difficulty": "初級",
-            "grade": "1年生"
-        },
-        {
-            "id": "candy-subtract",
-            "name": "キャンディー引き算チャレンジ",
-            "category": "basic",
-            "description": "びんのキャンディーで ひきざん。へったあと のこりを タップ。にじスパークでおいわい。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=candy-subtract",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "toy-measure-race",
-            "name": "おもちゃ測定レース",
-            "category": "geometry",
-            "description": "コースの ながさを はかって たしざん。はたが ゆれて ゴール！ タイマーつき。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=toy-measure-race",
-            "difficulty": "中級",
-            "grade": "1-3年生"
-        },
-        {
-            "id": "decimal-shopping",
-            "name": "小数ショッピングシミュレーション",
-            "category": "basic",
-            "description": "ドラッグで かいもの。小数の たしざん・ひきざんを れんしゅう。レジ音で おいわい。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=decimal-shopping",
-            "difficulty": "中級",
-            "grade": "4-6年生"
-        },
-        {
-            "id": "fraction-pizza",
-            "name": "分数ピザパーティー",
-            "category": "basic",
-            "description": "ピザを きって あわせて 分数を けいさん。やくぶん・帯分数OK。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=fraction-pizza",
-            "difficulty": "中級",
-            "grade": "4-6年生"
-        },
-        {
-            "id": "mixed-chain",
-            "name": "混合計算チェーンアドベンチャー",
-            "category": "basic",
-            "description": "小数と分数を まぜた もんだい。()→×÷→+- の じゅんで とこう。エンドレス。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=mixed-chain",
-            "difficulty": "上級",
-            "grade": "5-6年生"
-        },
-        {
-            "id": "fish-addition",
-            "name": "魚釣り足し算ゲーム",
-            "category": "basic",
-            "description": "さかなを つって たしざん。バブルでおいわい。まちがいは およいでヒント。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=fish-addition",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "balloon-pop",
-            "name": "バルーン引き算ポップ",
-            "category": "basic",
-            "description": "ふうせんが はじけて ひきざん。のこりを タップして こたえよう。タイマーつき。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=balloon-pop",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "robot-addition",
-            "name": "ロボット足し算ビルダー",
-            "category": "basic",
-            "description": "パーツを ドラッグして くみたて。たしざんの かずに そろえよう。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=robot-addition",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "sweets-mix",
-            "name": "混合演算お菓子パーティー",
-            "category": "basic",
-            "description": "クッキーで + と -。せいかいで パーティー。かんたん れんしゅう。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=sweets-mix",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "animal-shape-match",
-            "name": "動物図形マッチング",
-            "category": "geometry",
-            "description": "かげ と かたちを あわせよう。ドラッグで フィット。せいかいで ほえるよ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=animal-shape-match",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "addition-fruits",
-            "name": "フルーツ たしざん（シンプル）",
-            "category": "basic",
-            "description": "りんごやバナナを かごへ はこぶよ。たしざんを といて すすもう。せいかいで はなびと おと！",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=addition-fruits",
-            "difficulty": "初級",
-            "grade": "1年生"
-        },
-        {
-            "id": "shape-hunt",
-            "name": "形探しパズルアドベンチャー",
-            "category": "geometry",
-            "description": "こうえんで かたちを みつけて うごかそう。あう ばしょに おけば ピカッ！ まちがいはヒント。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=shape-hunt",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "ninja-mix",
-            "name": "忍者足し引きミックス修行",
-            "category": "basic",
-            "description": "たしざん と ひきざんを まぜて とくよ。こたえると きりワザ と ほしが でる。れんしゅうして レベルアップ！",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=ninja-mix",
-            "difficulty": "初級",
-            "grade": "1-2年生",
-            "createdDate": "2024-08-18"
-        },
-        {
-            "id": "subtraction-blocks",
-            "name": "ブロック ひきざん（シンプル）",
-            "category": "basic",
-            "description": "ブロックで ひきざん を たのしく！ すうじボタンで こたえよう。せいかいで おはなが さくよ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=subtraction-blocks",
-            "difficulty": "初級",
-            "grade": "1-3年生",
-            "createdDate": "2024-08-19"
-        },
-        {
-            "id": "addition-toybox",
-            "name": "おもちゃ たしざん（シンプル）",
-            "category": "basic",
-            "description": "おもちゃを かぞえて たしざん！ タップで すう を かぞえるよ。せいかいで はなびと バッジ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=addition-toybox",
-            "difficulty": "初級",
-            "grade": "1-2年生",
-            "createdDate": "2024-08-17"
-        },
-        {
-            "id": "addition",
-            "name": "たし算練習",
-            "category": "basic",
-            "description": "たしざんを くりかえし れんしゅう。こたえると スコアが あがるよ。かんたん もんだい から はじめよう。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=addition",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "subtraction",
-            "name": "ひき算チャレンジ",
-            "category": "basic",
-            "description": "ひきざんを チャレンジ！ こたえると ポイント。まちがえても やさしい ヒント。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=subtraction",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "subtraction-zoo",
-            "name": "どうぶつ ひきざん（シンプル）",
-            "category": "basic",
-            "description": "どうぶつを けして のこりを かぞえよう。レベルを えらんで れんしゅう。たのしい おとも あるよ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=subtraction-zoo",
-            "difficulty": "初級",
-            "grade": "1-2年生"
-        },
-        {
-            "id": "multiplication",
-            "name": "かけ算九九（シンプル）",
-            "category": "multiplication",
-            "description": "くくを クイズで おぼえよう。せいかいで スターが たまるよ。まいにち すこしずつ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=multiplication",
-            "difficulty": "中級",
-            "grade": "2-3年生"
-        },
-        {
-            "id": "division",
-            "name": "わり算（シンプル）",
-            "category": "division",
-            "description": "わりざんを パズルみたいに とこう。すうじを わけて こたえを みつけよう。アニメで たのしく。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=division",
-            "difficulty": "上級",
-            "grade": "3-4年生"
-        },
-        {
-            "id": "geometry",
-            "name": "図形クイズ（シンプル）",
-            "category": "geometry",
-            "description": "ずけいの なまえや かたちを たのしく まなぼう。ドラッグや クイズで おぼえるよ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "app-detail.html?id=geometry",
-            "difficulty": "中級",
-            "grade": "2-3年生"
-        },
-        {
-            "id": "shape-explorer",
-            "name": "図形探検アドベンチャー（シンプル）",
-            "category": "geometry",
-            "description": "図形の名前を覚えよう！まる、しかく、さんかくから、星やダイヤモンドまで楽しく学習できるよ。",
-            "screenshot": "img/placeholder.svg",
-            "link": "apps/shape-explorer/index.html",
-            "difficulty": "初級〜中級",
-            "grade": "1-3年生",
-            "createdDate": "2024-08-23",
-            "directLink": true
-        },
-        {
-            "id": "refactored-addition",
-            "name": "たし算練習（改良版・シンプル）",
-            "category": "basic",
-            "description": "新しくなった足し算アプリ！音声効果や美しいアニメーションで楽しく学習しよう。",
-            "screenshot": "img/placeholder.svg",
-            "link": "apps/refactored/index.html",
-            "difficulty": "初級",
-            "grade": "1-2年生",
-            "createdDate": "2024-08-22",
-            "directLink": true
-        }
-    ],
+    "apps": [],
     "categories": [
         {
             "id": "basic",
             "name": "基本計算",
-            "description": "たし算・ひき算の基礎"
+            "description": "たし算・ひき算・かけ算・わり算の基礎",
+            "icon": "🔢"
         },
         {
-            "id": "multiplication",
-            "name": "かけ算",
-            "description": "九九とかけ算"
-        },
-        {
-            "id": "division",
-            "name": "わり算",
-            "description": "わり算の基礎"
+            "id": "fraction-decimal",
+            "name": "分数・小数",
+            "description": "分数と小数の計算",
+            "icon": "🍕"
         },
         {
             "id": "geometry",
             "name": "図形",
-            "description": "図形の学習"
+            "description": "図形の学習・面積・体積",
+            "icon": "📐"
         },
         {
-            "id": "language",
-            "name": "国語（漢字）",
-            "description": "漢字の読み・練習"
+            "id": "word-problems",
+            "name": "文章題",
+            "description": "文章題・応用問題",
+            "icon": "📝"
         },
         {
-            "id": "science",
-            "name": "理科",
-            "description": "（準備中）"
+            "id": "measurement",
+            "name": "測定",
+            "description": "時間・長さ・重さ・速さ",
+            "icon": "⏱️"
+        }
+    ],
+    "grades": [
+        {
+            "id": "grade-1",
+            "name": "1年生",
+            "description": "10までの数、たし算・ひき算"
         },
         {
-            "id": "social",
-            "name": "社会",
-            "description": "（準備中）"
+            "id": "grade-2",
+            "name": "2年生",
+            "description": "九九、3桁の数"
+        },
+        {
+            "id": "grade-3",
+            "name": "3年生",
+            "description": "わり算、分数・小数の基礎"
+        },
+        {
+            "id": "grade-4",
+            "name": "4年生",
+            "description": "小数のかけ算・わり算、面積"
+        },
+        {
+            "id": "grade-5",
+            "name": "5年生",
+            "description": "割合、体積、分数のかけ算・わり算"
+        },
+        {
+            "id": "grade-6",
+            "name": "6年生",
+            "description": "速さ、比、円の面積"
+        }
+    ],
+    "difficulties": [
+        {
+            "id": "beginner",
+            "name": "初級",
+            "color": "#7ED321"
+        },
+        {
+            "id": "intermediate",
+            "name": "中級",
+            "color": "#F5A623"
+        },
+        {
+            "id": "advanced",
+            "name": "上級",
+            "color": "#E94B3C"
         }
     ]
 }

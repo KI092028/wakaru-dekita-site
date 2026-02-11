@@ -3,1083 +3,824 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールで、足し算や図形を楽しく学べます。保護者・教師におすすめ！無料で利用できる子供向け学習ツールです。">
-    <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム, 小学生おすすめアプリ, 子供向け算数, 小学生算数アプリおすすめ">
-    <meta name="author" content="子供達の「わかる！」「できた！」を増やす、お役立ちサイト">
+    <meta name="description" content="小学校低学年から高学年向けの算数ウェブアプリを集めたサイト。子供が使いやすいインタラクティブなツールで、足し算や図形を楽しく学べます。">
+    <meta name="keywords" content="小学校算数アプリ, 子供学習ツール, 足し算練習, 図形学習, 無料算数ゲーム">
+    <meta name="author" content="わかる！できた！算数">
     <meta name="robots" content="index, follow">
-    <title>学習ポータル - Learning Portal</title>
-    
+    <title>わかる！できた！算数 - 楽しく学べる算数アプリ</title>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSBGNQTYRZ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-YSBGNQTYRZ');
     </script>
-    
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/design-system.css">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ページ固有のスタイル */
 
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #fff3e0 100%);
-            min-height: 100vh;
-            color: #2c3e50;
-            line-height: 1.6;
-        }
-
-        /* Header */
+        /* ヘッダー */
         .header {
             background: linear-gradient(90deg, #4fc3f7 0%, #29b6f6 50%, #03a9f4 100%);
-            padding: 1rem 2rem;
+            padding: 16px 24px;
             box-shadow: 0 4px 20px rgba(79, 195, 247, 0.3);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: var(--z-sticky);
         }
 
-        .navbar {
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-family: var(--font-handwriting);
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-body);
+            transition: transform var(--transition-fast);
+            padding: 8px 12px;
+        }
+
+        .nav a:hover {
+            transform: translateY(-2px);
+            text-decoration: underline;
+        }
+
+        .nav .parent-link {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: var(--radius-xl);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-actions .search-input {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 1rem;
+            width: 250px;
+            min-height: auto;
+        }
+
+        .login-btn {
+            background: white;
+            color: var(--primary-500);
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--radius-xl);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: auto;
+        }
+
+        /* ヒーローセクション */
+        .hero-section {
+            background: var(--bg-gradient-1);
+            padding: 48px 24px;
+            text-align: center;
+        }
+
+        .greeting h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .user-name {
+            color: var(--primary-500);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-700);
+            margin-bottom: 32px;
+        }
+
+        .progress-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: transform var(--transition-normal);
+        }
+
+        .progress-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .progress-card .icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .progress-card .label {
+            font-size: var(--font-size-body-small);
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .progress-card .value {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            color: var(--gray-900);
+        }
+
+        /* きょうのチャレンジ */
+        .daily-challenge {
+            padding: 48px 24px;
+            background: white;
+        }
+
+        .daily-challenge h2 {
+            text-align: center;
+            font-size: 1.75rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .daily-desc {
+            text-align: center;
+            color: var(--gray-500);
+            margin-bottom: 32px;
+        }
+
+        .challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .challenge-card {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 3px solid #FFB74D;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all var(--transition-normal);
+            position: relative;
+            display: block;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.3);
+            text-decoration: none;
+        }
+
+        .challenge-card.completed {
+            background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
+            border-color: #66BB6A;
+        }
+
+        .challenge-card.completed::before {
+            content: '✅';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1.5rem;
+        }
+
+        .challenge-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .challenge-name {
+            font-size: 1.125rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: 4px;
+        }
+
+        .challenge-target {
+            font-size: var(--font-size-body-small);
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .challenge-progress {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            color: #F57C00;
+        }
+
+        .challenge-card.completed .challenge-progress {
+            color: #2E7D32;
+        }
+
+        /* おすすめセクション */
+        .recommendations {
+            padding: 48px 24px;
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+        }
+
+        .recommendations h2 {
+            text-align: center;
+            font-size: 1.75rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .rec-desc {
+            text-align: center;
+            color: var(--gray-700);
+            margin-bottom: 32px;
+        }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .rec-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            border: 3px solid #9C27B0;
+            box-shadow: 0 4px 20px rgba(156, 39, 176, 0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .rec-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #9C27B0, #BA68C8);
+            color: white;
+            padding: 6px 16px;
+            border-radius: var(--radius-xl);
+            font-size: var(--font-size-caption);
+            font-weight: var(--font-weight-bold);
+            box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+        }
+
+        .rec-icon {
+            font-size: 4rem;
+            margin: 16px 0;
+        }
+
+        .rec-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .rec-card p {
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+
+        .rec-reason {
+            background: var(--accent-purple-100);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-body-small);
+            color: #6A1B9A;
+            margin: 16px 0;
+        }
+
+        /* フィルターセクション */
+        .filters {
+            padding: 48px 24px;
+            background: white;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .filter-group {
+            max-width: 1000px;
+            margin: 0 auto 32px;
+        }
+
+        .filter-group h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        /* アプリ一覧 */
+        .app-catalog {
+            padding: 48px 24px;
+            background: var(--gray-50);
+        }
+
+        .catalog-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 32px;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 16px;
         }
 
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .search-container {
-            position: relative;
-        }
-
-        .search-input {
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            width: 250px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-
-        .lang-select {
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 20px;
-            font-size: 1rem;
+        .sort-select {
+            padding: 10px 16px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-body-small);
             background: white;
-            color: #2c3e50;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .lang-select:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .welcome-section {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .welcome-title {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .welcome-subtitle {
-            font-size: 1.2rem;
-            color: #546e7a;
-            margin-bottom: 2rem;
-        }
-
-        /* Subject Cards */
-        .subjects-section {
-            margin-bottom: 3rem;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 2rem;
-            text-align: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .subjects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .subject-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 3px solid transparent;
-        }
-
-        .subject-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            border-color: #4fc3f7;
-        }
-
-        .subject-card.math {
-            background: linear-gradient(135deg, #ffecb3 0%, #fff176 100%);
-        }
-
-        .subject-card.science {
-            background: linear-gradient(135deg, #c8e6c9 0%, #81c784 100%);
-        }
-
-        .subject-card.language {
-            background: linear-gradient(135deg, #f8bbd9 0%, #f48fb1 100%);
-        }
-
-        .subject-card.social {
-            background: linear-gradient(135deg, #d1c4e9 0%, #b39ddb 100%);
-        }
-
-        .subject-emoji {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .subject-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-
-        .subject-name-en {
-            font-size: 1rem;
-            color: #546e7a;
-            font-style: italic;
-        }
-
-        .subject-description {
-            font-size: 1rem;
-            color: #546e7a;
-            margin-top: 0.5rem;
-        }
-
-        /* App Container */
-        .app-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-bottom: 3rem;
-            display: none;
+            min-height: 48px;
         }
 
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .app-card {
-            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 2px solid #e0e0e0;
+        /* 空状態 */
+        .empty-state {
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 80px 24px;
         }
 
-        .app-card:hover {
-            border-color: #4fc3f7;
-            transform: scale(1.02);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 16px;
         }
 
-        .app-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 1rem;
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
         }
 
-        .app-description {
-            color: #546e7a;
-            margin-bottom: 1rem;
-            line-height: 1.5;
+        .empty-state p {
+            color: var(--gray-500);
+            margin-bottom: 24px;
         }
 
-        .app-badges {
-            margin-bottom: 1rem;
+        /* 保護者向けセクション */
+        .parent-section {
+            padding: 48px 24px;
+            background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 100%);
         }
 
-        .app-badge {
-            display: inline-block;
-            background: linear-gradient(90deg, #4fc3f7, #29b6f6);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            margin: 0.2rem;
+        .parent-section h2 {
+            text-align: center;
+            font-size: 1.75rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
         }
 
-        .app-badge.difficulty {
-            background: linear-gradient(90deg, #66bb6a, #4caf50);
+        .parent-desc {
+            text-align: center;
+            color: var(--gray-700);
+            margin-bottom: 32px;
         }
 
-        .app-badge.category {
-            background: linear-gradient(90deg, #ff9800, #f57c00);
-        }
-
-        .start-btn {
-            background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
-            color: white;
-            text-decoration: none;
-        }
-
-        .back-btn {
-            background: linear-gradient(90deg, #9e9e9e, #757575);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(158, 158, 158, 0.3);
-        }
-
-        .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(158, 158, 158, 0.4);
-        }
-
-        /* New Apps Showcase Section */
-        .new-apps-section {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 50%, #ffe0b2 100%);
-            border-radius: 25px;
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 6px 30px rgba(255, 152, 0, 0.2);
-            border: 3px solid #ffb74d;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .new-apps-section::before {
-            content: '✨';
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            font-size: 2rem;
-            animation: sparkle 2s ease-in-out infinite;
-        }
-
-        .new-apps-section::after {
-            content: '🎉';
-            position: absolute;
-            bottom: 1rem;
-            left: 1.5rem;
-            font-size: 2rem;
-            animation: bounce 1.5s ease-in-out infinite;
-        }
-
-        .new-apps-container {
+        .parent-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto 48px;
         }
 
-        .new-app-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 18px;
-            padding: 1.8rem;
-            border: 3px solid #ff9800;
+        .parent-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 32px 24px;
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .new-app-card::before {
-            content: '🆕';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.2rem;
-            background: #ff5722;
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-weight: bold;
-            transform: rotate(15deg);
-            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3);
-        }
-
-        .new-app-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow: 0 8px 35px rgba(255, 152, 0, 0.25);
-            border-color: #f57c00;
-        }
-
-        .new-app-card .app-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #e65100;
-            margin-bottom: 1rem;
-            text-shadow: 1px 1px 2px rgba(230, 81, 0, 0.1);
-        }
-
-        .new-app-card .app-description {
-            color: #5d4037;
-            margin-bottom: 1.2rem;
-            line-height: 1.6;
-        }
-
-        .new-app-card .app-badges {
-            margin-bottom: 1.2rem;
-        }
-
-        .new-app-card .app-badge {
-            background: linear-gradient(90deg, #ff9800, #f57c00);
-            color: white;
-            padding: 0.4rem 0.9rem;
-            border-radius: 18px;
-            font-size: 0.85rem;
-            margin: 0.3rem;
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
-        }
-
-        .new-app-card .start-btn {
-            background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2.2rem;
-            border-radius: 28px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
             text-decoration: none;
-            display: inline-block;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: inherit;
+            border: 2px solid #5C6BC0;
+            box-shadow: 0 4px 15px rgba(92, 107, 192, 0.2);
+            transition: all var(--transition-normal);
+            display: block;
         }
 
-        .new-app-card .start-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4);
-            color: white;
+        .parent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(92, 107, 192, 0.3);
             text-decoration: none;
         }
 
-        .new-app-created {
-            font-size: 0.9rem;
-            color: #8d6e63;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 0.3rem 0.8rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            display: inline-block;
+        .parent-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
 
-        /* Animations for new apps section */
-        @keyframes sparkle {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+        .parent-card h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .parent-card p {
+            font-size: var(--font-size-body-small);
+            color: var(--gray-500);
+            margin-bottom: 0;
         }
 
-        /* Footer */
+        /* フッター */
         .footer {
             background: linear-gradient(90deg, #37474f 0%, #455a64 100%);
             color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
+            padding: 48px 24px 24px;
         }
 
-        .footer-text {
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 48px;
+            margin-bottom: 32px;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: 12px;
+            font-family: var(--font-handwriting);
+        }
+
+        .footer-tagline {
+            font-size: var(--font-size-body-small);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .footer-column h4 {
             font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        .footer-text a {
+            margin-bottom: 16px;
             color: #4fc3f7;
-            text-decoration: none;
         }
 
-        .footer-text a:hover {
+        .footer-column a {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: var(--font-size-body-small);
+            margin-bottom: 8px;
+            transition: color var(--transition-normal);
+        }
+
+        .footer-column a:hover {
+            color: white;
             text-decoration: underline;
         }
 
-        /* Responsive Design */
+        .footer-bottom {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: var(--font-size-body-small);
+            opacity: 0.8;
+        }
+
+        /* レスポンシブ */
         @media (max-width: 768px) {
-            .navbar {
+            .header-container {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 16px;
             }
 
-            .search-input {
-                width: 200px;
+            .nav {
+                flex-direction: column;
+                gap: 12px;
             }
 
-            .welcome-title {
-                font-size: 2rem;
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
             }
 
-            .subjects-grid {
+            .header-actions .search-input {
+                width: 100%;
+            }
+
+            .footer-container {
                 grid-template-columns: 1fr;
+                gap: 32px;
             }
 
-            .main-content {
-                padding: 1rem;
-            }
-
-            .app-grid {
+            .footer-links {
                 grid-template-columns: 1fr;
+                gap: 24px;
             }
 
-            /* New apps section responsive */
-            .new-apps-section {
-                padding: 1.5rem;
-                margin-bottom: 2rem;
-            }
-
-            .new-apps-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .new-app-card {
-                padding: 1.5rem;
-            }
-
-            .new-app-card .start-btn {
-                padding: 0.8rem 1.8rem;
-                font-size: 1rem;
+            .catalog-header {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
 
-        @media (max-width: 480px) {
-            .new-apps-section {
-                padding: 1rem;
-            }
-
-            .new-app-card .app-title {
-                font-size: 1.2rem;
-            }
-
-            .new-app-card .start-btn {
-                padding: 0.7rem 1.5rem;
-                font-size: 0.9rem;
-            }
+        /* ハンバーガーメニュー（モバイル用） */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
         }
 
-        /* Accessibility */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all var(--transition-normal);
         }
 
-        /* Focus styles */
-        *:focus {
-            outline: 3px solid #4fc3f7;
-            outline-offset: 2px;
-        }
-
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-            .subject-card {
-                border: 2px solid #000;
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+                width: 100%;
             }
-            
-            .app-card {
-                border: 2px solid #000;
-            }
-        }
 
-        /* Reduced motion support */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+            .nav.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- ヘッダー -->
     <header class="header" role="banner">
-        <nav class="navbar" role="navigation" aria-label="メインナビゲーション">
-            <div class="logo" aria-label="学習ポータルロゴ">
-                🌟 学習ポータル
+        <div class="header-container">
+            <div class="logo">🌟 わかる！できた！算数</div>
+
+            <button class="hamburger" onclick="toggleMenu()" aria-label="メニュー">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav" id="mainNav" role="navigation" aria-label="メインナビゲーション">
+                <a href="#today">きょう</a>
+                <a href="#apps">アプリ</a>
+                <a href="#progress">がんばり</a>
+                <a href="#parent" class="parent-link">保護者</a>
+            </nav>
+
+            <div class="header-actions">
+                <input
+                    type="search"
+                    class="search-input"
+                    id="headerSearch"
+                    placeholder="アプリをさがす..."
+                    aria-label="アプリを検索"
+                >
+                <button class="login-btn">ログイン</button>
             </div>
-            <div class="nav-controls">
-                <div class="search-container">
-                    <label for="search" class="sr-only">検索</label>
-                    <input 
-                        type="search" 
-                        id="search"
-                        class="search-input" 
-                        placeholder="学習内容を検索... / Search content..."
-                        aria-label="学習内容を検索"
-                    >
-                </div>
-                <label for="language" class="sr-only">言語選択</label>
-                <select id="language" class="lang-select" aria-label="言語を選択">
-                    <option value="ja">🇯🇵 日本語</option>
-                    <option value="en">🇺🇸 English</option>
-                </select>
-            </div>
-        </nav>
+        </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content" role="main">
-        <!-- Welcome Section -->
-        <section class="welcome-section" aria-labelledby="welcome-title">
-            <h1 id="welcome-title" class="welcome-title">
-                楽しく学ぼう！<br>
-                <span lang="en">Let's Learn Together!</span>
-            </h1>
-            <p class="welcome-subtitle">
-                みんなで一緒に新しいことを発見しよう 🚀<br>
-                <span lang="en">Discover new things together</span>
-            </p>
-            
-            <!-- Quick access / Featured app -->
-            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
-                <a class="start-btn" href="app-detail.html?id=multiplication" aria-label="かけ算九九（ゲーム）を開く">
-                    🧮 かけ算九九であそぶ！
+    <!-- メインコンテンツ -->
+    <main role="main">
+        <!-- ヒーローセクション -->
+        <section class="hero-section" id="hero">
+            <div class="greeting">
+                <h1>
+                    🎉 ようこそ、<span class="user-name" id="userName">きみ</span>！
+                </h1>
+                <p class="subtitle">今日も楽しく算数を学ぼう！</p>
+            </div>
+
+            <div class="progress-cards">
+                <div class="progress-card level">
+                    <div class="icon">📊</div>
+                    <div class="label">レベル</div>
+                    <div class="value" id="userLevel">Lv.1</div>
+                </div>
+                <div class="progress-card streak">
+                    <div class="icon">🔥</div>
+                    <div class="label">連続学習</div>
+                    <div class="value" id="userStreak">1日</div>
+                </div>
+                <div class="progress-card badges">
+                    <div class="icon">⭐</div>
+                    <div class="label">バッジ</div>
+                    <div class="value" id="userBadges">0個</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- きょうのチャレンジ -->
+        <section class="daily-challenge" id="today">
+            <h2>🎯 きょうのチャレンジ</h2>
+            <p class="daily-desc">毎日3つクリアして、がんばりポイントをゲット！</p>
+
+            <div class="challenge-grid" id="dailyChallenge">
+                <!-- チャレンジカードはJavaScriptで生成 -->
+                <div class="challenge-card">
+                    <div class="challenge-icon">🔢</div>
+                    <div class="challenge-name">準備中</div>
+                    <div class="challenge-target">アプリを追加してね</div>
+                    <div class="challenge-progress">0/3</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- あなたへのおすすめ -->
+        <section class="recommendations" id="recommendations">
+            <h2>✨ <span id="recUserName">あなた</span>へのおすすめ</h2>
+            <p class="rec-desc">きみにぴったりのアプリをえらんだよ！</p>
+
+            <div class="rec-grid" id="recGrid">
+                <!-- おすすめアプリはJavaScriptで生成 -->
+                <div class="rec-card">
+                    <div class="rec-badge">準備中</div>
+                    <div class="rec-icon">🎓</div>
+                    <h3>アプリを追加中</h3>
+                    <p>もうすこし待ってね！</p>
+                    <div class="rec-reason">
+                        💡 たのしいアプリを用意しています
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- カテゴリ・学年フィルター -->
+        <section class="filters" id="filters">
+            <div class="filter-group">
+                <h3>📂 カテゴリから選ぶ</h3>
+                <div class="filter-pills">
+                    <button class="pill active" data-category="all">全て</button>
+                    <button class="pill" data-category="basic">基本計算</button>
+                    <button class="pill" data-category="multiplication">かけ算</button>
+                    <button class="pill" data-category="division">わり算</button>
+                    <button class="pill" data-category="geometry">図形</button>
+                    <button class="pill" data-category="fraction">分数</button>
+                    <button class="pill" data-category="decimal">小数</button>
+                    <button class="pill" data-category="ratio">割合・比</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h3>🎓 学年から選ぶ</h3>
+                <div class="filter-pills">
+                    <button class="pill" data-grade="1">1年</button>
+                    <button class="pill" data-grade="2">2年</button>
+                    <button class="pill" data-grade="3">3年</button>
+                    <button class="pill" data-grade="4">4年</button>
+                    <button class="pill" data-grade="5">5年</button>
+                    <button class="pill" data-grade="6">6年</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- アプリ一覧 -->
+        <section class="app-catalog" id="apps">
+            <div class="catalog-header">
+                <h2>📱 全てのアプリ</h2>
+                <select class="sort-select" id="sortSelect" aria-label="並び替え">
+                    <option value="default">おすすめ順</option>
+                    <option value="newest">新しい順</option>
+                    <option value="popular">人気順</option>
+                    <option value="grade-asc">学年順（低→高）</option>
+                </select>
+            </div>
+
+            <div class="app-grid" id="appGrid">
+                <!-- アプリカードはJavaScriptで生成 -->
+            </div>
+
+            <!-- 空状態 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🔍</div>
+                <h3>アプリが見つかりませんでした</h3>
+                <p>別のカテゴリや学年を試してみてね</p>
+                <button class="btn btn-primary" onclick="resetFilters()">フィルターをリセット</button>
+            </div>
+        </section>
+
+        <!-- 保護者向けセクション -->
+        <section class="parent-section" id="parent">
+            <h2>👨‍👩‍👧 保護者の方へ</h2>
+            <p class="parent-desc">お子様の学習をサポートする機能をご用意しています</p>
+
+            <div class="parent-grid">
+                <a href="#" class="parent-card">
+                    <div class="parent-icon">📊</div>
+                    <h3>学習レポート</h3>
+                    <p>お子様の学習状況を詳しく確認できます（準備中）</p>
                 </a>
-                <div style="color:#546e7a; font-size:0.95rem;">
-                    2〜3年生向け：クイズで九九を楽しく練習
-                </div>
-            </div>
 
-            <!-- Daily missions (progress shown via localStorage) -->
-            <div id="daily-section" style="margin-top: 1.75rem; width: 100%; max-width: 720px;">
-                <h2 style="text-align:center; font-size: 1.35rem; color:#2c3e50; margin: 0 0 0.75rem 0;">
-                    🎯 きょうのチャレンジ
-                </h2>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem;">
-                    <a href="apps/addition.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="たしざん きょうの3もん">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-                            <div style="font-weight:800; color:#2c3e50;">➕ たしざん</div>
-                            <div id="daily-addition" style="font-weight:800; color:#546e7a;">0/3</div>
-                        </div>
-                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（1〜2年生）</div>
-                    </a>
-                    <a href="apps/multiplication.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="かけざん きょうの3もん">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-                            <div style="font-weight:800; color:#2c3e50;">🧮 かけざん</div>
-                            <div id="daily-multiplication" style="font-weight:800; color:#546e7a;">0/3</div>
-                        </div>
-                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの3もん（2〜3年生）</div>
-                    </a>
-                    <a href="apps/shape-hunt.html?mode=daily" class="subject-card" style="text-decoration:none;" aria-label="かたち きょうの1かい">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-                            <div style="font-weight:800; color:#2c3e50;">🔺 かたち</div>
-                            <div id="daily-shape" style="font-weight:800; color:#546e7a;">0/1</div>
-                        </div>
-                        <div style="margin-top:0.25rem; color:#546e7a; font-size:0.95rem;">きょうの1かい（1〜2年生）</div>
-                    </a>
-                </div>
-                <div style="text-align:center; margin-top:0.75rem; color:#78909c; font-size:0.9rem;">
-                    ※ 進みぐあいは このスマホ/PCに きろくされます
-                </div>
-            </div>
-        </section>
+                <a href="#" class="parent-card">
+                    <div class="parent-icon">⚙️</div>
+                    <h3>設定・管理</h3>
+                    <p>学習時間の制限や通知設定ができます（準備中）</p>
+                </a>
 
-        <!-- Subject Cards -->
-        <section class="subjects-section" id="subjects-section" aria-labelledby="subjects-title">
-            <h2 id="subjects-title" class="section-title">
-                教科を選ぼう / Choose Your Subject
-            </h2>
-            <div class="subjects-grid" id="subjects-grid" role="grid" aria-label="教科選択">
-                <!-- 教科カードがJavaScriptで生成される -->
-            </div>
-        </section>
-
-        <!-- App Container -->
-        <section class="app-container" id="app-container" aria-labelledby="apps-title">
-            <h2 id="apps-title" class="section-title">
-                学習アプリ / Learning Apps
-            </h2>
-            <button class="back-btn" onclick="showSubjects()" id="back-btn">
-                ← 教科選択に戻る / Back to Subjects
-            </button>
-            <div class="app-grid" id="app-grid" role="region" aria-label="学習アプリ一覧">
-                <!-- アプリカードがJavaScriptで生成される -->
-            </div>
-        </section>
-        <!-- New Apps Showcase Section -->
-        <section class="new-apps-section" id="new-apps-section" aria-labelledby="new-apps-title">
-            <h2 id="new-apps-title" class="section-title">
-                🌟 あたらしいアプリだよ！ / New Apps!
-            </h2>
-            <div class="new-apps-container" id="new-apps-container" role="region" aria-label="新しいアプリ一覧">
-                <!-- 新しいアプリカードがJavaScriptで生成される -->
+                <a href="#" class="parent-card">
+                    <div class="parent-icon">❓</div>
+                    <h3>よくある質問</h3>
+                    <p>使い方やトラブル対応を確認できます（準備中）</p>
+                </a>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
+    <!-- フッター -->
     <footer class="footer" role="contentinfo">
-        <div class="footer-text">
-            © 2024 学習ポータル - みんなで楽しく学ぼう！<br>
-            <span lang="en">Learning Portal - Let's Learn Together!</span><br>
-            <a href="privacy.html">プライバシーポリシー / Privacy Policy</a> | 
-            <a href="mailto:contact@wakaru-dekita.com">お問い合わせ / Contact</a>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">🌟 わかる！できた！算数</div>
+                <p class="footer-tagline">
+                    子供達の「わかる！」「できた！」を増やす、お役立ちサイト
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>アプリ</h4>
+                    <a href="#apps">全てのアプリ</a>
+                    <a href="#today">きょうのチャレンジ</a>
+                    <a href="#recommendations">おすすめ</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4>保護者向け</h4>
+                    <a href="#parent">学習レポート</a>
+                    <a href="#parent">設定</a>
+                    <a href="#parent">よくある質問</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4>サポート</h4>
+                    <a href="privacy.html">プライバシーポリシー</a>
+                    <a href="#contact">利用規約</a>
+                    <a href="mailto:contact@wakaru-dekita.com">お問い合わせ</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2024 わかる！できた！算数 - みんなで楽しく学ぼう！</p>
         </div>
     </footer>
 
-    <script>
-        // 言語設定
-        const I18N = {
-            ja: {
-                home: 'ホーム', categories: 'カテゴリ', search: '検索', searchPlaceholder: 'アプリを検索',
-                subjectsTitle: '教科を選ぼう / Choose Your Subject', appsTitle: '学習アプリ / Learning Apps', 
-                newAppsTitle: '🌟 あたらしいアプリだよ！ / New Apps!',
-                start: 'はじめる', back: '戻る', backToSubjects: '← 教科選択に戻る / Back to Subjects'
-            },
-            en: {
-                home: 'Home', categories: 'Categories', search: 'Search', searchPlaceholder: 'Search apps',
-                subjectsTitle: 'Choose Your Subject', appsTitle: 'Learning Apps', 
-                newAppsTitle: '🌟 New Apps!',
-                start: 'Start', back: 'Back', backToSubjects: '← Back to Subjects'
-            }
-        };
-        
-        let currentLang = localStorage.getItem('lang') || 'ja';
-        function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ja[key] || key; }
-        function getAppField(app, key){ if(currentLang==='en' && app[key + '_en']) return app[key + '_en']; return app[key]; }
-        function subjectDisplay(name){ 
-            if(currentLang==='en'){ 
-                const m={ '算数':'Math', '国語':'Language', '理科':'Science', '社会':'Social Studies' }; 
-                return m[name] || name; 
-            } 
-            return name; 
-        }
-
-        // Daily progress (localStorage)
-        function todayKey(){
-            const d=new Date();
-            const y=d.getFullYear();
-            const m=String(d.getMonth()+1).padStart(2,'0');
-            const da=String(d.getDate()).padStart(2,'0');
-            return `${y}-${m}-${da}`;
-        }
-        function readDaily(key){
-            try{
-                const raw=localStorage.getItem(key);
-                const st=raw?JSON.parse(raw):{};
-                if(st.date!==todayKey()) return 0;
-                return Number(st.done||0) || 0;
-            }catch(e){
-                return 0;
-            }
-        }
-        function setDailyChip(id, done, goal){
-            const el=document.getElementById(id);
-            if(!el) return;
-            const d=Math.min(done, goal);
-            el.textContent = `${d}/${goal}`;
-            if(d>=goal){
-                el.textContent = `✅ ${goal}/${goal}`;
-                el.style.color = '#2e7d32';
-            }else{
-                el.style.color = '#546e7a';
-            }
-        }
-        function updateDailyOnTop(){
-            // v2 preferred (new quiz-core). fallback to v1 for older apps.
-            const addDone = Math.max(readDaily('wakaru.addition.daily.v2'), readDaily('wakaru.addition.daily.v1'));
-            const mulDone = Math.max(readDaily('wakaru.multiplication.daily.v2'), readDaily('wakaru.multiplication.daily.v1'));
-            setDailyChip('daily-addition', addDone, 3);
-            setDailyChip('daily-multiplication', mulDone, 3);
-            const shapeDone = Math.max(readDaily('wakaru.shape-hunt.daily.v2'), readDaily('wakaru.shapehunt.daily.v1'));
-            setDailyChip('daily-shape', shapeDone, 1);
-        }
-
-        // 教科データ
-        const subjects = [
-            {
-                name: "算数",
-                icon: "🧮",
-                description: "計算や図形を楽しく学ぼう",
-                descriptionEn: "Learn calculations and shapes in a fun way",
-                color: "math"
-            },
-            {
-                name: "国語",
-                icon: "📚",
-                description: "ひらがな・カタカナ・漢字を覚えよう",
-                descriptionEn: "Learn hiragana, katakana, and kanji",
-                color: "language"
-            },
-            {
-                name: "理科",
-                icon: "🔬",
-                description: "実験や観察で自然を学ぼう",
-                descriptionEn: "Learn nature through experiments and observations",
-                color: "science"
-            },
-            {
-                name: "社会",
-                icon: "🌍",
-                description: "地理や歴史を知ろう",
-                descriptionEn: "Learn geography and history",
-                color: "social"
-            }
-        ];
-
-        // アプリデータと状態
-        let apps = [];// loaded from data/apps.json
-        let categories = [];
-        let currentSubject = null;
-
-        // 教科カードを生成する関数
-        function createSubjectCard(subject) {
-            return `
-                <div class="subject-card ${subject.color}" onclick="showApps('${subject.name}')" role="gridcell" tabindex="0">
-                    <span class="subject-emoji" role="img" aria-label="${subject.name}">${subject.icon}</span>
-                    <div class="subject-name">${subjectDisplay(subject.name)}</div>
-                    <div class="subject-name-en" lang="en">${subject.name === '算数' ? 'Math & Numbers' : 
-                                                           subject.name === '国語' ? 'Language & Reading' : 
-                                                           subject.name === '理科' ? 'Science & Discovery' : 
-                                                           'Social Studies'}</div>
-                    <div class="subject-description">${currentLang === 'en' ? subject.descriptionEn : subject.description}</div>
-                </div>
-            `;
-        }
-
-        // アプリカードを生成する関数
-        // カテゴリIDを表示名に変換（日本語優先）
-        function categoryLabel(cat){
-            if(!cat) return '';
-            const found = (categories||[]).find(c=>String(c.id).toLowerCase()===String(cat).toLowerCase());
-            return found ? found.name : cat;
-        }
-
-        function createAppCard(app) {
-            const tags = [getAppField(app,'grade'), categoryLabel(app.category)].filter(Boolean);
-            const tagBadges = tags.map(tag => 
-                `<span class="app-badge category">${tag}</span>`
-            ).join('');
-            const href = `app-detail.html?id=${app.id}`;
-            
-            return `
-                <div class="app-card" role="article" onclick="location.href='${href}'" tabindex="0" aria-label="${getAppField(app,'name')}を開く">
-                    <h3 class="app-title">${getAppField(app,'name')}</h3>
-                    <p class="app-description">${getAppField(app,'description')}</p>
-                    <div class="app-badges">
-                        <span class="app-badge difficulty">${getAppField(app,'difficulty') || app.difficulty}</span>
-                        ${tagBadges}
-                    </div>
-                    <a href="${href}" class="start-btn" target="_self" rel="noopener">${t('start')}</a>
-                </div>
-            `;
-        }
-
-        // 新しいアプリカードを生成する関数
-        function createNewAppCard(app) {
-            const tags = [getAppField(app,'grade'), categoryLabel(app.category)].filter(Boolean);
-            const tagBadges = tags.map(tag => 
-                `<span class="app-badge category">${tag}</span>`
-            ).join('');
-            
-            // directLinkフラグがある場合は直接リンク、そうでなければapp-detail.htmlを経由
-            const href = app.directLink ? app.link : `app-detail.html?id=${app.id}`;
-            
-            // 作成日を表示用にフォーマット
-            const createdDate = app.createdDate ? formatDate(app.createdDate) : '最新';
-            
-            return `
-                <div class="new-app-card" role="article" onclick="location.href='${href}'" tabindex="0" aria-label="${getAppField(app,'name')}を開く">
-                    <div class="new-app-created">${createdDate}</div>
-                    <h3 class="app-title">${getAppField(app,'name')}</h3>
-                    <p class="app-description">${getAppField(app,'description')}</p>
-                    <div class="app-badges">
-                        <span class="app-badge difficulty">${getAppField(app,'difficulty') || app.difficulty}</span>
-                        ${tagBadges}
-                    </div>
-                    <a href="${href}" class="start-btn" target="_self" rel="noopener">
-                        ${currentLang === 'en' ? 'Try Now!' : 'いますぐやってみる！'}
-                    </a>
-                </div>
-            `;
-        }
-
-        // 日付フォーマット関数
-        function formatDate(dateString) {
-            if (!dateString) return '最新';
-            
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) {
-                return currentLang === 'en' ? 'Today' : '今日';
-            } else if (diffDays <= 7) {
-                return currentLang === 'en' ? `${diffDays} days ago` : `${diffDays}日前`;
-            } else if (diffDays <= 30) {
-                const weeks = Math.floor(diffDays / 7);
-                return currentLang === 'en' ? `${weeks} week${weeks > 1 ? 's' : ''} ago` : `${weeks}週間前`;
-            } else {
-                return date.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ja-JP');
-            }
-        }
-
-        // 新しいアプリを表示する関数
-        function showNewApps() {
-            const newAppsContainer = document.getElementById('new-apps-container');
-            if (!newAppsContainer || !apps.length) return;
-
-            // 作成日でソートして新しい順に3つ取得
-            const sortedApps = [...apps].sort((a, b) => {
-                const dateA = new Date(a.createdDate || '2024-01-01');
-                const dateB = new Date(b.createdDate || '2024-01-01');
-                return dateB - dateA; // 新しい順
-            });
-
-            const newestApps = sortedApps.slice(0, 3);
-            
-            if (newestApps.length > 0) {
-                newAppsContainer.innerHTML = newestApps.map(createNewAppCard).join('');
-                document.getElementById('new-apps-section').style.display = 'block';
-            } else {
-                document.getElementById('new-apps-section').style.display = 'none';
-            }
-        }
-
-        // 教科一覧を表示
-        function showSubjects() {
-            document.getElementById('subjects-grid').innerHTML = subjects.map(createSubjectCard).join('');
-            document.getElementById('subjects-section').style.display = 'block';
-            document.getElementById('app-container').style.display = 'none';
-            currentSubject = null;
-            
-            // 新しいアプリセクションも表示
-            showNewApps();
-        }
-
-        // 特定教科のアプリを表示
-        function showApps(subjectName) {
-            currentSubject = subjectName;
-
-            const subjectToCategories = {
-                '算数': ['basic','multiplication','division','geometry'],
-                '国語': ['language'],
-                // 理科・社会は将来追加用（現状はアプリ未登録）
-                '理科': ['science'],
-                '社会': ['social']
-            };
-
-            const allowed = (subjectToCategories[subjectName] || []).map(s=>String(s).toLowerCase());
-            const filteredApps = apps.filter(app => {
-                const appCategory = String(app.category||'').toLowerCase();
-                return allowed.includes(appCategory);
-            });
-
-            document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
-            document.getElementById('subjects-section').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            document.getElementById('new-apps-section').style.display = 'none';
-        }
-
-        // 検索機能
-        function setupSearch() {
-            const searchInput = document.getElementById('search');
-            
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                if (searchTerm.length === 0) {
-                    showSubjects();
-                    return;
-                }
-                
-                const filteredApps = apps.filter(app => 
-                    app.name.toLowerCase().includes(searchTerm) ||
-                    app.description.toLowerCase().includes(searchTerm) ||
-                    app.category.toLowerCase().includes(searchTerm) ||
-                    (app.grade || '').toLowerCase().includes(searchTerm) ||
-                    app.difficulty.toLowerCase().includes(searchTerm)
-                );
-                
-                document.getElementById('app-grid').innerHTML = filteredApps.map(createAppCard).join('');
-                document.getElementById('subjects-section').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                document.getElementById('new-apps-section').style.display = 'none';
-            });
-        }
-
-        // アプリデータを読み込む関数
-        async function loadAppData() {
-            try {
-                const response = await fetch('data/apps.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                apps = data.apps;
-                categories = data.categories || [];
-                console.log('読み込まれたアプリ:', apps);
-                return true;
-            } catch (error) {
-                console.error('データ読み込みエラー:', error);
-                // エラー時のフォールバックデータ
-                apps = [
-                    {
-                        id: 'addition',
-                        name: 'たし算練習',
-                        category: 'basic',
-                        description: '基本のたし算を楽しく練習しよう！',
-                        screenshot: 'img/placeholder.svg',
-                        link: 'app-detail.html?id=addition',
-                        difficulty: '初級',
-                        grade: '1-2年生'
-                    }
-                ];
-                return false;
-            }
-        }
-
-        // 初期化
-        let __initialized = false;
-        async function initialize() {
-            if (__initialized) return;
-            __initialized = true;
-            try {
-                console.log('初期化開始');
-                const loaded = await loadAppData();
-                if (!loaded) {
-                    console.warn('アプリデータの読み込みに失敗しました。フォールバックデータを使用します。');
-                }
-                
-                // 言語UI初期化
-                const langSelect = document.getElementById('language');
-                if (langSelect) {
-                    langSelect.value = currentLang;
-                    langSelect.addEventListener('change', () => {
-                        currentLang = langSelect.value;
-                        localStorage.setItem('lang', currentLang);
-                        updateStaticTexts();
-                        showSubjects();
-                    });
-                }
-                
-                updateStaticTexts();
-                updateDailyOnTop();
-                showSubjects();
-                setupSearch();
-
-                // Keep daily display fresh when returning to tab
-                window.addEventListener('focus', updateDailyOnTop);
-
-                console.log('初期化完了');
-            } catch (error) {
-                console.error('初期化エラー:', error);
-            }
-        }
-
-        function updateStaticTexts() {
-            document.getElementById('search').placeholder = t('searchPlaceholder');
-            document.getElementById('subjects-title').textContent = t('subjectsTitle');
-            document.getElementById('apps-title').textContent = t('appsTitle');
-            document.getElementById('new-apps-title').textContent = t('newAppsTitle');
-            document.getElementById('back-btn').textContent = t('backToSubjects');
-        }
-
-        // DOMContentLoadedイベントで初期化
-        document.addEventListener('DOMContentLoaded', initialize);
-
-        // フォールバック: DOMContentLoadedが既に発生している場合
-        if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            console.log('DOMContentLoaded既発生。直接初期化を実行。');
-            initialize();
-        }
-    </script>
+    <!-- JavaScript -->
+    <script src="main.js"></script>
 </body>
 </html>
