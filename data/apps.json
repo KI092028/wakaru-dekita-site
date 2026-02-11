@@ -1,11 +1,109 @@
 {
-    "apps": [],
+    "apps": [
+        {
+            "id": "kuku-master",
+            "name": "九九マスター（完全版）",
+            "category": "multiplication",
+            "description": "2年生の最重要！6つのモードで九九を完全マスター。段別練習、タイムアタック、苦手克服、リズムゲーム、対戦モードで楽しく学ぼう！",
+            "screenshot": "img/placeholder.svg",
+            "link": "apps/kuku-master/index.html",
+            "difficulty": "intermediate",
+            "grade": "2-3年生",
+            "createdDate": "2026-02-11",
+            "directLink": true,
+            "tags": ["九九", "かけ算", "2年生", "3年生", "タイムアタック"],
+            "learningGoals": [
+                "九九の完全暗記",
+                "計算速度の向上",
+                "苦手な段の克服"
+            ],
+            "featured": true
+        },
+        {
+            "id": "kuriagari-kurisagari",
+            "name": "繰り上がり・繰り下がりマスター",
+            "category": "basic",
+            "description": "10のかたまりを使って、繰り上がり・繰り下がりをマスター！さくらんぼ計算で楽しく学ぼう。",
+            "screenshot": "img/placeholder.svg",
+            "link": "apps/kuriagari-kurisagari/index.html",
+            "difficulty": "beginner",
+            "grade": "1-2年生",
+            "createdDate": "2026-02-11",
+            "directLink": true,
+            "tags": ["繰り上がり", "繰り下がり", "さくらんぼ計算", "1年生"],
+            "learningGoals": [
+                "10のかたまりの理解",
+                "繰り上がりの足し算",
+                "繰り下がりの引き算"
+            ]
+        },
+        {
+            "id": "decimal-trainer",
+            "name": "小数計算トレーナー",
+            "category": "fraction-decimal",
+            "description": "位取りを理解して小数をマスター！買い物や距離など、実生活で使える小数計算を学ぼう。",
+            "screenshot": "img/placeholder.svg",
+            "link": "apps/decimal-trainer/index.html",
+            "difficulty": "intermediate",
+            "grade": "4-5年生",
+            "createdDate": "2026-02-11",
+            "directLink": true,
+            "tags": ["小数", "位取り", "およその数", "4年生", "5年生"],
+            "learningGoals": [
+                "位取りの理解",
+                "小数の四則演算",
+                "およその数（四捨五入）"
+            ]
+        },
+        {
+            "id": "fraction-visualizer",
+            "name": "分数ビジュアライザー",
+            "category": "fraction-decimal",
+            "description": "ピザやバーで分数を見える化！通分・約分から分数の計算まで、楽しく学べるよ。",
+            "screenshot": "img/placeholder.svg",
+            "link": "apps/fraction-visualizer/index.html",
+            "difficulty": "intermediate",
+            "grade": "3-5年生",
+            "createdDate": "2026-02-11",
+            "directLink": true,
+            "tags": ["分数", "通分", "約分", "帯分数", "3年生", "4年生", "5年生"],
+            "learningGoals": [
+                "分数の概念理解",
+                "通分・約分",
+                "分数の四則演算"
+            ]
+        },
+        {
+            "id": "wariai-challenge",
+            "name": "割合チャレンジ",
+            "category": "word-problems",
+            "description": "5年生の最難関！割合をマスターしよう。セールや税金など、実生活で使える割合を段階的に学べるよ。",
+            "screenshot": "img/placeholder.svg",
+            "link": "apps/wariai-challenge/index.html",
+            "difficulty": "advanced",
+            "grade": "5年生",
+            "createdDate": "2026-02-11",
+            "directLink": true,
+            "tags": ["割合", "百分率", "パーセント", "歩合", "5年生"],
+            "learningGoals": [
+                "割合の3公式の理解",
+                "百分率（%）の理解",
+                "実生活での割合の活用"
+            ]
+        }
+    ],
     "categories": [
         {
             "id": "basic",
             "name": "基本計算",
             "description": "たし算・ひき算・かけ算・わり算の基礎",
             "icon": "🔢"
+        },
+        {
+            "id": "multiplication",
+            "name": "かけ算・九九",
+            "description": "九九の習得とかけ算の練習",
+            "icon": "✖️"
         },
         {
             "id": "fraction-decimal",

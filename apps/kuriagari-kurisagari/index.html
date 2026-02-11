@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>繰り上がり・繰り下がりマスター | わかる！できた！算数</title>
+    <meta name="description" content="10のかたまりを使って、繰り上がり・繰り下がりをマスター！さくらんぼ計算で楽しく学ぼう。">
+    <style>
+        /* CSS変数と基本スタイル */
+        :root {
+            --primary-500: #4A90E2;
+            --primary-400: #5CA3EF;
+            --primary-600: #3A7BCF;
+            --secondary-500: #7ED321;
+            --secondary-400: #96E03A;
+            --secondary-600: #6ABD1A;
+            --accent-orange-500: #F5A623;
+            --accent-yellow-500: #FFD54F;
+            --success-500: #7ED321;
+            --error-500: #FF6B6B;
+            --gray-900: #2C3E50;
+            --gray-800: #34495E;
+            --gray-700: #546E7A;
+            --gray-300: #CFD8DC;
+            --gray-200: #ECEFF1;
+            --gray-100: #F5F7F8;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FA;
+            --spacing-4: 1rem;
+            --spacing-5: 1.5rem;
+            --spacing-6: 2rem;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --transition-normal: 0.3s ease;
+            --font-body: 'UD Digi Kyokasho NK-R', 'UD Digi Kyokasho N-R', '游ゴシック体', 'Yu Gothic', YuGothic, 'メイリオ', Meiryo, sans-serif;
+            --font-heading: 'UD Digi Kyokasho NK-B', 'UD Digi Kyokasho N-B', '游ゴシック体', 'Yu Gothic', YuGothic, 'メイリオ', Meiryo, sans-serif;
+            --font-number: 'Poppins', 'Roboto', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #FFF3E0 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+            line-height: 1.7;
+            letter-spacing: 0.03em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* ヘッダー */
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: var(--primary-600);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            color: var(--gray-700);
+        }
+
+        /* モード選択画面 */
+        .mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .mode-button {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            border: 3px solid var(--gray-300);
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.5rem;
+            font-size: clamp(1.125rem, 3vw, 1.5rem);
+            font-weight: 700;
+            color: var(--gray-900);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .mode-button:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-500);
+        }
+
+        .mode-button:active {
+            transform: translateY(0);
+        }
+
+        .mode-button.addition {
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            border-color: var(--primary-400);
+        }
+
+        .mode-button.subtraction {
+            background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+            border-color: #BA68C8;
+        }
+
+        .mode-button.mixed {
+            background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+            border-color: var(--accent-orange-500);
+        }
+
+        /* ゲーム画面 */
+        #game-screen {
+            display: none;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .score-display {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .score-number {
+            color: var(--primary-600);
+            font-family: var(--font-number);
+        }
+
+        .back-button {
+            background: linear-gradient(90deg, #B0BEC5, #CFD8DC);
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 48px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 問題表示エリア */
+        .problem-container {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+        }
+
+        .problem-text {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            font-family: var(--font-number);
+        }
+
+        .cherry-blossom {
+            margin: 2rem auto;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .cherry-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            min-height: 80px;
+        }
+
+        .cherry-branch {
+            flex: 1;
+            text-align: center;
+        }
+
+        .cherry-number {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 700;
+            color: var(--primary-600);
+            font-family: var(--font-number);
+            background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+            border-radius: 50%;
+            width: clamp(60px, 15vw, 100px);
+            height: clamp(60px, 15vw, 100px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            border: 3px solid var(--primary-500);
+            animation: cherry-pop 0.5s ease-out;
+        }
+
+        @keyframes cherry-pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .cherry-label {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        /* おはじき表示 */
+        .beads-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 2rem auto;
+            max-width: 600px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-lg);
+            min-height: 100px;
+        }
+
+        .bead {
+            width: clamp(30px, 8vw, 40px);
+            height: clamp(30px, 8vw, 40px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #5CA3EF, #4A90E2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: bead-appear 0.3s ease-out;
+            transition: all 0.5s ease;
+        }
+
+        .bead.ten-group {
+            background: radial-gradient(circle at 30% 30%, #96E03A, #7ED321);
+        }
+
+        .bead.removing {
+            animation: bead-remove 0.5s ease-out forwards;
+        }
+
+        @keyframes bead-appear {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bead-remove {
+            to {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 入力エリア */
+        .answer-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .answer-input {
+            width: clamp(100px, 30vw, 160px);
+            padding: 1rem;
+            border: 4px solid var(--primary-500);
+            border-radius: var(--radius-lg);
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            text-align: center;
+            font-family: var(--font-number);
+            background: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+            outline: none;
+            transition: all var(--transition-normal);
+        }
+
+        .answer-input:focus {
+            border-color: var(--secondary-500);
+            box-shadow: 0 0 0 3px rgba(126, 211, 33, 0.2);
+        }
+
+        .submit-button {
+            background: linear-gradient(90deg, #66bb6a 0%, #4caf50 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 1rem 3rem;
+            font-size: clamp(1.125rem, 3vw, 1.5rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 60px;
+            min-width: 48px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .submit-button:disabled {
+            background: linear-gradient(90deg, #B0BEC5, #CFD8DC);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* フィードバック */
+        .feedback {
+            text-align: center;
+            font-size: clamp(1.25rem, 4vw, 1.75rem);
+            font-weight: 700;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            margin: 1rem 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, #C8E6C9, #A5D6A7);
+            color: var(--success-500);
+            animation: success-flash 0.5s ease;
+        }
+
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #FFCDD2, #EF9A9A);
+            color: var(--error-500);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes success-flash {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-10px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(10px);
+            }
+        }
+
+        /* 紙吹雪 */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 1100;
+            pointer-events: none;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ヒントボタン */
+        .hint-button {
+            background: linear-gradient(90deg, #FFB84D, #F5A623);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 48px;
+            box-shadow: 0 2px 10px rgba(245, 166, 35, 0.3);
+        }
+
+        .hint-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 767px) {
+            .problem-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .cherry-display {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* アクセシビリティ */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        button:focus,
+        input:focus {
+            outline: 3px solid #4fc3f7;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>繰り上がり・繰り下がりマスター</h1>
+            <p class="subtitle">10のかたまりで、楽しく学ぼう！</p>
+        </header>
+
+        <!-- モード選択画面 -->
+        <div id="mode-screen">
+            <div class="mode-select">
+                <button class="mode-button addition" onclick="startGame('addition')" aria-label="繰り上がり練習モードを開始">
+                    繰り上がり練習<br>（たし算）
+                </button>
+                <button class="mode-button subtraction" onclick="startGame('subtraction')" aria-label="繰り下がり練習モードを開始">
+                    繰り下がり練習<br>（ひき算）
+                </button>
+                <button class="mode-button mixed" onclick="startGame('mixed')" aria-label="ミックスモードを開始">
+                    ミックスモード<br>（両方）
+                </button>
+            </div>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="game-screen">
+            <div class="game-header">
+                <div class="score-display">
+                    スコア: <span class="score-number" id="score">0</span> /
+                    問題: <span class="score-number" id="question-count">0</span>
+                </div>
+                <button class="back-button" onclick="returnToMenu()" aria-label="メニューに戻る">
+                    メニューに戻る
+                </button>
+            </div>
+
+            <div class="problem-container">
+                <div class="problem-text" id="problem-text" role="heading" aria-level="2">
+                    <!-- 問題がここに表示されます -->
+                </div>
+
+                <!-- さくらんぼ計算の表示 -->
+                <div class="cherry-blossom" id="cherry-blossom" style="display: none;">
+                    <div class="cherry-display" id="cherry-display">
+                        <!-- さくらんぼがここに表示されます -->
+                    </div>
+                </div>
+
+                <!-- おはじきの表示 -->
+                <div class="beads-container" id="beads-container">
+                    <!-- おはじきがここに表示されます -->
+                </div>
+
+                <!-- 入力エリア -->
+                <div class="answer-area">
+                    <input
+                        type="number"
+                        class="answer-input"
+                        id="answer-input"
+                        placeholder="?"
+                        aria-label="答えを入力してください"
+                        autocomplete="off"
+                    >
+                    <button class="hint-button" id="hint-button" onclick="showHint()" aria-label="ヒントを表示">
+                        ヒント
+                    </button>
+                    <button class="submit-button" id="submit-button" onclick="checkAnswer()" aria-label="答えを確認">
+                        答え合わせ
+                    </button>
+                </div>
+
+                <!-- フィードバック -->
+                <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ゲーム状態
+        let gameState = {
+            mode: null,
+            score: 0,
+            questionCount: 0,
+            currentProblem: null,
+            hintShown: false
+        };
+
+        // モード開始
+        function startGame(mode) {
+            gameState.mode = mode;
+            gameState.score = 0;
+            gameState.questionCount = 0;
+
+            document.getElementById('mode-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+
+            generateProblem();
+        }
+
+        // メニューに戻る
+        function returnToMenu() {
+            document.getElementById('mode-screen').style.display = 'block';
+            document.getElementById('game-screen').style.display = 'none';
+            gameState = { mode: null, score: 0, questionCount: 0, currentProblem: null, hintShown: false };
+        }
+
+        // 問題生成
+        function generateProblem() {
+            gameState.hintShown = false;
+            document.getElementById('hint-button').style.display = 'inline-block';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('answer-input').value = '';
+            document.getElementById('answer-input').disabled = false;
+            document.getElementById('submit-button').disabled = false;
+            document.getElementById('cherry-blossom').style.display = 'none';
+            document.getElementById('cherry-display').innerHTML = '';
+
+            let problemType;
+            if (gameState.mode === 'mixed') {
+                problemType = Math.random() < 0.5 ? 'addition' : 'subtraction';
+            } else {
+                problemType = gameState.mode;
+            }
+
+            if (problemType === 'addition') {
+                generateAdditionProblem();
+            } else {
+                generateSubtractionProblem();
+            }
+
+            gameState.questionCount++;
+            updateScore();
+        }
+
+        // 繰り上がりの足し算生成
+        function generateAdditionProblem() {
+            // 8+5, 7+6, 9+4 などの繰り上がりがある問題
+            const a = Math.floor(Math.random() * 3) + 7; // 7-9
+            const b = 10 - a + 1 + Math.floor(Math.random() * (10 - (10 - a + 1))); // 繰り上がりが発生する数
+
+            gameState.currentProblem = {
+                type: 'addition',
+                a: a,
+                b: b,
+                answer: a + b,
+                toTen: 10 - a,
+                remaining: b - (10 - a)
+            };
+
+            document.getElementById('problem-text').textContent = `${a} + ${b} = ?`;
+            renderBeads(a, b, 'addition');
+        }
+
+        // 繰り下がりの引き算生成
+        function generateSubtractionProblem() {
+            // 13-8, 12-5 などの繰り下がりがある問題
+            const answer = Math.floor(Math.random() * 9) + 1; // 1-9
+            const b = Math.floor(Math.random() * 6) + 4; // 4-9
+            const a = answer + 10 + (10 - b); // 11-18の範囲で繰り下がりが発生
+            const actualA = Math.min(18, Math.max(11, answer + b));
+            const actualB = Math.floor(Math.random() * (actualA - 10)) + (11 - actualA > 0 ? 11 - actualA : 1);
+
+            const finalA = Math.floor(Math.random() * 8) + 11; // 11-18
+            let finalB = Math.floor(Math.random() * 9) + 1; // 1-9
+
+            // 繰り下がりが発生するように調整
+            if (finalA % 10 >= finalB) {
+                finalB = (finalA % 10) + Math.floor(Math.random() * 3) + 1;
+            }
+
+            gameState.currentProblem = {
+                type: 'subtraction',
+                a: finalA,
+                b: finalB,
+                answer: finalA - finalB,
+                onesDigit: finalA % 10,
+                borrowAmount: finalB - (finalA % 10)
+            };
+
+            document.getElementById('problem-text').textContent = `${finalA} - ${finalB} = ?`;
+            renderBeads(finalA, finalB, 'subtraction');
+        }
+
+        // おはじき表示
+        function renderBeads(a, b, type) {
+            const container = document.getElementById('beads-container');
+            container.innerHTML = '';
+
+            if (type === 'addition') {
+                // 最初の数のおはじき
+                for (let i = 0; i < a; i++) {
+                    const bead = document.createElement('div');
+                    bead.className = 'bead';
+                    bead.style.animationDelay = `${i * 0.05}s`;
+                    container.appendChild(bead);
+                }
+
+                // 追加する数のおはじき（異なる色で追加予定を示す）
+                setTimeout(() => {
+                    for (let i = 0; i < b; i++) {
+                        const bead = document.createElement('div');
+                        bead.className = 'bead';
+                        bead.style.background = 'radial-gradient(circle at 30% 30%, #FFE082, #FFD54F)';
+                        bead.style.animationDelay = `${i * 0.05}s`;
+                        container.appendChild(bead);
+                    }
+                }, 500);
+            } else {
+                // 引く前の数のおはじき
+                for (let i = 0; i < a; i++) {
+                    const bead = document.createElement('div');
+                    bead.className = 'bead';
+                    if (i < 10) {
+                        bead.classList.add('ten-group');
+                    }
+                    bead.style.animationDelay = `${i * 0.05}s`;
+                    container.appendChild(bead);
+                }
+            }
+        }
+
+        // ヒント表示
+        function showHint() {
+            if (gameState.hintShown) return;
+
+            gameState.hintShown = true;
+            const problem = gameState.currentProblem;
+            const cherryDisplay = document.getElementById('cherry-display');
+
+            document.getElementById('cherry-blossom').style.display = 'block';
+            document.getElementById('hint-button').style.display = 'none';
+
+            if (problem.type === 'addition') {
+                // さくらんぼ計算を表示
+                cherryDisplay.innerHTML = `
+                    <div class="cherry-branch">
+                        <div class="cherry-number">${problem.toTen}</div>
+                        <div class="cherry-label">10になる数</div>
+                    </div>
+                    <div class="cherry-branch">
+                        <div class="cherry-number">${problem.remaining}</div>
+                        <div class="cherry-label">残りの数</div>
+                    </div>
+                `;
+
+                // おはじきのアニメーション
+                setTimeout(() => {
+                    const beads = document.querySelectorAll('.bead');
+                    const firstNumber = problem.a;
+
+                    // 10のかたまりを強調
+                    for (let i = 0; i < Math.min(10, beads.length); i++) {
+                        if (i >= firstNumber || i < firstNumber + problem.toTen) {
+                            beads[i].classList.add('ten-group');
+                        }
+                    }
+                }, 500);
+            } else {
+                // 繰り下がりの説明
+                cherryDisplay.innerHTML = `
+                    <div class="cherry-branch">
+                        <div class="cherry-number">${problem.onesDigit}</div>
+                        <div class="cherry-label">一の位</div>
+                    </div>
+                    <div class="cherry-branch">
+                        <div class="cherry-number">${problem.borrowAmount}</div>
+                        <div class="cherry-label">10から借りる</div>
+                    </div>
+                `;
+
+                // おはじきを減らすアニメーション
+                setTimeout(() => {
+                    const beads = document.querySelectorAll('.bead');
+                    for (let i = beads.length - 1; i >= beads.length - problem.b && i >= 0; i--) {
+                        beads[i].classList.add('removing');
+                    }
+                }, 500);
+            }
+        }
+
+        // 答え合わせ
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer-input').value);
+            const correctAnswer = gameState.currentProblem.answer;
+            const feedback = document.getElementById('feedback');
+
+            if (isNaN(userAnswer)) {
+                feedback.textContent = '答えを入力してください';
+                feedback.className = 'feedback';
+                return;
+            }
+
+            document.getElementById('answer-input').disabled = true;
+            document.getElementById('submit-button').disabled = true;
+
+            if (userAnswer === correctAnswer) {
+                gameState.score++;
+                feedback.textContent = `正解！ ${correctAnswer} です`;
+                feedback.className = 'feedback correct';
+
+                createConfetti();
+                updateScore();
+
+                setTimeout(() => {
+                    generateProblem();
+                }, 2500);
+            } else {
+                feedback.textContent = `残念！正解は ${correctAnswer} です`;
+                feedback.className = 'feedback incorrect';
+
+                setTimeout(() => {
+                    generateProblem();
+                }, 3000);
+            }
+        }
+
+        // スコア更新
+        function updateScore() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('question-count').textContent = gameState.questionCount;
+        }
+
+        // 紙吹雪エフェクト
+        function createConfetti() {
+            const colors = ['#FFD54F', '#FF9800', '#4CAF50', '#2196F3', '#E91E63', '#9C27B0'];
+
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+                confetti.style.animation = 'confetti-fall ' + (Math.random() * 2 + 2) + 's ease-out forwards';
+
+                document.body.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+        }
+
+        // Enterキーで答え合わせ
+        document.addEventListener('DOMContentLoaded', function() {
+            const answerInput = document.getElementById('answer-input');
+            answerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !document.getElementById('submit-button').disabled) {
+                    checkAnswer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
