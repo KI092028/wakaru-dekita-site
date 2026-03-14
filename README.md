@@ -80,6 +80,26 @@ cd wakaru-dekita-site
 - [ ] オフライン対応
 - [ ] PWA対応
 
+
+## 🔐 Gitリモート設定とpush手順（この環境向け）
+
+このリポジトリは初期状態で `origin` が未設定の場合があります。以下のスクリプトで、コミット後の push を確実に行えます。
+
+```bash
+# 1) リモートを設定（既存ならURL更新）
+./scripts/setup-git-remote.sh <your-repository-url>
+
+# 2) 現在ブランチを upstream 付きで push
+./scripts/push-current-branch.sh
+```
+
+例:
+
+```bash
+./scripts/setup-git-remote.sh git@github.com:your-org/wakaru-dekita-site.git
+./scripts/push-current-branch.sh origin work
+```
+
 ## 🤝 コントリビューション
 
 1. このリポジトリをフォーク
