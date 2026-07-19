@@ -6,18 +6,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        border: "hsl(214.3 31.8% 91.4%)",
-        input: "hsl(214.3 31.8% 91.4%)",
-        ring: "hsl(221.2 83.2% 53.3%)",
+        border: "hsl(30 25% 88%)",
+        input: "hsl(30 25% 88%)",
+        ring: "hsl(24 95% 58%)",
         background: "hsl(0 0% 100%)",
-        foreground: "hsl(222.2 84% 4.9%)",
+        foreground: "hsl(20 30% 15%)",
         muted: {
-          DEFAULT: "hsl(210 40% 96.1%)",
-          foreground: "hsl(215.4 16.3% 46.9%)"
+          DEFAULT: "hsl(30 40% 96%)",
+          foreground: "hsl(20 15% 45%)"
         },
         primary: {
-          DEFAULT: "hsl(221.2 83.2% 53.3%)",
-          foreground: "hsl(210 40% 98%)"
+          DEFAULT: "hsl(24 95% 58%)",
+          foreground: "hsl(0 0% 100%)"
+        },
+        secondary: {
+          DEFAULT: "hsl(172 60% 40%)",
+          foreground: "hsl(0 0% 100%)"
+        },
+        success: {
+          DEFAULT: "hsl(142 65% 42%)",
+          foreground: "hsl(0 0% 100%)"
+        },
+        danger: {
+          DEFAULT: "hsl(0 72% 55%)",
+          foreground: "hsl(0 0% 100%)"
         }
       }
     }
