@@ -4,8 +4,9 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "先生の道具箱 | 教員向けお助けツール",
-  description: "登録不要ですぐ使える、教員向けのシンプルなお助けツールサイトです。",
+  title: "わかる・できる | 小学生向け算数ドリル",
+  description:
+    "すきま時間や家庭学習で使える、小学生向けの無料算数ドリルサイトです。登録不要で今すぐ問題を解き始められます。",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

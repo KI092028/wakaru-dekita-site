@@ -7,7 +7,7 @@ export default function PrivacyPage() {
           <h2 className="mb-3 text-xl font-semibold text-foreground">情報の収集について</h2>
           <p>
             当サイトでは、アカウント登録や個人情報の入力は一切不要です。
-            各ツールに入力されたデータはブラウザ上でのみ処理され、サーバーには送信・保存されません。
+            ドリルの解答結果はブラウザ上でのみ処理され、サーバーには送信・保存されません。
           </p>
         </section>
         <section>

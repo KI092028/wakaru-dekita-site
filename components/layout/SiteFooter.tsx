@@ -18,7 +18,7 @@ export function SiteFooter() {
             お問い合わせ
           </Link>
         </div>
-        <p className="text-center text-xs text-muted-foreground">© 2025 先生の道具箱</p>
+        <p className="text-center text-xs text-muted-foreground">© 2026 わかる・できる</p>
       </div>
     </footer>
   );
