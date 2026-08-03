@@ -12,7 +12,7 @@ export function generateTimesTableQuestions(count: number): Question[] {
 
     questions.push({
       id: `times-table-${i}`,
-      prompt: `${a} × ${b} = ?`,
+      terms: [a, "×", b],
       answer,
       choices: buildChoices(answer, 1, 81),
     });

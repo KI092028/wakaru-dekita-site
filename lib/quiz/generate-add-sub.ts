@@ -10,23 +10,20 @@ export function generateAddSubQuestions(count: number): Question[] {
     let a: number;
     let b: number;
     let answer: number;
-    let prompt: string;
 
     if (isAddition) {
       a = 1 + Math.floor(Math.random() * 15);
       b = 1 + Math.floor(Math.random() * (20 - a));
       answer = a + b;
-      prompt = `${a} + ${b} = ?`;
     } else {
       a = 2 + Math.floor(Math.random() * 19);
       b = 1 + Math.floor(Math.random() * a);
       answer = a - b;
-      prompt = `${a} - ${b} = ?`;
     }
 
     questions.push({
       id: `add-sub-${i}`,
-      prompt,
+      terms: [a, isAddition ? "+" : "−", b],
       answer,
       choices: buildChoices(answer, 0, 20),
     });

@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ValueDisplay } from "@/components/quiz/value-display";
 import { cn } from "@/lib/utils";
+import { valueKey } from "@/lib/quiz/fraction";
 import { generateAddSubQuestions } from "@/lib/quiz/generate-add-sub";
+import { generateFractionsQuestions } from "@/lib/quiz/generate-fractions";
 import { generateTimesTableQuestions } from "@/lib/quiz/generate-times-table";
 import type { Question } from "@/lib/quiz/types";
 
@@ -16,6 +19,7 @@ const QUESTION_COUNT = 10;
 const generators = {
   "add-sub": generateAddSubQuestions,
   "times-table": generateTimesTableQuestions,
+  fractions: generateFractionsQuestions,
 } satisfies Record<string, (count: number) => Question[]>;
 
 type Props = {
@@ -28,7 +32,7 @@ export function QuizApp({ title, unit }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
     setQuestions(generateQuestions(QUESTION_COUNT));
@@ -38,19 +42,19 @@ export function QuizApp({ title, unit }: Props) {
     setQuestions(generateQuestions(QUESTION_COUNT));
     setIndex(0);
     setScore(0);
-    setSelected(null);
+    setSelectedKey(null);
   }
 
-  function selectChoice(choice: number) {
-    if (selected !== null) return;
-    setSelected(choice);
-    if (choice === questions[index].answer) {
+  function selectChoice(key: string) {
+    if (selectedKey !== null) return;
+    setSelectedKey(key);
+    if (key === valueKey(questions[index].answer)) {
       setScore((s) => s + 1);
     }
   }
 
   function next() {
-    setSelected(null);
+    setSelectedKey(null);
     setIndex((i) => i + 1);
   }
 
@@ -81,6 +85,9 @@ export function QuizApp({ title, unit }: Props) {
   }
 
   const question = questions[index];
+  const answerKey = valueKey(question.answer);
+  const showResult = selectedKey !== null;
+  const isCorrect = selectedKey === answerKey;
 
   return (
     <Card className="mx-auto max-w-lg">
@@ -92,38 +99,54 @@ export function QuizApp({ title, unit }: Props) {
           <span>とくてん: {score}</span>
         </div>
 
-        <p className="mb-8 text-center text-4xl font-bold tracking-wide">{question.prompt}</p>
+        <p className="mb-8 flex items-center justify-center gap-2 text-center text-4xl font-bold tracking-wide">
+          {question.terms.map((term, i) =>
+            typeof term === "string" ? (
+              <span key={i}>{term}</span>
+            ) : (
+              <ValueDisplay key={i} value={term} />
+            )
+          )}
+          <span>=</span>
+          <span>?</span>
+        </p>
 
         <div className="grid grid-cols-2 gap-3">
           {question.choices.map((choice) => {
-            const isCorrectChoice = choice === question.answer;
-            const isSelected = choice === selected;
-            const showResult = selected !== null;
+            const key = valueKey(choice);
+            const isCorrectChoice = key === answerKey;
+            const isSelected = key === selectedKey;
 
             return (
               <button
-                key={choice}
+                key={key}
                 type="button"
-                onClick={() => selectChoice(choice)}
+                onClick={() => selectChoice(key)}
                 disabled={showResult}
                 className={cn(
-                  "h-16 rounded-2xl border-2 text-2xl font-bold transition-colors disabled:cursor-default",
+                  "flex h-16 items-center justify-center rounded-2xl border-2 text-2xl font-bold transition-colors disabled:cursor-default",
                   !showResult && "border-input bg-background hover:border-primary hover:bg-primary/5",
                   showResult && isCorrectChoice && "border-success bg-success/10 text-success",
                   showResult && isSelected && !isCorrectChoice && "border-danger bg-danger/10 text-danger",
                   showResult && !isSelected && !isCorrectChoice && "border-input opacity-50"
                 )}
               >
-                {choice}
+                <ValueDisplay value={choice} />
               </button>
             );
           })}
         </div>
 
-        {selected !== null && (
+        {showResult && (
           <div className="mt-8 text-center">
-            <p className={cn("mb-4 text-lg font-bold", selected === question.answer ? "text-success" : "text-danger")}>
-              {selected === question.answer ? "せいかい！" : `ざんねん…答えは ${question.answer}`}
+            <p className={cn("mb-4 text-lg font-bold", isCorrect ? "text-success" : "text-danger")}>
+              {isCorrect ? (
+                "せいかい！"
+              ) : (
+                <span className="inline-flex items-center gap-1">
+                  ざんねん…答えは <ValueDisplay value={question.answer} />
+                </span>
+              )}
             </p>
             <Button size="lg" onClick={next}>
               つぎへ

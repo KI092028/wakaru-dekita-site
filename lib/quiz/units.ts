@@ -19,8 +19,8 @@ export const quizUnits: QuizUnit[] = [
     slug: "fractions",
     title: "分数",
     gradeLabel: "4〜5年生",
-    description: "分数のたし算・ひき算にちょうせん。",
-    available: false,
+    description: "通分・約分をふくむ、分数のたし算・ひき算にちょうせん。",
+    available: true,
   },
   {
     slug: "time",

@@ -32,6 +32,32 @@
 単元の追加コストを下げることを優先する。1単元の追加は以下の3ステップで完結する（→ 第4章）。
 共通の出題UIは `QuizApp` 1つに集約し、単元ごとにUIを作らない。
 
+### 1.4 値のモデル
+
+問題に出る値は整数とは限らないため、**`Value = number | Fraction`** として扱う。
+
+```ts
+type Fraction = { numerator: number; denominator: number };
+type Value = number | Fraction;
+```
+
+問題文は文字列ではなく、**値と演算子を並べた配列**で持つ。
+表示側が値の種類に応じて描き分けるため、分数の見た目をロジックから切り離せる。
+
+```ts
+terms: [7, "+", 5]                                   // 7 + 5 = ?
+terms: [{numerator:1,denominator:2}, "+", {...}]     // 1/2 + 1/3 = ?
+```
+
+末尾の `= ?` は全単元共通なので `terms` には含めず、表示側で付ける。
+
+#### 値の比較は必ず `valueKey()` を通す
+
+分数は `2/4` と `1/2` のように**同じ値が別の形で表せる**ため、
+オブジェクトの一致比較や `===` では正誤判定できない。
+`lib/quiz/fraction.ts` の `valueKey()`（約分してから文字列化する）を使い、
+その文字列で比較する。Reactの `key` にも同じものを使う。
+
 ---
 
 ## 2. ディレクトリ構成
@@ -50,14 +76,17 @@ app/                      ルーティングとページ（App Router）
 components/
   home/                   トップページのセクション単位のコンポーネント
   layout/                 SiteHeader / SiteFooter
-  quiz/quiz-app.tsx       ドリルUI（全単元共通・クライアントコンポーネント）
+  quiz/
+    quiz-app.tsx          ドリルUI（全単元共通・クライアントコンポーネント）
+    value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
   ui/                     汎用UIプリミティブ（button, card ほか）
 
 lib/
   quiz/
-    types.ts              Question / QuizUnit の型
+    types.ts              Question / Value / Fraction / QuizUnit の型
     units.ts              単元の一覧（ここが単元マスタ）
-    choices.ts            選択肢の組み立て（共通）
+    choices.ts            整数の選択肢の組み立て（共通）
+    fraction.ts           分数の四則・約分・値の比較
     generate-*.ts         単元ごとの問題生成
   utils.ts                cn() などの小物
 
@@ -97,18 +126,18 @@ props として**関数を渡すことはできない**（`Functions cannot be p
 
 ## 4. 単元を追加する手順
 
-例として `fractions`（分数）を追加する場合。
+例として `time`（時こく・時間）を追加する場合。
 
 ### ステップ1: 出題ロジックを作る
 
-`lib/quiz/generate-fractions.ts` を新規作成し、`(count: number) => Question[]` を実装する。
+`lib/quiz/generate-time.ts` を新規作成し、`(count: number) => Question[]` を実装する。
 選択肢の組み立ては `buildChoices()` を再利用する。
 
 ```ts
 import { buildChoices } from "./choices";
 import type { Question } from "./types";
 
-export function generateFractionsQuestions(count: number): Question[] {
+export function generateTimeQuestions(count: number): Question[] {
   // ...
 }
 ```
@@ -121,14 +150,15 @@ export function generateFractionsQuestions(count: number): Question[] {
 const generators = {
   "add-sub": generateAddSubQuestions,
   "times-table": generateTimesTableQuestions,
-  "fractions": generateFractionsQuestions,   // 追加
+  fractions: generateFractionsQuestions,
+  time: generateTimeQuestions,   // 追加
 } satisfies Record<string, (count: number) => Question[]>;
 ```
 
 ### ステップ3: 単元マスタとページを用意する
 
 `lib/quiz/units.ts` の該当単元を `available: true` に変更し、
-`app/learn/fractions/page.tsx` を既存単元のページをまねて作る（metadataの文言だけ差し替える）。
+`app/learn/time/page.tsx` を既存単元のページをまねて作る（metadataの文言だけ差し替える）。
 
 これだけでトップページと単元一覧のカードが「準備中」から解禁され、リンクが張られる。
 
@@ -202,6 +232,13 @@ cd out && python3 -m http.server 8788
 出題ロジックだけを検証したい場合は、`lib/quiz/*.ts` を tsc でコンパイルして
 Node.js から直接呼べる（UIに依存していないため）。多数の問題を生成して
 「選択肢4つ・正解を含む・重複なし・計算が正しい」を機械的に確認できる。
+
+**分数を含む単元では、これに加えて次も確認する。**
+
+- 答えが真分数（0 < 分子 < 分母）で、約分済みであること
+- 問題として出す分数も既約であること
+- 選択肢がすべて真分数で、分子・分母が整数であること
+- ひき算の答えが負にならないこと
 
 ---
 
