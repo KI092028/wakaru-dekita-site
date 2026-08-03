@@ -6,6 +6,67 @@ body {
   @apply bg-background text-foreground antialiased;
 }
 
+/* ドリルの手応えを出すための短い演出。長くするとテンポを損なうので 0.3 秒前後にとどめる。 */
+@keyframes wd-pop-in {
+  0% {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes wd-correct {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes wd-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.wd-pop-in {
+  animation: wd-pop-in 0.26s ease-out both;
+}
+
+.wd-correct {
+  animation: wd-correct 0.3s ease-out;
+}
+
+.wd-shake {
+  animation: wd-shake 0.24s ease-out;
+}
+
+/* 動きに敏感な利用者には演出を出さない */
+@media (prefers-reduced-motion: reduce) {
+  .wd-pop-in,
+  .wd-correct,
+  .wd-shake {
+    animation: none;
+  }
+}
+
 @media print {
   @page {
     margin: 1.5cm;
