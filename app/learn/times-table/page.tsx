@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { QuizApp } from "@/components/quiz/quiz-app";
+import { TimesTableGame } from "@/components/quiz/times-table-game";
 
 export const metadata: Metadata = {
   title: "九九ドリル | わかる・できる",
-  description: "小学2〜3年生向け、1の段から9の段までの九九をれんしゅうできる無料ドリルです。",
+  description:
+    "小学2〜3年生向けの無料九九ドリル。81マスの九九マップをうめながら、苦手な九九を重点的にれんしゅうできます。",
 };
 
 export default function TimesTablePage() {
@@ -16,8 +17,8 @@ export default function TimesTablePage() {
           ← たんげんいちらんに戻る
         </Link>
         <h1 className="mb-2 text-center text-2xl font-bold">九九</h1>
-        <p className="mb-10 text-center text-sm text-muted-foreground">2〜3年生向け・1の段〜9の段</p>
-        <QuizApp title="九九" unit="times-table" />
+        <p className="mb-10 text-center text-sm text-muted-foreground">2〜3年生向け・81マスの九九マップをうめよう</p>
+        <TimesTableGame />
       </div>
     </main>
   );
