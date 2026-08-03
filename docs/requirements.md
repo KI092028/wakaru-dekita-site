@@ -219,11 +219,14 @@ Enforce HTTPS を有効にしている。
 |------|------|
 | `robots.txt` がリポジトリ直下にあり `public/` にないため、**静的エクスポートに含まれず配信されていない** | クローラーに読まれない |
 | `robots.txt` が参照している `sitemap.xml` が存在しない | 同上 |
-| favicon が未設定（`/favicon.ico` が404） | ブラウザのタブにアイコンが出ない |
 | 未使用コンポーネントが残存（`components/ui/input.tsx`、`label.tsx`、`textarea.tsx`） | 旧サイトの名残。動作に影響はない |
 | お問い合わせ手段が実質存在しない | 利用者からの連絡を受け取れない |
-| OGP画像・メタタグが未設定 | SNSでシェアしたときの見栄え |
 | 出題は毎回ランダムのみ。間違えた問題を重点的に出す等の仕組みはない | 学習効率の面での改善余地 |
+
+### 対応済み
+
+- ~~favicon が未設定~~ → `app/icon.png` / `app/apple-icon.png` / `app/favicon.ico` を追加
+- ~~OGP画像・メタタグが未設定~~ → `public/ogp.png` と `app/layout.tsx` の metadata で対応
 
 ---
 
