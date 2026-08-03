@@ -34,6 +34,7 @@ npm run dev
 |----------|------|
 | [docs/requirements.md](docs/requirements.md) | 要件定義（目的・ターゲット・機能要件・既知の課題） |
 | [docs/design-guidelines.md](docs/design-guidelines.md) | 設計・実装方針（構成・単元の追加手順・デザイントークン・公開フロー） |
+| [docs/x-operations.md](docs/x-operations.md) | X運用・自動化ロードマップ（方針・コスト・計測設計） |
 
 ## 設計方針
 
