@@ -3,19 +3,23 @@ export type Fraction = { numerator: number; denominator: number };
 /** 問題に登場する値。整数か分数。 */
 export type Value = number | Fraction;
 
-/**
- * 問題文の左辺。値と演算子を並べたもの。
- * 例: [7, "+", 5] / [{numerator:1,denominator:2}, "+", {numerator:1,denominator:3}]
- * 末尾の「= ?」は表示側で共通に付けるため含めない。
- */
-export type Term = Value | string;
+export type Operator = "+" | "−" | "×";
 
+/**
+ * 出題は「a op b = ?」の形にそろえている。
+ *
+ * 表示用の文字列ではなく値のまま持つのは、誤答の型を判定する（diagnose.ts）ときに
+ * 演算子と両辺が必要になるため。選択肢は持たない（入力式にしたため）。
+ */
 export type Question = {
   id: string;
-  terms: Term[];
-  choices: Value[];
+  a: Value;
+  op: Operator;
+  b: Value;
   answer: Value;
 };
+
+export type UnitSlug = "add-sub" | "times-table" | "fractions";
 
 export type QuizUnit = {
   slug: string;

@@ -5,7 +5,11 @@
 
 const STORAGE_KEY = "wakaru-dekita:times-table:v1";
 
-/** マスターと判定するのに必要な連続正解数。4択なので1回では偶然当たりうる。 */
+/**
+ * マスターと判定するのに必要な連続正解数。
+ * 入力式にしてまぐれ当たりは減ったが、1回正解しただけでは定着したとは言えないので
+ * 2回のままにしている（別のセットでもう一度出会って正解する必要がある）。
+ */
 export const MASTERY_STREAK = 2;
 
 export const TABLE_SIZE = 9;

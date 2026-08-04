@@ -24,13 +24,16 @@
 | 出題ロジック | `lib/quiz/` | 問題の生成、選択肢の組み立て。UIを一切知らない |
 | UI | `components/quiz/` | 出題・判定・進行の画面表示。問題の作り方を知らない |
 
-この分離により、**出題ロジックは Node.js から直接呼んでテストできる**。
-実際、公開前に4000問を生成して「選択肢が4つ・正解を含む・重複なし・計算が正しい」を検証している。
+この分離により、**出題ロジックと誤答診断は Node.js から直接呼んでテストできる**。
 
 ### 1.3 単元を増やしやすくする
 
 単元の追加コストを下げることを優先する。1単元の追加は以下の3ステップで完結する（→ 第4章）。
-共通の出題UIは `QuizApp` 1つに集約し、単元ごとにUIを作らない。
+共通の出題UIは `QuizGame` 1つに集約し、単元ごとにUIを作らない。
+
+**3単元は同じ操作感でなければならない。** 入力の仕方、正誤の見せ方、間違えたあとの流れ、
+次へ進むタイミングを単元ごとに変えないこと。同じサイトの中で操作が変わると、
+子どもは単元を移るたびに操作を覚え直すことになる。
 
 ### 1.4 値のモデル
 
@@ -41,22 +44,25 @@ type Fraction = { numerator: number; denominator: number };
 type Value = number | Fraction;
 ```
 
-問題文は文字列ではなく、**値と演算子を並べた配列**で持つ。
+出題はすべて **`a op b = ?`** の形にそろえ、問題文は文字列ではなく値のまま持つ。
 表示側が値の種類に応じて描き分けるため、分数の見た目をロジックから切り離せる。
 
 ```ts
-terms: [7, "+", 5]                                   // 7 + 5 = ?
-terms: [{numerator:1,denominator:2}, "+", {...}]     // 1/2 + 1/3 = ?
+{ a: 7, op: "+", b: 5, answer: 12 }
+{ a: {numerator:1,denominator:2}, op: "+", b: {...}, answer: {...} }
 ```
 
-末尾の `= ?` は全単元共通なので `terms` には含めず、表示側で付ける。
+演算子と両辺を分けて持つのは、**誤答の型を判定する**（`lib/quiz/diagnose.ts`）ときに
+両方が必要になるため。末尾の `= ?` は全単元共通なので、表示側で付ける。
 
-#### 値の比較は必ず `valueKey()` を通す
+#### 分数は「約分し終えた形」だけを正解にする
 
-分数は `2/4` と `1/2` のように**同じ値が別の形で表せる**ため、
-オブジェクトの一致比較や `===` では正誤判定できない。
-`lib/quiz/fraction.ts` の `valueKey()`（約分してから文字列化する）を使い、
-その文字列で比較する。Reactの `key` にも同じものを使う。
+`valueKey()` / `valuesEqual()` は約分してから比べるため、`2/4` と `1/2` を同じ値とみなす。
+これは誤答の型を判定するときには正しいが、**正誤判定に使ってはいけない。**
+約分こそがこの単元で練習させたい作業であり、`2/4` を正解にすると素通りできてしまう。
+
+正誤判定は `lib/quiz/answer-input.ts` の `matchesAnswer()` を使う（分数は分子・分母の完全一致）。
+約分前の形は誤答として拾い、`diagnose()` が「もっとかんたんにできる」と返す。
 
 ### 1.5 端末内への保存（localStorage）
 
@@ -74,12 +80,12 @@ terms: [{numerator:1,denominator:2}, "+", {...}]     // 1/2 + 1/3 = ?
 - 保存するのは学習に関する情報のみ。個人を特定する情報は扱わない
 - 保存を追加・変更したら、**プライバシーポリシーの記載も合わせて更新する**
 
-#### 九九だけ別コンポーネントにしている理由
+#### 九九マップは九九だけの機能
 
-`QuizApp` は3単元で共有しているため、九九のゲーム性をここに入れると
-他単元に影響が及ぶ。試験導入の段階では影響範囲を切り離すことを優先し、
-`times-table-game.tsx` に独立して実装している。
-出題カードの見た目に重複があるのは承知のうえで、**効果を確認してから統合を判断する。**
+81マスの習得状況を持つのは九九だけなので、マップの表示は `usesProgress(unit)` で分岐する。
+分岐はこの1か所に閉じ、単元ごとにコンポーネントを分けない
+（かつて九九だけ別実装にしていたが、出題カードの見た目が二重管理になり、
+操作感も単元ごとにずれたため統合した）。
 
 ---
 
@@ -91,7 +97,7 @@ app/                      ルーティングとページ（App Router）
   page.tsx                トップページ（LP）
   learn/
     page.tsx              単元一覧
-    add-sub/page.tsx      各単元のページ。QuizApp を置くだけの薄い層
+    add-sub/page.tsx      各単元のページ。QuizGame を置くだけの薄い層
     times-table/page.tsx
   about|privacy|terms|contact/page.tsx
   globals.css
@@ -100,18 +106,20 @@ components/
   home/                   トップページのセクション単位のコンポーネント
   layout/                 SiteHeader / SiteFooter
   quiz/
-    quiz-app.tsx          4択ドリルUI（たし算・ひき算 / 分数）
-    times-table-game.tsx  九九専用。マップ＋入力式ドリル（→ 1.5）
-    times-table-grid.tsx  81マスの習得状況の表
-    number-pad.tsx        画面内の数字キーパッド（九九の入力式で使用）
+    quiz-game.tsx         3単元共通の出題UI（入力・判定・進行）
+    answer-slot.tsx       「= ここ」に入る入力欄（整数は1枠、分数は2枠）
+    number-pad.tsx        画面内の数字キーパッド（全単元共通）
+    times-table-grid.tsx  81マスの習得状況の表（九九のみ）
     value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
   ui/                     汎用UIプリミティブ（button, card ほか）
 
 lib/
   quiz/
-    types.ts              Question / Value / Fraction / QuizUnit の型
+    types.ts              Question / Value / Fraction / UnitSlug の型
     units.ts              単元の一覧（ここが単元マスタ）
-    choices.ts            整数の選択肢の組み立て（共通）
+    build-questions.ts    単元スラッグ → 問題。出題数もここ
+    answer-input.ts       入力途中の答えの状態遷移と正誤判定
+    diagnose.ts           誤答の型 → 子どもへの言葉
     fraction.ts           分数の四則・約分・値の比較
     progress.ts           九九の習得状況（localStorage）
     generate-*.ts         単元ごとの問題生成
@@ -129,22 +137,22 @@ docs/                     本ドキュメント群
 
 ページ（`app/**/page.tsx`）はサーバーコンポーネントのままにし、
 `metadata` によるタイトル・説明の指定はページ側で行う。
-状態を持つのはドリルUIだけなので、`"use client"` は `components/quiz/quiz-app.tsx` に限定する。
+状態を持つのはドリルUIだけなので、`"use client"` は `components/quiz/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
 **過去にこれでビルドが落ちている。** サーバーコンポーネントからクライアントコンポーネントへ
 props として**関数を渡すことはできない**（`Functions cannot be passed directly to Client Components`）。
 
-そのため `QuizApp` には出題関数そのものではなく、**単元スラッグ（文字列）を渡し**、
-クライアント側で対応する生成関数を解決している。
+そのため `QuizGame` には出題関数そのものではなく、**単元スラッグ（文字列）を渡し**、
+クライアント側の `buildQuestions()` で対応する生成関数を解決している。
 
 ```tsx
 // NG: ページ（サーバー）から関数を渡す
-<QuizApp title="九九" generateQuestions={generateTimesTableQuestions} />
+<QuizGame title="九九" generateQuestions={generateTimesTableQuestions} />
 
-// OK: 文字列を渡し、QuizApp 内部で解決する
-<QuizApp title="九九" unit="times-table" />
+// OK: 文字列を渡し、buildQuestions() で解決する
+<QuizGame title="九九" unit="times-table" />
 ```
 
 新しい単元を追加するときも、この形を崩さないこと。
@@ -158,28 +166,26 @@ props として**関数を渡すことはできない**（`Functions cannot be p
 ### ステップ1: 出題ロジックを作る
 
 `lib/quiz/generate-time.ts` を新規作成し、`(count: number) => Question[]` を実装する。
-選択肢の組み立ては `buildChoices()` を再利用する。
+選択肢は不要（入力式のため）。答えは既約の形で持たせる。
 
 ```ts
-import { buildChoices } from "./choices";
 import type { Question } from "./types";
 
 export function generateTimeQuestions(count: number): Question[] {
-  // ...
+  // { id, a, op, b, answer } を count 個返す
 }
 ```
 
-### ステップ2: QuizApp に登録する
+余力があれば `lib/quiz/diagnose.ts` に、その単元で子どもが実際にやりがちな
+誤答の型を足す。判定できないときは `null` を返せばよく、無理に埋めなくてよい。
 
-`components/quiz/quiz-app.tsx` の `generators` に1行足す。
+### ステップ2: buildQuestions に登録する
+
+`lib/quiz/build-questions.ts` の `switch` に1行足し、`UnitSlug` に単元名を加える。
 
 ```ts
-const generators = {
-  "add-sub": generateAddSubQuestions,
-  "times-table": generateTimesTableQuestions,
-  fractions: generateFractionsQuestions,
-  time: generateTimeQuestions,   // 追加
-} satisfies Record<string, (count: number) => Question[]>;
+case "time":
+  return generateTimeQuestions(count);
 ```
 
 ### ステップ3: 単元マスタとページを用意する
@@ -233,20 +239,29 @@ const generators = {
 - **`prefers-reduced-motion` で無効化する。** 上記クラスは対応済み
 - **効果音は使わない。** 入れる場合も既定はOFFにし、画面から切り替えられるようにする
 
-### 5.4 回答形式
+### 5.4 回答形式：3単元とも入力式
 
-**九九は入力式、他の単元は4択**という状態にある。これは移行の途中であり、
-4択が正しいと判断した結果ではない。
+**4択は全廃した。選択肢を復活させないこと。**
 
 4択には、25%が偶然当たる・消去法が効く・再認であって想起ではない、という
 根本的な弱点がある（→ [cognitive-science-research.md](./cognitive-science-research.md)）。
-**新しい単元を作るときは、まず入力式で検討すること。**
+効果量でも、選択肢を選ばせる回答ベースの形式と、誤りを診断して返す形式とでは
+倍以上の開きがある（→ [concept-review.md](./concept-review.md)）。
 
-4択を使う場合、**誤答は「正解に近いランダムな数」にしてはいけない。**
-実際に子どもが混同する値（九九なら同じ段の別の答え、分数なら分子どうしを足した値）を
-混ぜないと、計算せずに消去法で解けてしまう。
+かつて4択の誤選択肢に埋め込んでいた「子どもが実際に混同する値」の知識は、
+捨てずに `lib/quiz/diagnose.ts` へ移した。選択肢としてではなく、
+**間違えたときに何を間違えたかを言う**ために使っている。
 
-### 5.5 文言
+### 5.5 間違えたあとの流れ（3単元共通）
+
+1. 正答を見せる。同時に、誤答の型が分かれば**何を間違えたか**を1行で言う
+2. 「もういちど うってみる」で、**自分でもう一度入力させる**（訂正的検索）
+3. 打ち直しの正解では得点も習得記録も動かさない
+
+答えを見せて「つぎへ」で流すと、「見て分かったつもり」で終わる。
+必ず自分の手で正しい答えを通させること。
+
+### 5.6 文言
 
 - ドリル画面まわりは**ひらがな主体**（対象が1年生から）
 - 保護者向けセクション・規約類は通常の漢字表記

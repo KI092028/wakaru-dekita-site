@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { QuizApp } from "@/components/quiz/quiz-app";
+import { QuizGame } from "@/components/quiz/quiz-game";
 
 export const metadata: Metadata = {
   title: "分数ドリル | わかる・できる",
@@ -20,7 +20,7 @@ export default function FractionsPage() {
         <p className="mb-10 text-center text-sm text-muted-foreground">
           4〜5年生向け・通分と約分にちょうせん
         </p>
-        <QuizApp title="分数" unit="fractions" />
+        <QuizGame title="分数" unit="fractions" />
       </div>
     </main>
   );

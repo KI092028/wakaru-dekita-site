@@ -1,12 +1,4 @@
-import {
-  addFractions,
-  fraction,
-  gcd,
-  isProperFraction,
-  simplify,
-  subtractFractions,
-  valueKey,
-} from "./fraction";
+import { addFractions, fraction, gcd, isProperFraction, subtractFractions } from "./fraction";
 import type { Fraction, Question } from "./types";
 
 /**
@@ -15,89 +7,13 @@ import type { Fraction, Question } from "./types";
  * 1セットの中で、同分母 → 片方が倍数 → 最小公倍数で通分 → 約分あり の順に
  * 難しくなるよう並べる。いきなり全滅させず、つまずきの本丸である通分・約分まで
  * 到達させるための構成。
+ *
+ * 答えは既約分数で持つ。入力式では約分し終えた形だけを正解とし、
+ * 約分前の形（2/4 など）は誤答として「もっとかんたんにできる」と返す（diagnose.ts）。
  */
 
 const randInt = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1));
 const pick = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
-
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
-
-/**
- * 誤答の候補。子どもが実際にやりがちな間違いを混ぜることで、
- * 計算せずに消去法で解けないようにする。
- */
-function distractorCandidates(a: Fraction, b: Fraction, isAdd: boolean, answer: Fraction): Fraction[] {
-  const candidates: Fraction[] = [];
-
-  // 分子どうし・分母どうしを計算してしまう誤り（1/2 + 1/3 = 2/5 とするタイプ）
-  candidates.push(
-    isAdd
-      ? fraction(a.numerator + b.numerator, a.denominator + b.denominator)
-      : fraction(a.numerator - b.numerator, a.denominator - b.denominator)
-  );
-
-  // 通分したのに分子を直し忘れる誤り
-  const common = (a.denominator * b.denominator) / gcd(a.denominator, b.denominator);
-  candidates.push(
-    isAdd
-      ? fraction(a.numerator + b.numerator, common)
-      : fraction(a.numerator - b.numerator, common)
-  );
-
-  // 約分し忘れ（約分が必要な問題のときだけ意味を持つ）
-  const unreduced = isAdd
-    ? fraction(
-        (a.numerator * common) / a.denominator + (b.numerator * common) / b.denominator,
-        common
-      )
-    : fraction(
-        (a.numerator * common) / a.denominator - (b.numerator * common) / b.denominator,
-        common
-      );
-  candidates.push(unreduced);
-
-  // 惜しい値
-  candidates.push(fraction(answer.numerator + 1, answer.denominator));
-  candidates.push(fraction(answer.numerator - 1, answer.denominator));
-  candidates.push(fraction(answer.numerator, answer.denominator + 1));
-  candidates.push(fraction(answer.numerator + 1, answer.denominator + 1));
-  candidates.push(fraction(answer.numerator, answer.denominator + 2));
-
-  return candidates;
-}
-
-function buildFractionChoices(a: Fraction, b: Fraction, isAdd: boolean, answer: Fraction): Fraction[] {
-  const seen = new Set<string>([valueKey(answer)]);
-  const choices: Fraction[] = [answer];
-
-  const consider = (candidate: Fraction) => {
-    if (choices.length >= 4) return;
-    if (!Number.isInteger(candidate.numerator) || !Number.isInteger(candidate.denominator)) return;
-    if (!isProperFraction(candidate)) return;
-    const key = valueKey(candidate);
-    if (seen.has(key)) return;
-    seen.add(key);
-    choices.push(simplify(candidate));
-  };
-
-  distractorCandidates(a, b, isAdd, answer).forEach(consider);
-
-  // 足りなければ、答えと分母が近い真分数で埋める
-  for (let d = answer.denominator; d <= answer.denominator + 6 && choices.length < 4; d++) {
-    for (let n = 1; n < d && choices.length < 4; n++) {
-      consider(fraction(n, d));
-    }
-  }
-
-  return shuffle(choices);
-}
 
 /**
  * 問題に出す分数は既約にそろえる。
@@ -112,12 +28,7 @@ function makeQuestion(a: Fraction, b: Fraction, isAdd: boolean, id: string): Que
   const answer = isAdd ? addFractions(a, b) : subtractFractions(a, b);
   if (!isProperFraction(answer)) return null;
 
-  return {
-    id,
-    terms: [a, isAdd ? "+" : "−", b],
-    choices: buildFractionChoices(a, b, isAdd, answer),
-    answer,
-  };
+  return { id, a, op: isAdd ? "+" : "−", b, answer };
 }
 
 /** 同分母のたし算・ひき算。 */

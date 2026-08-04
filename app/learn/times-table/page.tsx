@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { TimesTableGame } from "@/components/quiz/times-table-game";
+import { QuizGame } from "@/components/quiz/quiz-game";
 
 export const metadata: Metadata = {
   title: "九九ドリル | わかる・できる",
@@ -18,7 +18,7 @@ export default function TimesTablePage() {
         </Link>
         <h1 className="mb-2 text-center text-2xl font-bold">九九</h1>
         <p className="mb-10 text-center text-sm text-muted-foreground">2〜3年生向け・81マスの九九マップをうめよう</p>
-        <TimesTableGame />
+        <QuizGame title="九九" unit="times-table" />
       </div>
     </main>
   );

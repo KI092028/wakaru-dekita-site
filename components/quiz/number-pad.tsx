@@ -3,10 +3,13 @@
 import { cn } from "@/lib/utils";
 
 /**
- * 画面内に置く数字キーパッド。
+ * 画面内に置く数字キーパッド。3単元で共通。
  *
  * 端末のキーボードを出さないのは、低学年には操作が難しく、
  * 画面の半分が覆われて問題文が見えなくなるため。
+ *
+ * 右下の大きいボタンは「いま何をするか」がそのままラベルになる。
+ * 分数で分子だけ埋まっているあいだは「ぶんぼへ」、両方そろったら「けってい」。
  */
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
@@ -14,13 +17,21 @@ const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 type Props = {
   onDigit: (digit: string) => void;
   onBackspace: () => void;
-  onSubmit: () => void;
-  /** 入力が空のときは「けってい」を押せない */
-  canSubmit: boolean;
+  onPrimary: () => void;
+  primaryLabel: string;
+  /** 入力がそろっていないあいだは押せない */
+  primaryEnabled: boolean;
   disabled?: boolean;
 };
 
-export function NumberPad({ onDigit, onBackspace, onSubmit, canSubmit, disabled = false }: Props) {
+export function NumberPad({
+  onDigit,
+  onBackspace,
+  onPrimary,
+  primaryLabel,
+  primaryEnabled,
+  disabled = false,
+}: Props) {
   const keyClass =
     "h-14 rounded-2xl border-2 border-input bg-background text-2xl font-bold transition-colors " +
     "hover:border-primary hover:bg-primary/5 active:bg-primary/10 " +
@@ -55,10 +66,10 @@ export function NumberPad({ onDigit, onBackspace, onSubmit, canSubmit, disabled 
           "bg-primary hover:bg-primary/90 active:bg-primary/80",
           "disabled:bg-muted disabled:text-muted-foreground"
         )}
-        onClick={onSubmit}
-        disabled={disabled || !canSubmit}
+        onClick={onPrimary}
+        disabled={disabled || !primaryEnabled}
       >
-        けってい
+        {primaryLabel}
       </button>
     </div>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { QuizApp } from "@/components/quiz/quiz-app";
+import { QuizGame } from "@/components/quiz/quiz-game";
 
 export const metadata: Metadata = {
   title: "たし算・ひき算ドリル | わかる・できる",
@@ -17,7 +17,7 @@ export default function AddSubPage() {
         </Link>
         <h1 className="mb-2 text-center text-2xl font-bold">たし算・ひき算</h1>
         <p className="mb-10 text-center text-sm text-muted-foreground">1〜2年生向け・20までのかず</p>
-        <QuizApp title="たし算・ひき算" unit="add-sub" />
+        <QuizGame title="たし算・ひき算" unit="add-sub" />
       </div>
     </main>
   );
