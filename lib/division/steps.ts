@@ -150,7 +150,7 @@ export const NO_ERRORS: StepErrors = {
  * 九九・ひき算を先に見るのは、この2つだけが別の単元で直接練習できる＝
  * 打ち手のあるつまずきだから。手順のまよいは、土台が固まると自然に減ることが多い。
  */
-const ADVICE_PRIORITY: StepKind[] = ["multiply", "subtract", "quotient", "start", "bringDown"];
+export const ADVICE_PRIORITY: StepKind[] = ["multiply", "subtract", "quotient", "start", "bringDown"];
 
 export function advice(errors: StepErrors): { text: string; unit?: string } | null {
   const worst = (Object.keys(errors) as StepKind[])
@@ -160,9 +160,11 @@ export function advice(errors: StepErrors): { text: string; unit?: string } | nu
         errors[b] - errors[a] || ADVICE_PRIORITY.indexOf(a) - ADVICE_PRIORITY.indexOf(b)
     )[0];
 
-  if (!worst) return null;
+  return worst ? adviceFor(worst) : null;
+}
 
-  switch (worst) {
+export function adviceFor(kind: StepKind): { text: string; unit?: string } {
+  switch (kind) {
     case "start":
       return { text: "商を どこに 立てるかで まよったみたい。左から ひとけたずつ 見ていこう" };
     case "quotient":

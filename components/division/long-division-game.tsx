@@ -20,12 +20,20 @@ import {
   STEP_CYCLE,
   STEP_LABEL,
   advice,
+  adviceFor,
   buildSteps,
   diagnoseStep,
   stepPrompt,
   type StepErrors,
   type StepKind,
 } from "@/lib/division/steps";
+import {
+  addSet,
+  loadRecord,
+  saveRecord,
+  weakness,
+  type DivisionRecord,
+} from "@/lib/division/record";
 import { appendDigit, backspace, type AnswerInput } from "@/lib/quiz/answer-input";
 
 /**
@@ -52,8 +60,11 @@ export function LongDivisionGame() {
   const [hint, setHint] = useState<string | null>(null);
   const [shake, setShake] = useState(0);
   const [errors, setErrors] = useState<StepErrors>(NO_ERRORS);
+  const [attempts, setAttempts] = useState<StepErrors>(NO_ERRORS);
   const [mistakesInProblem, setMistakesInProblem] = useState(0);
   const [perfectCount, setPerfectCount] = useState(0);
+  const [record, setRecord] = useState<DivisionRecord | null>(null);
+  const [saved, setSaved] = useState(false);
 
   // 問題の生成は乱数を使うため、描画後に行う（サーバー側の出力と食い違わせない）
   useEffect(() => {
@@ -66,11 +77,27 @@ export function LongDivisionGame() {
     [problem]
   );
   const steps = useMemo(() => (plan ? buildSteps(plan) : []), [plan]);
+  const finished = problems !== null && problemIndex >= problems.length;
+
+  // 1セット通し終えた時点で、この端末に結果を書き足す。
+  // 保存時に読み直すのは、別のタブで進めた分を消さないため
+  useEffect(() => {
+    if (!finished || saved || problems === null) return;
+    const next = addSet(loadRecord(), {
+      errors,
+      attempts,
+      perfect: perfectCount,
+      problems: problems.length,
+    });
+    saveRecord(next);
+    setRecord(next);
+    setSaved(true);
+  }, [finished, saved, problems, errors, attempts, perfectCount]);
 
   // 最後の1問を終えたあとは problems[problemIndex] が無くなるため、
   // 「準備中」の判定より先に結果画面へ抜ける
-  if (problems !== null && problemIndex >= problems.length) {
-    return <Result errors={errors} perfect={perfectCount} onRestart={restart} />;
+  if (finished) {
+    return <Result errors={errors} perfect={perfectCount} record={record} onRestart={restart} />;
   }
 
   if (problems === null || plan === null || problem === null) {
@@ -92,6 +119,9 @@ export function LongDivisionGame() {
   function advanceStep() {
     setInput(EMPTY);
     setHint(null);
+    if (step !== undefined) {
+      setAttempts((prev) => ({ ...prev, [step.kind]: prev[step.kind] + 1 }));
+    }
     // ひっ算は1問が長いので、1手ごとに間を置かない。
     // 書き足された数字が盤面に現れること自体を手ごたえにしている
     if (stepIndex + 1 >= steps.length) {
@@ -142,8 +172,10 @@ export function LongDivisionGame() {
     setPhase("answering");
     setHint(null);
     setErrors(NO_ERRORS);
+    setAttempts(NO_ERRORS);
     setMistakesInProblem(0);
     setPerfectCount(0);
+    setSaved(false);
   }
 
   const wrongValue = phase === "wrong" ? digits : "";
@@ -272,14 +304,19 @@ const UNIT_TITLE: Record<string, string> = {
 function Result({
   errors,
   perfect,
+  record,
   onRestart,
 }: {
   errors: StepErrors;
   perfect: number;
+  record: DivisionRecord | null;
   onRestart: () => void;
 }) {
   const stumbles = (Object.keys(errors) as StepKind[]).filter((kind) => errors[kind] > 0);
-  const tip = advice(errors);
+
+  // 2セット以上やっていれば、1回分より積み重ねのほうが確かな見立てになる
+  const history = record !== null && record.sets >= 2 ? weakness(record) : null;
+  const tip = history ? adviceFor(history.kind) : advice(errors);
 
   return (
     <Card className="mx-auto max-w-lg border-primary/30">
@@ -308,6 +345,26 @@ function Result({
           <p className="mb-6 text-sm text-muted-foreground">ひとつも まよわずに できました</p>
         )}
 
+        {history && (
+          <div className="mb-6 rounded-xl border border-primary/30 px-4 py-3">
+            <p className="mb-1 text-xs font-bold text-muted-foreground">
+              これまで {record?.sets} 回 やってみて
+            </p>
+            <p className="text-sm">
+              <span className="font-bold">{STEP_LABEL[history.kind]}</span> で とまることが
+              いちばん 多いよ
+              {history.ofSets >= 2 && history.sets >= 2 && (
+                <>
+                  <br />
+                  <span className="text-muted-foreground">
+                    さいきんの {history.ofSets} 回のうち {history.sets} 回
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
         {tip && (
           <p className="mb-6 text-sm">
             {tip.text}
@@ -325,6 +382,12 @@ function Result({
         <Button size="lg" onClick={onRestart}>
           もういちど挑戦する
         </Button>
+
+        <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
+          きろくはこの端末のブラウザにだけ保存されます。
+          <br />
+          ほかの端末には引きつがれません。
+        </p>
       </CardContent>
     </Card>
   );
