@@ -16,6 +16,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "long-division",
+    title: "わり算のひっ算",
+    gradeLabel: "3〜4年生",
+    description: "たてる・かける・ひく・おろすを1手ずつ。どこでつまずくかが分かります。",
+    available: true,
+  },
+  {
     slug: "fractions",
     title: "分数",
     gradeLabel: "4〜5年生",
