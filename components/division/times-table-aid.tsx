@@ -13,7 +13,8 @@ export function TimesTableAid({ divisor }: { divisor: number }) {
   return (
     <details className="rounded-xl border border-input bg-muted/40 px-4 py-2 text-sm">
       <summary className="cursor-pointer select-none font-bold text-muted-foreground">
-        {divisor} のだんを 見る
+        {/* 2けたには「◯のだん」が無いので、そのまま かけ算の表として見せる */}
+        {divisor < 10 ? `${divisor} のだんを 見る` : `${divisor} × 1〜9 を 見る`}
       </summary>
       <ul className="mt-3 grid grid-cols-3 gap-x-3 gap-y-1.5 tabular-nums sm:grid-cols-5">
         {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (

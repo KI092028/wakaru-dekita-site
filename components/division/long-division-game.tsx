@@ -9,7 +9,7 @@ import { DivisionBoard } from "@/components/division/division-board";
 import { TimesTableAid } from "@/components/division/times-table-aid";
 import { NumberPad } from "@/components/quiz/number-pad";
 import { cn } from "@/lib/utils";
-import { buildPlan } from "@/lib/division/plan";
+import { buildPlan, type DivisionLevel } from "@/lib/division/plan";
 import {
   PROBLEM_COUNT,
   generateDivisionProblems,
@@ -23,6 +23,8 @@ import {
   adviceFor,
   buildSteps,
   diagnoseStep,
+  stepHint,
+  stepMaxDigits,
   stepPrompt,
   type StepErrors,
   type StepKind,
@@ -51,7 +53,7 @@ type Phase = "answering" | "wrong" | "retry" | "problemDone";
 
 const EMPTY: AnswerInput = { kind: "number", digits: "" };
 
-export function LongDivisionGame() {
+export function LongDivisionGame({ level }: { level: DivisionLevel }) {
   const [problems, setProblems] = useState<DivisionProblem[] | null>(null);
   const [problemIndex, setProblemIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
@@ -68,8 +70,8 @@ export function LongDivisionGame() {
 
   // 問題の生成は乱数を使うため、描画後に行う（サーバー側の出力と食い違わせない）
   useEffect(() => {
-    setProblems(generateDivisionProblems());
-  }, []);
+    setProblems(generateDivisionProblems(level));
+  }, [level]);
 
   const problem = problems?.[problemIndex] ?? null;
   const plan = useMemo(
@@ -83,21 +85,29 @@ export function LongDivisionGame() {
   // 保存時に読み直すのは、別のタブで進めた分を消さないため
   useEffect(() => {
     if (!finished || saved || problems === null) return;
-    const next = addSet(loadRecord(), {
+    const next = addSet(loadRecord(level), {
       errors,
       attempts,
       perfect: perfectCount,
       problems: problems.length,
     });
-    saveRecord(next);
+    saveRecord(level, next);
     setRecord(next);
     setSaved(true);
-  }, [finished, saved, problems, errors, attempts, perfectCount]);
+  }, [finished, saved, problems, errors, attempts, perfectCount, level]);
 
   // 最後の1問を終えたあとは problems[problemIndex] が無くなるため、
   // 「準備中」の判定より先に結果画面へ抜ける
   if (finished) {
-    return <Result errors={errors} perfect={perfectCount} record={record} onRestart={restart} />;
+    return (
+      <Result
+        errors={errors}
+        perfect={perfectCount}
+        record={record}
+        level={level}
+        onRestart={restart}
+      />
+    );
   }
 
   if (problems === null || plan === null || problem === null) {
@@ -165,7 +175,7 @@ export function LongDivisionGame() {
   }
 
   function restart() {
-    setProblems(generateDivisionProblems());
+    setProblems(generateDivisionProblems(level));
     setProblemIndex(0);
     setStepIndex(0);
     setInput(EMPTY);
@@ -236,12 +246,19 @@ export function LongDivisionGame() {
             </div>
           ) : (
             <>
-              <p className="mb-4 text-center text-sm font-medium">
+              <p className="mb-2 text-center text-sm font-medium">
                 {step ? stepPrompt(plan, step) : ""}
               </p>
+              {step && stepHint(plan, step) && (
+                <p className="mb-4 rounded-lg bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
+                  {stepHint(plan, step)}
+                </p>
+              )}
               {step?.input === "number" ? (
                 <NumberPad
-                  onDigit={(digit) => setInput((current) => appendDigit(current, digit))}
+                  onDigit={(digit) =>
+                    setInput((current) => appendDigit(current, digit, stepMaxDigits(plan, step)))
+                  }
                   onBackspace={() => setInput((current) => backspace(current))}
                   onPrimary={() => digits !== "" && resolve(Number(digits))}
                   primaryLabel="けってい"
@@ -305,18 +322,20 @@ function Result({
   errors,
   perfect,
   record,
+  level,
   onRestart,
 }: {
   errors: StepErrors;
   perfect: number;
   record: DivisionRecord | null;
+  level: DivisionLevel;
   onRestart: () => void;
 }) {
   const stumbles = (Object.keys(errors) as StepKind[]).filter((kind) => errors[kind] > 0);
 
   // 2セット以上やっていれば、1回分より積み重ねのほうが確かな見立てになる
   const history = record !== null && record.sets >= 2 ? weakness(record) : null;
-  const tip = history ? adviceFor(history.kind) : advice(errors);
+  const tip = history ? adviceFor(history.kind, level) : advice(errors, level);
 
   return (
     <Card className="mx-auto max-w-lg border-primary/30">

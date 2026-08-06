@@ -23,6 +23,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "long-division-2",
+    title: "わり算のひっ算（2けたでわる）",
+    gradeLabel: "4年生",
+    description: "がい数で 見当を つけて、合わなければ ひとつ 増減する れんしゅう。",
+    available: true,
+  },
+  {
     slug: "fractions",
     title: "分数",
     gradeLabel: "4〜5年生",

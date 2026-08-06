@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="mb-3 text-xl font-semibold text-foreground">学習の記録について</h2>
           <p>
-            九九ドリルでは「どの九九を覚えたか」を、わり算のひっ算では
+            九九ドリルでは「どの九九を覚えたか」を、わり算のひっ算（1けた・2けた）では
             「どの手順でつまずいたか」と取り組んだ回数を、
             お使いの端末のブラウザ内（localStorage）にのみ保存します。
             この記録がサーバーや外部に送信されることはありません。

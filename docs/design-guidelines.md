@@ -76,7 +76,7 @@ type Value = number | Fraction;
 ### 1.5 端末内への保存（localStorage）
 
 端末に保存するのは、九九の習得状況（`lib/quiz/progress.ts`）と
-わり算のひっ算のつまずき記録（`lib/division/record.ts`）の2つ。
+わり算のひっ算のつまずき記録（`lib/division/record.ts`、1けた／2けたで別キー）。
 
 **必ず守ること。**
 
@@ -129,7 +129,7 @@ components/
 
 lib/
   division/
-    plan.ts               わり算を「段」に展開する
+    plan.ts               わり算を「段」に展開する。がい数と仮の商もここ
     steps.ts              1手ごとの問い・誤答の型・結果の見立て
     generate.ts           段階ごとの出題
     record.ts             手ごとのつまずきの記録（localStorage）

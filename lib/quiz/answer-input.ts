@@ -29,20 +29,28 @@ export function emptyInput(answer: Value): AnswerInput {
  * 先頭の 0 は「0」単独のときだけ許す。たし算・ひき算では答えが 0 になりうるので
  * 0 そのものは入力できる必要があるが、「05」は入力させたくない。
  */
-function pushDigit(current: string, digit: string): string {
+function pushDigit(current: string, digit: string, maxDigits: number): string {
   if (current === "") return digit;
   if (current === "0") return digit === "0" ? current : digit;
-  if (current.length >= MAX_DIGITS) return current;
+  if (current.length >= maxDigits) return current;
   return current + digit;
 }
 
-export function appendDigit(input: AnswerInput, digit: string): AnswerInput {
+/**
+ * 桁数の上限は既定で2桁。
+ * わり算のひっ算だけは、商は1桁・かけた数は3桁になりうるので呼び出し側で指定する。
+ */
+export function appendDigit(
+  input: AnswerInput,
+  digit: string,
+  maxDigits: number = MAX_DIGITS
+): AnswerInput {
   if (input.kind === "number") {
-    return { ...input, digits: pushDigit(input.digits, digit) };
+    return { ...input, digits: pushDigit(input.digits, digit, maxDigits) };
   }
   return input.active === "numerator"
-    ? { ...input, numerator: pushDigit(input.numerator, digit) }
-    : { ...input, denominator: pushDigit(input.denominator, digit) };
+    ? { ...input, numerator: pushDigit(input.numerator, digit, maxDigits) }
+    : { ...input, denominator: pushDigit(input.denominator, digit, maxDigits) };
 }
 
 export function backspace(input: AnswerInput): AnswerInput {

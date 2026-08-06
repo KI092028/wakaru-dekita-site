@@ -5,6 +5,9 @@
  * どの桁で何をするかを段（rung）に分け、1段ずつ たてる→かける→ひく→おろす を踏ませる。
  */
 
+/** わる数が1けたか2けたか。単元が分かれ、記録も別に持つ。 */
+export type DivisionLevel = "one-digit" | "two-digit";
+
 export type Rung = {
   /** 商が立つ、被除数の何けた目か（左から0） */
   position: number;
@@ -90,4 +93,24 @@ export function buildPlan(dividend: number, divisor: number): DivisionPlan {
 /** その段で わられる数が、被除数の何けた目から始まるか。ひっ算の桁ぞろえに使う。 */
 export function partStartColumn(rung: Rung): number {
   return rung.position - String(rung.dividendPart).length + 1;
+}
+
+/**
+ * わる数を十の位までのがい数にする（四捨五入）。
+ * 2けたでわるときは、この数で仮の商の見当をつける。
+ */
+export function roundedDivisor(divisor: number): number {
+  return Math.round(divisor / 10) * 10;
+}
+
+/**
+ * がい数で立てた仮の商。商は1けたなので9でとめる。
+ *
+ * 19 を 20 と見れば仮の商は本当の商より小さめに、
+ * 23 を 20 と見れば大きめに出る。ずれたら1つ増減するのがこの単元の山。
+ */
+export function provisionalQuotient(dividendPart: number, divisor: number): number {
+  const rounded = roundedDivisor(divisor);
+  if (rounded === 0) return 0;
+  return Math.min(9, Math.floor(dividendPart / rounded));
 }

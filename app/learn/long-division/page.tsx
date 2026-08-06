@@ -20,7 +20,7 @@ export default function LongDivisionPage() {
         <p className="mb-10 text-center text-sm text-muted-foreground">
           3〜4年生向け・たてる → かける → ひく → おろす
         </p>
-        <LongDivisionGame />
+        <LongDivisionGame level="one-digit" />
       </div>
     </main>
   );

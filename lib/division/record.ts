@@ -1,3 +1,4 @@
+import type { DivisionLevel } from "./plan";
 import { ADVICE_PRIORITY, NO_ERRORS, type StepErrors, type StepKind } from "./steps";
 
 /**
@@ -8,7 +9,11 @@ import { ADVICE_PRIORITY, NO_ERRORS, type StepErrors, type StepKind } from "./st
  * 何回やっても同じ手で止まっているのかどうかが分かって、はじめて見立てになる。
  */
 
-const STORAGE_KEY = "wakaru-dekita:long-division:v1";
+/** 1けたでわる／2けたでわるは別の単元なので、記録も分けて持つ。 */
+const STORAGE_KEY: Record<DivisionLevel, string> = {
+  "one-digit": "wakaru-dekita:long-division:v1",
+  "two-digit": "wakaru-dekita:long-division-2:v1",
+};
 
 /** 直近このセット数ぶんだけ、どの手で止まったかを覚えておく。 */
 const RECENT_LIMIT = 5;
@@ -63,10 +68,10 @@ function isStepErrors(value: unknown): value is StepErrors {
  * localStorage が使えない環境や、保存内容が壊れている場合は
  * 記録なしとして扱い、例外を投げない。
  */
-export function loadRecord(): DivisionRecord {
+export function loadRecord(level: DivisionLevel): DivisionRecord {
   if (typeof window === "undefined") return EMPTY_RECORD;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(STORAGE_KEY[level]);
     if (!raw) return EMPTY_RECORD;
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return EMPTY_RECORD;
@@ -94,10 +99,10 @@ export function loadRecord(): DivisionRecord {
   }
 }
 
-export function saveRecord(record: DivisionRecord): void {
+export function saveRecord(level: DivisionLevel, record: DivisionRecord): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+    window.localStorage.setItem(STORAGE_KEY[level], JSON.stringify(record));
   } catch {
     // 保存できなくても練習そのものは続けられるので、握りつぶす
   }
