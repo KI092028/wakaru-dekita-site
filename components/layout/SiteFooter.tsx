@@ -8,6 +8,10 @@ export function SiteFooter() {
           <Link href="/about" className="hover:text-foreground transition-colors">
             このサイトについて
           </Link>
+          {/* 教員向けエリアへの導線はここだけ。児童が見るヘッダーには出さない */}
+          <Link href="/teachers" className="hover:text-foreground transition-colors">
+            先生の方へ
+          </Link>
           <Link href="/terms" className="hover:text-foreground transition-colors">
             利用規約
           </Link>

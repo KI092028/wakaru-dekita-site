@@ -109,6 +109,11 @@ app/                      ルーティングとページ（App Router）
     page.tsx              単元一覧
     add-sub/page.tsx      各単元のページ。QuizGame を置くだけの薄い層
     times-table/page.tsx
+  teachers/               教員向けエリア（児童向けIAとは分離する）
+    page.tsx              入口
+    rec/page.tsx          学級レク一覧
+    rec/[slug]/page.tsx   学級レク詳細
+    use/page.tsx          授業での利用について
   about|privacy|terms|contact/page.tsx
   globals.css
 
@@ -121,6 +126,8 @@ components/
     number-pad.tsx        画面内の数字キーパッド（全単元共通）
     times-table-grid.tsx  81マスの習得状況の表（九九のみ）
     value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
+  teachers/
+    rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
     long-division-game.tsx  わり算のひっ算の進行（手順の表示・判定・結果）
     division-board.tsx      ひっ算の盤面。進んだところまでしか書かない
@@ -128,6 +135,9 @@ components/
   ui/                     汎用UIプリミティブ（button, card ほか）
 
 lib/
+  rec/
+    types.ts              学級レクの型（時間・声・隊形・準備物）
+    activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
   division/
     plan.ts               わり算を「段」に展開する。がい数と仮の商もここ
     steps.ts              1手ごとの問い・誤答の型・結果の見立て
@@ -156,7 +166,8 @@ docs/                     本ドキュメント群
 
 ページ（`app/**/page.tsx`）はサーバーコンポーネントのままにし、
 `metadata` によるタイトル・説明の指定はページ側で行う。
-状態を持つのはドリルUIだけなので、`"use client"` は `components/quiz/` の中に限定する。
+状態を持つのはドリルUIと学級レクの絞り込みだけなので、`"use client"` は
+`components/quiz/`・`components/division/`・`components/teachers/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
