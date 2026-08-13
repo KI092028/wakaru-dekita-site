@@ -23,6 +23,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "column-multiply",
+    title: "かけ算のひっ算",
+    gradeLabel: "3〜4年生",
+    description: "2だんめを ひとつ 左に ずらす理由から。九九・くり上がりも1手ずつ。",
+    available: true,
+  },
+  {
     slug: "long-division",
     title: "わり算のひっ算",
     gradeLabel: "3〜4年生",

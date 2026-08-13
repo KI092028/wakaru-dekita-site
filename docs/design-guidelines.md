@@ -44,6 +44,22 @@
 ただし分けてよいのは**盤面と進行だけ**。数字キーパッド、間違えたときの流れ
 （止まる→指摘→正答→自分で打ち直す）、言い回しはドリルと共通のものを使う。
 
+#### 手続き単元どうしでも、盤と手順の型は共有しない
+
+わり算・列のひっ算・かけ算はいずれも `plan → steps → 盤 → 記録` の同じ形をとるが、
+**`Plan` と `Step` の型は単元ごとに別に定義する。**
+わり算は「段」で、列のひっ算は「位」で、かけ算は「部分積の行」で進む。
+進み方そのものが違うものを1つの型にまとめると、どの単元にも当てはまらない
+抽象になってしまう（実際に一度そう見積もって、書きながら取り消している）。
+
+単元をまたいで共有してよいのはこの4つだけ。
+
+- `components/quiz/number-pad.tsx`（キーパッド）
+- `lib/practice/record.ts`（つまずきの記録。手の種類は呼び出し側が渡す）
+- 誤答→再挑戦の流れと言い回し
+- **他単元の `plan` を部品として呼ぶこと**。かけ算の最後のたし算が
+  `buildColumnPlan()` を使うように、手続きが本当に同じ場合に限る
+
 ### 1.4 値のモデル
 
 問題に出る値は整数とは限らないため、**`Value = number | Fraction`** として扱う。
@@ -128,7 +144,10 @@ components/
     value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
   column/
     column-game.tsx         列のひっ算の進行（整数・小数を mode で切り替え）
-    column-board.tsx        列のひっ算の盤面（整数・小数で共有。将来かけ算も）
+    column-board.tsx        列のひっ算の盤面（整数・小数で共有）
+  multiply/
+    multiply-game.tsx       かけ算のひっ算の進行
+    multiply-board.tsx      部分積の行を持つ盤面。段のずらしもここ
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -146,6 +165,10 @@ lib/
     generate.ts           整数の出題（段階ごと）
     decimal.ts            小数を10^n倍して整数のひっ算に載せる
     rounds.ts             整数／小数を同じ形にそろえて UI に渡す
+  multiply/
+    plan.ts               部分積ごとに展開する。最後のたし算は column/plan.ts を使う
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           段階ごとの出題
   rec/
     types.ts              学級レクの型（時間・声・隊形・準備物）
     activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
@@ -178,8 +201,8 @@ docs/                     本ドキュメント群
 ページ（`app/**/page.tsx`）はサーバーコンポーネントのままにし、
 `metadata` によるタイトル・説明の指定はページ側で行う。
 状態を持つのはドリルUI・ひっ算UI・学級レクの絞り込みだけなので、`"use client"` は
-`components/quiz/`・`components/division/`・`components/column/`・`components/teachers/`
-の中に限定する。
+`components/quiz/`・`components/division/`・`components/column/`・`components/multiply/`・
+`components/teachers/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
