@@ -13,14 +13,26 @@ import { borrowedValue, type ColumnPlan } from "./plan";
  * 「上下をひっくり返してひく」も、その代表例のひとつ。
  */
 
-export type ColumnStepKind = "write" | "carry" | "borrow";
+export type ColumnStepKind = "write" | "carry" | "borrow" | "pad" | "point";
 
-export const COLUMN_STEP_KINDS: ColumnStepKind[] = ["write", "carry", "borrow"];
+export const COLUMN_STEP_KINDS: ColumnStepKind[] = ["write", "carry", "borrow", "pad", "point"];
 
 export const COLUMN_STEP_LABEL: Record<ColumnStepKind, string> = {
   write: "けたの計算",
   carry: "くり上がり",
   borrow: "くり下がり",
+  pad: "けたをそろえる",
+  point: "小数点",
+};
+
+/**
+ * 小数のひっ算のときだけ渡す。
+ * けたをそろえる手と、答えの小数点を打つ手が先頭に加わる。
+ */
+export type DecimalInfo = {
+  decimals: number;
+  padColumns: number[];
+  padTarget: "a" | "b" | null;
 };
 
 export type ColumnStep = {
@@ -37,8 +49,26 @@ export type ColumnStep = {
  * 手の並び。位ごとに右から左へ進む。
  * ひき算は「借りてから引く」、たし算は「書いてからくり上げる」の順。
  */
-export function buildColumnSteps(plan: ColumnPlan): ColumnStep[] {
+export function buildColumnSteps(plan: ColumnPlan, decimal?: DecimalInfo): ColumnStep[] {
   const steps: ColumnStep[] = [];
+
+  if (decimal) {
+    // まず けたをそろえ、つぎに 答えの小数点を決めてから 計算に入る。
+    // この単元のつまずきは計算ではなく、そろえる作業そのものにあるため
+    for (const column of decimal.padColumns) {
+      steps.push({ kind: "pad", index: column, input: "number", answer: 0 });
+    }
+    // すきまが1つしかない盤（一の位と小数第1位だけ）では選ぶ余地がないので、
+    // 手として問わずに最初から打っておく
+    if (plan.width >= 3) {
+      steps.push({
+        kind: "point",
+        index: decimal.decimals,
+        input: "column",
+        answer: decimal.decimals,
+      });
+    }
+  }
 
   plan.columns.forEach((column, i) => {
     if (plan.op === "−" && column.borrows) {
@@ -68,6 +98,10 @@ export function columnStepPrompt(plan: ColumnPlan, step: ColumnStep): string {
   const place = placeName(step.index);
 
   switch (step.kind) {
+    case "pad":
+      return "けたが たりないね。あいている ところに 何を 書く？";
+    case "point":
+      return "答えの 小数点は どこに 打つ？ すきまを タップ";
     case "borrow":
       return `${column.top} から ${column.bottom} は ひけないね。となりの位は いくつに なる？`;
     case "write": {
@@ -127,6 +161,12 @@ export function diagnoseColumnStep(
   const column = plan.columns[step.index];
 
   switch (step.kind) {
+    case "pad":
+      return "あいている位には 0 を 書くよ。12 と 12.0 は 同じ大きさだね";
+
+    case "point":
+      if (typed < step.answer) return "もう ひとつ 右だよ。上と下の 小数点と まっすぐ そろえよう";
+      return "もう ひとつ 左だよ。上と下の 小数点と まっすぐ そろえよう";
     case "write":
       return plan.op === "+"
         ? diagnoseWriteAdd(plan, step.index, typed)
@@ -149,7 +189,13 @@ export function diagnoseColumnStep(
  * いちばん多かったつまずきに対する見立て。
  * 「ひっ算が苦手」で終わらせず、戻るべき場所を名指しする。
  */
-export const COLUMN_ADVICE_PRIORITY: ColumnStepKind[] = ["write", "borrow", "carry"];
+export const COLUMN_ADVICE_PRIORITY: ColumnStepKind[] = [
+  "write",
+  "borrow",
+  "carry",
+  "point",
+  "pad",
+];
 
 export function columnAdviceFor(kind: ColumnStepKind): { text: string; unit?: string } {
   switch (kind) {
@@ -162,5 +208,9 @@ export function columnAdviceFor(kind: ColumnStepKind): { text: string; unit?: st
       return { text: "くり上がりの 1 を どこに 書くかで まよったみたい。かならず ひとつ 左の位の 上だよ" };
     case "borrow":
       return { text: "くり下がりで つまずいていたよ。「となりから 10 を 借りる」を 声に出しながら やってみよう" };
+    case "point":
+      return { text: "小数点の 位置で まよったみたい。上と下の 小数点と まっすぐ そろう ところ、と おぼえよう" };
+    case "pad":
+      return { text: "けたを そろえるところで まよったみたい。あいている位には 0 を 書けば そろうよ" };
   }
 }

@@ -20,7 +20,7 @@ export default function ColumnAddSubPage() {
         <p className="mb-10 text-center text-sm text-muted-foreground">
           2〜3年生向け・くり上がりと くり下がりを 1手ずつ
         </p>
-        <ColumnGame />
+        <ColumnGame mode="integer" />
       </div>
     </main>
   );

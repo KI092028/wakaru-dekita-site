@@ -36,6 +36,10 @@ export type ColumnPlan = {
   columns: Column[];
   /** 盤面のけた数 */
   width: number;
+  /** 上の数のけた数。これを超える位には何も書かない（02.7 と書かないため） */
+  topWidth: number;
+  /** 下の数のけた数 */
+  bottomWidth: number;
   /** 上下の数のけた数。ここを超える位は「くり上がりで増えたけた」 */
   operandWidth: number;
 };
@@ -101,7 +105,17 @@ export function buildColumnPlan(a: number, b: number, op: ColumnOp): ColumnPlan 
     }
   }
 
-  return { a, b, op, answer, columns, width, operandWidth };
+  return {
+    a,
+    b,
+    op,
+    answer,
+    columns,
+    width,
+    operandWidth,
+    topWidth: digitCount(a),
+    bottomWidth: digitCount(b),
+  };
 }
 
 /** 借りたあとに、左どなりの位へ書き直す数。 */

@@ -37,6 +37,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "column-decimal",
+    title: "小数のたし算・ひき算",
+    gradeLabel: "4年生",
+    description: "けたをそろえて、小数点をたてにそろえる練習。",
+    available: true,
+  },
+  {
     slug: "fractions",
     title: "分数",
     gradeLabel: "4〜5年生",

@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ColumnBoard } from "@/components/column/column-board";
 import { NumberPad } from "@/components/quiz/number-pad";
 import { cn } from "@/lib/utils";
-import { buildColumnPlan } from "@/lib/column/plan";
+
 import {
   COLUMN_ADVICE_PRIORITY,
   COLUMN_STEP_KINDS,
@@ -20,10 +20,13 @@ import {
   type ColumnStepKind,
 } from "@/lib/column/steps";
 import {
-  COLUMN_PROBLEM_COUNT,
-  generateColumnProblems,
-  type ColumnProblem,
-} from "@/lib/column/generate";
+  MODE_TITLE,
+  ROUND_COUNT,
+  STORAGE_KEY,
+  buildRounds,
+  type ColumnMode,
+  type ColumnRound,
+} from "@/lib/column/rounds";
 import {
   addSet,
   emptyTally,
@@ -42,8 +45,6 @@ import { appendDigit, backspace, type AnswerInput } from "@/lib/quiz/answer-inpu
  * 入力・誤答時の流れ・言い回しは他の単元とそろえてある。
  */
 
-const STORAGE_KEY = "wakaru-dekita:column-add-sub:v1";
-
 /** 打てる桁数。位ごとの答えは1けた、借りたあとの数も1けた。 */
 const MAX_DIGITS = 2;
 
@@ -51,8 +52,8 @@ type Phase = "answering" | "wrong" | "retry" | "problemDone";
 
 const EMPTY: AnswerInput = { kind: "number", digits: "" };
 
-export function ColumnGame() {
-  const [problems, setProblems] = useState<ColumnProblem[] | null>(null);
+export function ColumnGame({ mode }: { mode: ColumnMode }) {
+  const [problems, setProblems] = useState<ColumnRound[] | null>(null);
   const [problemIndex, setProblemIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [input, setInput] = useState<AnswerInput>(EMPTY);
@@ -68,31 +69,39 @@ export function ColumnGame() {
 
   // 出題は乱数を使うため、描画後に行う（サーバー側の出力と食い違わせない）
   useEffect(() => {
-    setProblems(generateColumnProblems());
-  }, []);
+    setProblems(buildRounds(mode));
+  }, [mode]);
 
   const problem = problems?.[problemIndex] ?? null;
-  const plan = useMemo(
-    () => (problem ? buildColumnPlan(problem.a, problem.b, problem.op) : null),
+  const plan = problem?.plan ?? null;
+  const steps = useMemo(
+    () => (problem ? buildColumnSteps(problem.plan, problem.decimal) : []),
     [problem]
   );
-  const steps = useMemo(() => (plan ? buildColumnSteps(plan) : []), [plan]);
   const finished = problems !== null && problemIndex >= problems.length;
 
   useEffect(() => {
     if (!finished || saved || problems === null) return;
     const next = addSet(
-      loadRecord(STORAGE_KEY, COLUMN_STEP_KINDS),
+      loadRecord(STORAGE_KEY[mode], COLUMN_STEP_KINDS),
       { errors, attempts, perfect: perfectCount, problems: problems.length },
       COLUMN_STEP_KINDS
     );
-    saveRecord(STORAGE_KEY, next);
+    saveRecord(STORAGE_KEY[mode], next);
     setRecord(next);
     setSaved(true);
-  }, [finished, saved, problems, errors, attempts, perfectCount]);
+  }, [finished, saved, problems, errors, attempts, perfectCount, mode]);
 
   if (finished) {
-    return <Result errors={errors} perfect={perfectCount} record={record} onRestart={restart} />;
+    return (
+      <Result
+        mode={mode}
+        errors={errors}
+        perfect={perfectCount}
+        record={record}
+        onRestart={restart}
+      />
+    );
   }
 
   if (problems === null || plan === null || problem === null) {
@@ -155,7 +164,7 @@ export function ColumnGame() {
   }
 
   function restart() {
-    setProblems(generateColumnProblems());
+    setProblems(buildRounds(mode));
     setProblemIndex(0);
     setStepIndex(0);
     setInput(EMPTY);
@@ -178,17 +187,16 @@ export function ColumnGame() {
             <span>
               {problemIndex + 1} / {problems.length} もん目
             </span>
-            <span className="tabular-nums">
-              {problem.a} {problem.op} {problem.b}
-            </span>
+            <span className="tabular-nums">{problem.headline}</span>
           </div>
 
-          <StepGuide current={step?.kind ?? null} op={problem.op} />
+          <StepGuide current={step?.kind ?? null} op={plan.op} hasDecimal={problem.decimal !== undefined} />
 
           <div key={shake} className={cn("my-6", shake > 0 && phase === "retry" && "wd-shake")}>
             <ColumnBoard
               plan={plan}
               steps={steps}
+              decimal={problem.decimal}
               stepIndex={stepIndex}
               input={phase === "wrong" ? wrongValue : digits}
               wrong={phase === "wrong"}
@@ -203,7 +211,7 @@ export function ColumnGame() {
             <div className="text-center">
               <p className="wd-pop-in mb-2 text-lg font-bold text-success">できた！</p>
               <p className="mb-6 text-2xl font-bold tabular-nums">
-                {plan.a} {plan.op} {plan.b} = {plan.answer}
+                {problem.headline} = {problem.answerText}
               </p>
               <Button size="lg" onClick={nextProblem}>
                 {problemIndex + 1 >= problems.length ? "けっかを見る" : "つぎの もんだいへ"}
@@ -250,8 +258,17 @@ export function ColumnGame() {
 }
 
 /** いまどの手かを常に画面に出す。手順を思い出すことに気を取られると計算が崩れるため。 */
-function StepGuide({ current, op }: { current: ColumnStepKind | null; op: "+" | "−" }) {
-  const cycle: ColumnStepKind[] = op === "+" ? ["write", "carry"] : ["borrow", "write"];
+function StepGuide({
+  current,
+  op,
+  hasDecimal,
+}: {
+  current: ColumnStepKind | null;
+  op: "+" | "−";
+  hasDecimal: boolean;
+}) {
+  const core: ColumnStepKind[] = op === "+" ? ["write", "carry"] : ["borrow", "write"];
+  const cycle: ColumnStepKind[] = hasDecimal ? ["pad", "point", ...core] : core;
 
   return (
     <ol className="flex items-center justify-center gap-1.5 text-xs">
@@ -275,11 +292,13 @@ function StepGuide({ current, op }: { current: ColumnStepKind | null; op: "+" | 
 const UNIT_TITLE: Record<string, string> = { "add-sub": "たし算・ひき算" };
 
 function Result({
+  mode,
   errors,
   perfect,
   record,
   onRestart,
 }: {
+  mode: ColumnMode;
   errors: Tally;
   perfect: number;
   record: PracticeRecord | null;
@@ -298,9 +317,9 @@ function Result({
   return (
     <Card className="mx-auto max-w-lg border-primary/30">
       <CardContent className="py-12 text-center">
-        <p className="mb-2 text-sm font-medium text-muted-foreground">たし算・ひき算のひっ算・けっか</p>
+        <p className="mb-2 text-sm font-medium text-muted-foreground">{MODE_TITLE[mode]}・けっか</p>
         <p className="mb-1 text-5xl font-bold text-primary">
-          {perfect} <span className="text-2xl text-foreground">/ {COLUMN_PROBLEM_COUNT} もん</span>
+          {perfect} <span className="text-2xl text-foreground">/ {ROUND_COUNT} もん</span>
         </p>
         <p className="mb-6 text-sm text-muted-foreground">1回で さいごまで できた もんだい</p>
 

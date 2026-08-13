@@ -127,8 +127,8 @@ components/
     times-table-grid.tsx  81マスの習得状況の表（九九のみ）
     value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
   column/
-    column-game.tsx         たし算・ひき算のひっ算の進行
-    column-board.tsx        列のひっ算の盤面（加減で共有。将来かけ算も）
+    column-game.tsx         列のひっ算の進行（整数・小数を mode で切り替え）
+    column-board.tsx        列のひっ算の盤面（整数・小数で共有。将来かけ算も）
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -143,7 +143,9 @@ lib/
   column/
     plan.ts               列のひっ算を位ごとに展開する
     steps.ts              1手ごとの問い・誤答の型・見立て
-    generate.ts           段階ごとの出題
+    generate.ts           整数の出題（段階ごと）
+    decimal.ts            小数を10^n倍して整数のひっ算に載せる
+    rounds.ts             整数／小数を同じ形にそろえて UI に渡す
   rec/
     types.ts              学級レクの型（時間・声・隊形・準備物）
     activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
