@@ -16,6 +16,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "column-add-sub",
+    title: "たし算・ひき算のひっ算",
+    gradeLabel: "2〜3年生",
+    description: "くり上がりの1を書く、となりから借りる。1手ずつ進めます。",
+    available: true,
+  },
+  {
     slug: "long-division",
     title: "わり算のひっ算",
     gradeLabel: "3〜4年生",

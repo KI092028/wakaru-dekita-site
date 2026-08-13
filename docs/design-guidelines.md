@@ -75,8 +75,8 @@ type Value = number | Fraction;
 
 ### 1.5 端末内への保存（localStorage）
 
-端末に保存するのは、九九の習得状況（`lib/quiz/progress.ts`）と
-わり算のひっ算のつまずき記録（`lib/division/record.ts`、1けた／2けたで別キー）。
+端末に保存するのは、九九の習得状況（`lib/quiz/progress.ts`）と、
+手順型の単元のつまずき記録（`lib/practice/record.ts`。単元ごとに別キー）。
 
 **必ず守ること。**
 
@@ -126,6 +126,9 @@ components/
     number-pad.tsx        画面内の数字キーパッド（全単元共通）
     times-table-grid.tsx  81マスの習得状況の表（九九のみ）
     value-display.tsx     値の表示（整数はそのまま、分数は上下に積む）
+  column/
+    column-game.tsx         たし算・ひき算のひっ算の進行
+    column-board.tsx        列のひっ算の盤面（加減で共有。将来かけ算も）
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -135,6 +138,12 @@ components/
   ui/                     汎用UIプリミティブ（button, card ほか）
 
 lib/
+  practice/
+    record.ts             手ごとのつまずきの記録（手順型の単元で共通）
+  column/
+    plan.ts               列のひっ算を位ごとに展開する
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           段階ごとの出題
   rec/
     types.ts              学級レクの型（時間・声・隊形・準備物）
     activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
@@ -142,7 +151,7 @@ lib/
     plan.ts               わり算を「段」に展開する。がい数と仮の商もここ
     steps.ts              1手ごとの問い・誤答の型・結果の見立て
     generate.ts           段階ごとの出題
-    record.ts             手ごとのつまずきの記録（localStorage）
+    record.ts             わり算用に手の種類を固定する薄い層
   quiz/
     types.ts              Question / Value / Fraction / UnitSlug の型
     units.ts              単元の一覧（ここが単元マスタ）
@@ -166,8 +175,9 @@ docs/                     本ドキュメント群
 
 ページ（`app/**/page.tsx`）はサーバーコンポーネントのままにし、
 `metadata` によるタイトル・説明の指定はページ側で行う。
-状態を持つのはドリルUIと学級レクの絞り込みだけなので、`"use client"` は
-`components/quiz/`・`components/division/`・`components/teachers/` の中に限定する。
+状態を持つのはドリルUI・ひっ算UI・学級レクの絞り込みだけなので、`"use client"` は
+`components/quiz/`・`components/division/`・`components/column/`・`components/teachers/`
+の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
