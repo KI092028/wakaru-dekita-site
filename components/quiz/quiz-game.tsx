@@ -27,6 +27,7 @@ import {
   TOTAL_CELLS,
   loadProgress,
   masteredCount,
+  nearMasteryCount,
   recordAnswer,
   saveProgress,
   type Progress,
@@ -124,6 +125,7 @@ export function QuizGame({ title, unit }: Props) {
   }
 
   const mastered = masteredCount(progress);
+  const nearMastery = nearMasteryCount(progress);
   const isFinished = index >= questions.length;
   const question = questions[index];
 
@@ -214,13 +216,21 @@ export function QuizGame({ title, unit }: Props) {
               {score} <span className="text-2xl text-foreground">/ {questions.length} もん</span>
             </p>
             {showMap && (
-              <p className="mb-6 text-sm text-muted-foreground">
-                {mastered > masteredAtStart
-                  ? `あたらしく ${mastered - masteredAtStart} マス マスターしました`
-                  : "マスターまであと少しです"}
-                <br />
-                のこり {TOTAL_CELLS - mastered} マス
-              </p>
+              <div className="mb-6 text-sm text-muted-foreground">
+                {mastered > masteredAtStart ? (
+                  <p>あたらしく {mastered - masteredAtStart} マス マスターしました</p>
+                ) : nearMastery > 0 ? (
+                  // マスターは連続2回せいかいで付く。はじめの1セットでは必ず0になるので、
+                  // 「何も進まなかった」と見えないように、あと1回のマスの数を伝える
+                  <p>
+                    あと1回 せいかいすると マスターに なる マスが{" "}
+                    <span className="font-bold text-foreground">{nearMastery}</span> マス あるよ
+                  </p>
+                ) : (
+                  <p>マスターまであと少しです</p>
+                )}
+                <p className="mt-1">のこり {TOTAL_CELLS - mastered} マス</p>
+              </div>
             )}
             <Button size="lg" onClick={restart}>
               もういちど挑戦する

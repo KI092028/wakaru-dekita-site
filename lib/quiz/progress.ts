@@ -122,6 +122,19 @@ export function cellStatus(progress: Progress, a: number, b: number): CellStatus
   return "untouched";
 }
 
+/**
+ * あと1回せいかいすればマスターになるマスの数。
+ *
+ * 1セット10問はすべて別のマスなので、**はじめての1セットではマスターが必ず0になる。**
+ * 9問正解したのに「のこり81マス」とだけ出ると、何も進まなかったように見えるため、
+ * 結果画面ではこの数を先に伝える。
+ */
+export function nearMasteryCount(progress: Progress): number {
+  return Object.values(progress).filter(
+    (cell) => !cell.mastered && cell.streak >= MASTERY_STREAK - 1
+  ).length;
+}
+
 export function masteredCount(progress: Progress): number {
   return allCells().filter(([a, b]) => progress[cellKey(a, b)]?.mastered).length;
 }
