@@ -21,10 +21,28 @@ export type Question = {
 
 export type UnitSlug = "add-sub" | "times-table" | "fractions";
 
+/**
+ * 単元の種類。**1問にかかる時間も、やることも違う**ので、開く前に分かるようにする。
+ *
+ * - drill: 1セット10問、1問10秒ほど。答えを打つ
+ * - steps: ひっ算など。1問に10手前後かかり、どの手で止まったかを記録する
+ * - figure: 図を動かして考える。答えを打つ場面がないこともある
+ */
+export type UnitKind = "drill" | "steps" | "figure";
+
+export const UNIT_KIND_LABEL: Record<UnitKind, string> = {
+  drill: "ドリル",
+  steps: "1手ずつ",
+  figure: "図で考える",
+};
+
 export type QuizUnit = {
   slug: string;
   title: string;
+  /** 並べ替えと見出しに使う学年。「1〜2年生」なら 1 */
+  grade: number;
   gradeLabel: string;
+  kind: UnitKind;
   description: string;
   available: boolean;
 };

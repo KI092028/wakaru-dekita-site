@@ -1,36 +1,65 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { quizUnits } from "@/lib/quiz/units";
+import { unitsByGrade } from "@/lib/quiz/units";
+import { UNIT_KIND_LABEL } from "@/lib/quiz/types";
+
+/**
+ * トップページの単元一覧。
+ *
+ * 単元が増えたので、**カードを全部並べるのはやめて学年ごとの行にした。**
+ * 12枚のカードを縦に積むと、トップページの大半が単元一覧になってしまい、
+ * 学年で探している人にはかえって見つけにくい。
+ * ここでは名前を並べるだけにして、詳しくは /learn にまかせる。
+ */
+const KIND_STYLE: Record<string, string> = {
+  drill: "bg-secondary/10 text-secondary",
+  steps: "bg-primary/10 text-primary",
+  figure: "bg-success/10 text-success",
+};
 
 export function UnitGrid() {
+  const groups = unitsByGrade();
+
   return (
     <section className="py-16">
-      <div className="mx-auto max-w-6xl px-6">
-        <h2 className="mb-10 text-center text-2xl font-bold">学べる単元</h2>
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-          {quizUnits.map((unit) => (
-            <Card key={unit.slug} className={unit.available ? "border-primary/30" : "border-dashed opacity-60"}>
-              <CardHeader>
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
-                    {unit.gradeLabel}
-                  </span>
-                  {!unit.available && <span className="text-xs text-muted-foreground">準備中</span>}
-                </div>
-                <CardTitle className="text-base">{unit.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-4 text-sm text-muted-foreground">{unit.description}</p>
-                {unit.available && (
-                  <Button asChild size="sm" className="w-full">
-                    <Link href={`/learn/${unit.slug}`}>解いてみる</Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+      <div className="mx-auto max-w-4xl px-6">
+        <h2 className="mb-2 text-center text-2xl font-bold">学べる単元</h2>
+        <p className="mb-10 text-center text-sm text-muted-foreground">
+          学年ごとに、ならう順に並べています。
+        </p>
+
+        <div className="space-y-6">
+          {groups.map((group) => (
+            <div key={group.grade} className="sm:flex sm:gap-6">
+              <h3 className="mb-2 shrink-0 pt-1 text-sm font-bold text-muted-foreground sm:w-24">
+                {group.label}
+              </h3>
+              <ul className="flex flex-1 flex-wrap gap-2">
+                {group.units.map((unit) => (
+                  <li key={unit.slug}>
+                    <Link
+                      href={`/learn/${unit.slug}`}
+                      className="flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm transition-colors hover:border-primary hover:bg-primary/5"
+                    >
+                      <span className="font-medium">{unit.title}</span>
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${KIND_STYLE[unit.kind]}`}
+                      >
+                        {UNIT_KIND_LABEL[unit.kind]}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button variant="outline" asChild>
+            <Link href="/learn">単元をくわしく見る</Link>
+          </Button>
         </div>
       </div>
     </section>

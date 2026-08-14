@@ -8,11 +8,31 @@ export default function AboutPage() {
         <section>
           <h2 className="mb-3 text-xl font-semibold text-foreground">コンセプト</h2>
           <p>
-            「わかる・できる」は、小学生向けの算数ドリルサイトです。
+            「わかる・できる」は、小学生向けの算数の練習サイトです。
             すきま時間や家庭学習で取り組める練習を通じて、
             「わかった」「できた」という達成感を積み重ねられることを目指しています。
-            答えは選択肢から選ぶのではなく、自分で入力する形にしています。
+            答えは選択肢から選ぶのではなく、自分で書く形にしています。
           </p>
+        </section>
+        <section>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">3しゅるいの練習</h2>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <strong className="text-foreground">ドリル</strong>
+              ：1セット10問。1問10秒ほどで、たし算・九九・分数など
+            </li>
+            <li>
+              <strong className="text-foreground">1手ずつ</strong>
+              ：ひっ算を手順どおりに進めます。答えだけを合わせても意味がないため、
+              くり上がり・位取りなど、どの手で止まったのかを分けて記録します
+            </li>
+            <li>
+              <strong className="text-foreground">図で考える</strong>
+              ：分度器を当てる、数直線をそろえる、など。
+              単位量あたりのように、答えを打たせない単元もあります。
+              公式を覚えて計算できてしまうことが、その単元の問題そのものだからです
+            </li>
+          </ul>
         </section>
         <section>
           <h2 className="mb-3 text-xl font-semibold text-foreground">対象ユーザー</h2>

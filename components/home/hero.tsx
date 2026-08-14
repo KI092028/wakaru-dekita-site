@@ -1,48 +1,45 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { HeroDemo } from "@/components/home/hero-demo";
 
+/**
+ * スマホでは 見出し → その場で解けるカード → 説明とボタン の順に並べる。
+ * 説明を読ませてから触らせるより、先に1問触ってもらうほうが早いため。
+ * 画面が広いときは、左に文・右にカードの2列に組み直す。
+ */
 export function Hero() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
-      <div className="grid items-center gap-12 md:grid-cols-2">
-        <div>
+    <section className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+      <div className="grid gap-6 md:grid-cols-2 md:items-center md:gap-12">
+        <div className="order-1 md:col-start-1 md:row-start-1">
           <p className="mb-4 text-sm font-bold text-primary">無料・登録不要・すきま時間に</p>
-          <h1 className="mb-6 text-4xl font-bold leading-tight md:text-5xl">
+          <h1 className="text-4xl font-bold leading-tight md:text-5xl">
             わかる、できる。
             <br />
             算数がすきになる。
           </h1>
+        </div>
+
+        {/* 見本の絵ではなく、本物のアプリを置く（→ hero-demo.tsx） */}
+        <div className="order-2 md:col-start-2 md:row-span-2 md:row-start-1">
+          <HeroDemo />
+        </div>
+
+        <div className="order-3 md:col-start-1 md:row-start-2">
           <p className="mb-8 text-lg text-muted-foreground">
-            小学生向けの算数ドリルアプリ。ちょっとしたすきま時間や、おうちでの学習にぴったりの
-            4択クイズで、楽しみながら計算力を身につけられます。
+            小学校の算数を、学年・単元ごとに練習できる無料サイト。
+            答えを選ぶのではなく自分で書き、ひっ算や分度器は
+            <strong className="font-bold text-foreground">1手ずつ</strong>
+            進めるので、どこでつまずいたのかが自分で分かります。
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link href="/learn">今すぐ問題を解いてみる</Link>
+              <Link href="/learn">たんげんを えらぶ</Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
               <Link href="/about">このサイトについて</Link>
             </Button>
-          </div>
-        </div>
-
-        <div className="hidden md:block">
-          <div className="rounded-2xl border bg-muted/40 p-8 shadow-sm">
-            <p className="mb-6 text-center text-sm font-medium text-muted-foreground">たし算・ひき算</p>
-            <p className="mb-8 text-center text-5xl font-bold tracking-wide">7 + 5 = ?</p>
-            <div className="grid grid-cols-2 gap-3">
-              {[11, 12, 13, 14].map((n) => (
-                <div
-                  key={n}
-                  className={`flex h-14 items-center justify-center rounded-2xl border-2 text-xl font-bold ${
-                    n === 12 ? "border-success bg-success/10 text-success" : "border-input bg-white"
-                  }`}
-                >
-                  {n}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
