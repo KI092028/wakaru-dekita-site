@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { unitsByGrade } from "@/lib/quiz/units";
-import { UNIT_KIND_LABEL } from "@/lib/quiz/types";
+import { subjectsInUse, unitsByGrade } from "@/lib/quiz/units";
+import { SUBJECT_LABEL, UNIT_KIND_LABEL } from "@/lib/quiz/types";
 
 /**
  * トップページの単元一覧。
@@ -16,10 +16,11 @@ const KIND_STYLE: Record<string, string> = {
   drill: "bg-secondary/10 text-secondary",
   steps: "bg-primary/10 text-primary",
   figure: "bg-success/10 text-success",
+  game: "bg-danger/10 text-danger",
 };
 
 export function UnitGrid() {
-  const groups = unitsByGrade();
+  const subjects = subjectsInUse();
 
   return (
     <section className="py-16">
@@ -29,8 +30,12 @@ export function UnitGrid() {
           学年ごとに、ならう順に並べています。
         </p>
 
-        <div className="space-y-6">
-          {groups.map((group) => (
+        <div className="space-y-10">
+          {subjects.map((subject) => (
+            <div key={subject}>
+              <h3 className="mb-4 text-center text-lg font-bold">{SUBJECT_LABEL[subject]}</h3>
+              <div className="space-y-4">
+          {unitsByGrade(subject).map((group) => (
             <div key={group.grade} className="sm:flex sm:gap-6">
               <h3 className="mb-2 shrink-0 pt-1 text-sm font-bold text-muted-foreground sm:w-24">
                 {group.label}
@@ -52,6 +57,9 @@ export function UnitGrid() {
                   </li>
                 ))}
               </ul>
+            </div>
+          ))}
+              </div>
             </div>
           ))}
         </div>

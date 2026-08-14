@@ -1,4 +1,4 @@
-import type { QuizUnit } from "./types";
+import type { QuizUnit, Subject } from "./types";
 
 /**
  * 単元マスタ。**教科書でならう順に並べる。**
@@ -10,6 +10,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "add-sub",
     title: "たし算・ひき算",
+    subject: "math",
     grade: 1,
     gradeLabel: "1〜2年生",
     kind: "drill",
@@ -19,6 +20,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "times-table",
     title: "九九",
+    subject: "math",
     grade: 2,
     gradeLabel: "2〜3年生",
     kind: "drill",
@@ -28,6 +30,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "column-add-sub",
     title: "たし算・ひき算のひっ算",
+    subject: "math",
     grade: 2,
     gradeLabel: "2〜3年生",
     kind: "steps",
@@ -37,6 +40,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "column-multiply",
     title: "かけ算のひっ算",
+    subject: "math",
     grade: 3,
     gradeLabel: "3〜4年生",
     kind: "steps",
@@ -46,6 +50,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "long-division",
     title: "わり算のひっ算",
+    subject: "math",
     grade: 3,
     gradeLabel: "3〜4年生",
     kind: "steps",
@@ -55,6 +60,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "long-division-2",
     title: "わり算のひっ算（2けたでわる）",
+    subject: "math",
     grade: 4,
     gradeLabel: "4年生",
     kind: "steps",
@@ -64,6 +70,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "column-decimal",
     title: "小数のたし算・ひき算",
+    subject: "math",
     grade: 4,
     gradeLabel: "4年生",
     kind: "steps",
@@ -73,6 +80,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "angle",
     title: "角の大きさ",
+    subject: "math",
     grade: 4,
     gradeLabel: "4年生",
     kind: "figure",
@@ -82,6 +90,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "fractions",
     title: "分数",
+    subject: "math",
     grade: 4,
     gradeLabel: "4〜5年生",
     kind: "drill",
@@ -91,6 +100,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "per-unit",
     title: "単位量あたりの大きさ",
+    subject: "math",
     grade: 5,
     gradeLabel: "5年生",
     kind: "figure",
@@ -98,8 +108,19 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "prefectures",
+    title: "都道府県",
+    subject: "social",
+    grade: 4,
+    gradeLabel: "4年生〜",
+    kind: "game",
+    description: "地図の上でさがす。おしいときは「同じ地方だよ」「もっと北だよ」と方角が返ります。",
+    available: true,
+  },
+  {
     slug: "time",
     title: "時こく・時間",
+    subject: "math",
     grade: 2,
     gradeLabel: "2〜3年生",
     kind: "drill",
@@ -109,6 +130,7 @@ export const quizUnits: QuizUnit[] = [
   {
     slug: "figures",
     title: "図形",
+    subject: "math",
     grade: 4,
     gradeLabel: "4〜6年生",
     kind: "figure",
@@ -117,11 +139,25 @@ export const quizUnits: QuizUnit[] = [
   },
 ];
 
+/** その教科の、公開中の単元。 */
+export const unitsOfSubject = (subject: Subject): QuizUnit[] =>
+  quizUnits.filter((unit) => unit.available && unit.subject === subject);
+
+/** いま単元がある教科を、units.ts の並び順で返す。画面の見出しはこれで作る。 */
+export function subjectsInUse(): Subject[] {
+  const seen: Subject[] = [];
+  for (const unit of quizUnits) {
+    if (unit.available && !seen.includes(unit.subject)) seen.push(unit.subject);
+  }
+  return seen;
+}
+
 /** 公開中の単元だけを、学年ごとにまとめる。 */
-export function unitsByGrade(): { grade: number; label: string; units: QuizUnit[] }[] {
+export function unitsByGrade(subject?: Subject): { grade: number; label: string; units: QuizUnit[] }[] {
   const groups: { grade: number; label: string; units: QuizUnit[] }[] = [];
   for (const unit of quizUnits) {
     if (!unit.available) continue;
+    if (subject !== undefined && unit.subject !== subject) continue;
     const found = groups.find((g) => g.grade === unit.grade);
     if (found) found.units.push(unit);
     else groups.push({ grade: unit.grade, label: `${unit.grade}年生から`, units: [unit] });

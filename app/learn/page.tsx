@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { unitsByGrade, upcomingUnits } from "@/lib/quiz/units";
-import { UNIT_KIND_LABEL, type QuizUnit } from "@/lib/quiz/types";
+import { subjectsInUse, unitsByGrade, upcomingUnits } from "@/lib/quiz/units";
+import { SUBJECT_LABEL, UNIT_KIND_LABEL, type QuizUnit } from "@/lib/quiz/types";
 
 export const metadata: Metadata = {
   title: "まなぶ | わかる・できる",
@@ -15,6 +15,7 @@ const KIND_STYLE: Record<string, string> = {
   drill: "bg-secondary/10 text-secondary",
   steps: "bg-primary/10 text-primary",
   figure: "bg-success/10 text-success",
+  game: "bg-danger/10 text-danger",
 };
 
 function UnitCard({ unit }: { unit: QuizUnit }) {
@@ -43,7 +44,7 @@ function UnitCard({ unit }: { unit: QuizUnit }) {
 }
 
 export default function LearnPage() {
-  const groups = unitsByGrade();
+  const subjects = subjectsInUse();
   const upcoming = upcomingUnits();
 
   return (
@@ -74,15 +75,31 @@ export default function LearnPage() {
             </span>
             図を動かしてたしかめる
           </li>
+          <li>
+            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.game}`}>
+              ゲーム
+            </span>
+            さがす・当てる
+          </li>
         </ul>
 
-        <div className="space-y-10">
-          {groups.map((group) => (
-            <section key={group.grade}>
-              <h2 className="mb-4 border-b pb-2 text-lg font-bold">{group.label}</h2>
-              <div className="grid gap-6 sm:grid-cols-2">
-                {group.units.map((unit) => (
-                  <UnitCard key={unit.slug} unit={unit} />
+        <div className="space-y-14">
+          {/* 教科 → 学年 の2段で区切る。教科が増えてもここは直さずに済む */}
+          {subjects.map((subject) => (
+            <section key={subject}>
+              <h2 className="mb-6 text-center text-2xl font-bold">{SUBJECT_LABEL[subject]}</h2>
+              <div className="space-y-8">
+                {unitsByGrade(subject).map((group) => (
+                  <div key={group.grade}>
+                    <h3 className="mb-4 border-b pb-2 text-sm font-bold text-muted-foreground">
+                      {group.label}
+                    </h3>
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      {group.units.map((unit) => (
+                        <UnitCard key={unit.slug} unit={unit} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>
@@ -90,7 +107,7 @@ export default function LearnPage() {
 
           {upcoming.length > 0 && (
             <section>
-              <h2 className="mb-4 border-b pb-2 text-lg font-bold text-muted-foreground">準備中</h2>
+              <h2 className="mb-6 text-center text-2xl font-bold text-muted-foreground">準備中</h2>
               <div className="grid gap-6 sm:grid-cols-2">
                 {upcoming.map((unit) => (
                   <Card key={unit.slug} className="h-full border-dashed opacity-60">

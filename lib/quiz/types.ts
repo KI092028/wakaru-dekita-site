@@ -28,17 +28,30 @@ export type UnitSlug = "add-sub" | "times-table" | "fractions";
  * - steps: ひっ算など。1問に10手前後かかり、どの手で止まったかを記録する
  * - figure: 図を動かして考える。答えを打つ場面がないこともある
  */
-export type UnitKind = "drill" | "steps" | "figure";
+export type UnitKind = "drill" | "steps" | "figure" | "game";
 
 export const UNIT_KIND_LABEL: Record<UnitKind, string> = {
   drill: "ドリル",
   steps: "1手ずつ",
   figure: "図で考える",
+  game: "ゲーム",
+};
+
+/**
+ * 教科。**単元マスタに持たせて、画面はそこから組み立てる。**
+ * 教科を増やすときに直すのはこの表と units.ts だけで済むようにしておく。
+ */
+export type Subject = "math" | "social";
+
+export const SUBJECT_LABEL: Record<Subject, string> = {
+  math: "算数",
+  social: "社会",
 };
 
 export type QuizUnit = {
   slug: string;
   title: string;
+  subject: Subject;
   /** 並べ替えと見出しに使う学年。「1〜2年生」なら 1 */
   grade: number;
   gradeLabel: string;

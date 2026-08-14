@@ -1,0 +1,363 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { JapanMap, MapLegend } from "@/components/geo/japan-map";
+import { cn } from "@/lib/utils";
+
+import {
+  REGIONS,
+  REGION_LABEL,
+  fullName,
+  type Prefecture,
+  type Region,
+} from "@/lib/geo/prefectures";
+import {
+  buildGeoQuestions,
+  judge,
+  scopeLabel,
+  type GeoQuestion,
+  type GeoVerdict,
+} from "@/lib/geo/quiz";
+import {
+  loadGeoProgress,
+  masteredCount,
+  nearMasteryCount,
+  recordGeoAnswer,
+  saveGeoProgress,
+  totalOf,
+  type GeoProgress,
+} from "@/lib/geo/progress";
+
+/**
+ * 都道府県をさがすゲーム。
+ *
+ * 名前が出るので、地図の上でその県を押す。
+ *
+ * **正解・不正解の2つで終わらせない。** となりの県を押したのと、
+ * まったく違う地方を押したのは同じ「不正解」ではないので、
+ * 同じ地方なら「おしい」、別の地方なら方角を返す。
+ *
+ * 地図そのものが記録の表示になっている。おぼえた県から色がついていくので、
+ * 白いところが残りの県になる。
+ */
+
+type Phase = "choosing" | "asking" | "judged" | "finished";
+
+export function GeoGame() {
+  const [progress, setProgress] = useState<GeoProgress | null>(null);
+  const [region, setRegion] = useState<Region | null>(null);
+  const [questions, setQuestions] = useState<GeoQuestion[] | null>(null);
+  const [index, setIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>("choosing");
+  const [picked, setPicked] = useState<Prefecture | null>(null);
+  const [verdict, setVerdict] = useState<GeoVerdict | null>(null);
+  const [score, setScore] = useState(0);
+  const [missedHere, setMissedHere] = useState(false);
+  const [masteredAtStart, setMasteredAtStart] = useState(0);
+  /**
+   * 地図に塗る色は、問題のはじめの状態で止めておく。
+   *
+   * 記録をそのまま塗ると、まちがえた瞬間に**正解のマスが「にがて」の色になって
+   * 答えが見えてしまう。** 記録そのものは動かし、色だけ次の問題まで据え置く。
+   */
+  const [mapProgress, setMapProgress] = useState<GeoProgress>({});
+
+  // 記録の読み出しは描画後（静的書き出しなので、初回描画と食い違わせない）
+  useEffect(() => {
+    setProgress(loadGeoProgress());
+  }, []);
+
+  if (progress === null) {
+    return (
+      <Card className="mx-auto max-w-lg">
+        <CardContent className="py-16 text-center text-muted-foreground">
+          じゅんびしています…
+        </CardContent>
+      </Card>
+    );
+  }
+
+  function start(next: Region | null) {
+    if (progress === null) return;
+    setRegion(next);
+    setQuestions(buildGeoQuestions(progress, next));
+    setIndex(0);
+    setScore(0);
+    setPicked(null);
+    setVerdict(null);
+    setMissedHere(false);
+    setMasteredAtStart(masteredCount(progress, next));
+    setMapProgress(progress);
+    setPhase("asking");
+  }
+
+  const question = questions?.[index] ?? null;
+
+  function pick(prefecture: Prefecture) {
+    if (phase !== "asking" || question === null || progress === null) return;
+    const result = judge(question.answer, prefecture);
+    setPicked(prefecture);
+    setVerdict(result);
+
+    if (result.kind === "correct") {
+      // 一度でも外した問題は、得点にも記録にも入れない（打ち直しと同じ扱い）
+      if (!missedHere) {
+        setScore((s) => s + 1);
+        const next = recordGeoAnswer(progress, question.answer.code, true);
+        saveGeoProgress(next);
+        setProgress(next);
+      }
+      setPhase("judged");
+    } else {
+      if (!missedHere) {
+        const next = recordGeoAnswer(progress, question.answer.code, false);
+        saveGeoProgress(next);
+        setProgress(next);
+      }
+      setMissedHere(true);
+    }
+  }
+
+  function next() {
+    if (questions === null || progress === null) return;
+    setMapProgress(progress);
+    setPicked(null);
+    setVerdict(null);
+    setMissedHere(false);
+    if (index + 1 >= questions.length) setPhase("finished");
+    else {
+      setIndex((i) => i + 1);
+      setPhase("asking");
+    }
+  }
+
+  if (phase === "choosing") {
+    return <ScopePicker progress={progress} onStart={start} />;
+  }
+
+  if (phase === "finished") {
+    return (
+      <Result
+        progress={progress}
+        region={region}
+        score={score}
+        total={questions?.length ?? 0}
+        masteredAtStart={masteredAtStart}
+        onRetry={() => start(region)}
+        onChangeScope={() => setPhase("choosing")}
+      />
+    );
+  }
+
+  const correct = verdict?.kind === "correct";
+
+  return (
+    <div className="mx-auto max-w-lg space-y-4">
+      <Card>
+        <CardContent className="py-6">
+          <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground">
+            <span>
+              {index + 1} / {questions?.length} もん目
+            </span>
+            <span>{scopeLabel(region)}</span>
+          </div>
+
+          <p className="mb-1 text-center text-sm text-muted-foreground">
+            地図の上で さがして タップ
+          </p>
+          <p className="mb-4 text-center text-3xl font-bold">
+            {question ? fullName(question.answer) : ""}
+          </p>
+
+          <JapanMap
+            region={region}
+            progress={mapProgress}
+            interactive={phase === "asking"}
+            onPick={pick}
+            picked={correct ? null : picked}
+            reveal={phase === "judged" ? question?.answer ?? null : null}
+          />
+
+          <div className="mt-4 min-h-[5.5rem] text-center">
+            {phase === "judged" ? (
+              <>
+                <p className="wd-pop-in mb-1 text-lg font-bold text-success">
+                  {missedHere ? "そこだよ！" : "せいかい！"}
+                </p>
+                <p className="mb-3 text-sm text-muted-foreground">
+                  {question && REGION_LABEL[question.answer.region]}地方
+                </p>
+                <Button size="lg" onClick={next}>
+                  {index + 1 >= (questions?.length ?? 0) ? "けっかを見る" : "つぎの もんだいへ"}
+                </Button>
+              </>
+            ) : verdict && verdict.kind !== "correct" ? (
+              <>
+                <p className="mb-1 text-lg font-bold text-danger">
+                  {verdict.kind === "sameRegion" ? "ちかい！" : "ちがうよ"}
+                </p>
+                <p className="text-sm font-medium">{verdict.message}</p>
+                <p className="mt-2 text-xs text-muted-foreground">もういちど さがしてみよう</p>
+              </>
+            ) : (
+              <p className="pt-4 text-xs text-muted-foreground">
+                この地図は マスに 置きかえた 図で、じっさいの 形とは ちがいます
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="py-4">
+          <MapLegend />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/** どの範囲でやるかを選ぶ。地方ごとの進みぐあいもここに出す。 */
+function ScopePicker({
+  progress,
+  onStart,
+}: {
+  progress: GeoProgress;
+  onStart: (region: Region | null) => void;
+}) {
+  const all = masteredCount(progress, null);
+
+  return (
+    <div className="mx-auto max-w-lg space-y-4">
+      <Card className="border-primary/30">
+        <CardContent className="py-6">
+          <p className="mb-1 text-center text-sm text-muted-foreground">おぼえた 都道府県</p>
+          <p className="mb-4 text-center text-4xl font-bold text-primary">
+            {all} <span className="text-xl text-foreground">/ 47</span>
+          </p>
+          <JapanMap region={null} progress={progress} interactive={false} showNames={false} />
+          <div className="mt-3">
+            <MapLegend />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="py-6">
+          <h2 className="mb-1 text-center text-sm font-bold">どこを れんしゅうする？</h2>
+          <p className="mb-4 text-center text-xs text-muted-foreground">
+            地方をえらぶと、その地方だけが 大きく出ます
+          </p>
+
+          <Button size="lg" className="mb-3 w-full" onClick={() => onStart(null)}>
+            日本全国（47）
+          </Button>
+
+          <div className="grid grid-cols-2 gap-2">
+            {REGIONS.map((region) => {
+              const done = masteredCount(progress, region);
+              const total = totalOf(region);
+              return (
+                <button
+                  key={region}
+                  type="button"
+                  onClick={() => onStart(region)}
+                  className={cn(
+                    "rounded-xl border-2 px-3 py-3 text-left transition-colors",
+                    done === total
+                      ? "border-primary/60 bg-primary/5"
+                      : "border-input hover:border-primary hover:bg-primary/5"
+                  )}
+                >
+                  <span className="block text-sm font-bold">{REGION_LABEL[region]}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {done} / {total}
+                    {done === total && total > 0 && " ぜんぶ おぼえた"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Result({
+  progress,
+  region,
+  score,
+  total,
+  masteredAtStart,
+  onRetry,
+  onChangeScope,
+}: {
+  progress: GeoProgress;
+  region: Region | null;
+  score: number;
+  total: number;
+  masteredAtStart: number;
+  onRetry: () => void;
+  onChangeScope: () => void;
+}) {
+  const mastered = masteredCount(progress, region);
+  const near = nearMasteryCount(progress, region);
+  const scopeTotal = totalOf(region);
+  const gained = mastered - masteredAtStart;
+
+  return (
+    <Card className="mx-auto max-w-lg border-primary/30">
+      <CardContent className="py-10 text-center">
+        <p className="mb-2 text-sm font-medium text-muted-foreground">
+          {scopeLabel(region)}・けっか
+        </p>
+        <p className="mb-1 text-5xl font-bold text-primary">
+          {score} <span className="text-2xl text-foreground">/ {total} もん</span>
+        </p>
+        <p className="mb-5 text-sm text-muted-foreground">1回で 見つけられた 県</p>
+
+        <div className="mb-5 rounded-xl bg-muted/60 px-4 py-3 text-sm">
+          {gained > 0 ? (
+            <p>
+              あたらしく <span className="text-base font-bold text-primary">{gained}</span> 県 おぼえた！
+            </p>
+          ) : near > 0 ? (
+            // 連続2回せいかいで「おぼえた」になるので、1セット目は必ず0になる
+            <p>
+              あと1回 せいかいすると おぼえた に なる 県が{" "}
+              <span className="font-bold text-foreground">{near}</span> 県 あるよ
+            </p>
+          ) : (
+            <p>もう一度 まわすと、おぼえた 県が ふえていくよ</p>
+          )}
+          <p className="mt-1 text-muted-foreground">
+            {scopeLabel(region)}：{mastered} / {scopeTotal} 県
+          </p>
+        </div>
+
+        <div className="mb-6">
+          <JapanMap region={region} progress={progress} interactive={false} showNames />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Button size="lg" onClick={onRetry}>
+            もういちど（{scopeLabel(region)}）
+          </Button>
+          <Button size="lg" variant="outline" onClick={onChangeScope}>
+            ほかの地方を えらぶ
+          </Button>
+        </div>
+
+        <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
+          きろくはこの端末のブラウザにだけ保存されます。
+          <br />
+          ほかの端末には引きつがれません。
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
