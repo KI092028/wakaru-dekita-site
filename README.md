@@ -30,6 +30,7 @@
 | `/learn/long-division-2` | わり算のひっ算（2けたでわる） | 1手ずつ |
 | `/learn/angle` | 角の大きさ（分度器） | 図で考える |
 | `/learn/per-unit` | 単位量あたりの大きさ | 図で考える |
+| `/learn/prefectures` | 都道府県（社会） | ゲーム |
 | `/teachers` | 先生の方へ（学級レク・授業での利用） | — |
 | `/about` `/privacy` `/terms` `/contact` | 固定ページ | — |
 
@@ -45,6 +46,7 @@ npm run dev
 | ファイル | 内容 |
 |----------|------|
 | [docs/requirements.md](docs/requirements.md) | 要件定義（目的・ターゲット・機能要件・既知の課題） |
+| [docs/game-elements.md](docs/game-elements.md) | ゲーム性の要素（ota tools の分析と、取り込み方の基準） |
 | [docs/design-guidelines.md](docs/design-guidelines.md) | 設計・実装方針（構成・単元の追加手順・デザイントークン・公開フロー） |
 | [docs/x-operations.md](docs/x-operations.md) | X運用・自動化ロードマップ（方針・コスト・計測設計） |
 | [docs/game-design-research.md](docs/game-design-research.md) | 「面白さ」と再訪に関する調査（**一部訂正あり**。下の文書を併読のこと） |

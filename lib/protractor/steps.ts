@@ -24,28 +24,74 @@ import {
  * 読みの誤りとしてではなく、合わせた辺に立ち返らせる形で返す。
  */
 
-export type ProtractorStepKind = "place" | "align" | "read";
+export type ProtractorStepKind = "guess" | "place" | "align" | "read";
 
-export const PROTRACTOR_STEP_KINDS: ProtractorStepKind[] = ["place", "align", "read"];
+export const PROTRACTOR_STEP_KINDS: ProtractorStepKind[] = ["guess", "place", "align", "read"];
 
 export const PROTRACTOR_STEP_LABEL: Record<ProtractorStepKind, string> = {
+  guess: "目分量で予想",
   place: "中心を合わせる",
   align: "0を合わせる",
   read: "目もりを読む",
 };
 
-/** 手順の帯に出す短い名前。3つ横に並べても折り返さない長さにしてある。 */
+/** 手順の帯に出す短い名前。横に並べても折り返さない長さにしてある。 */
 export const PROTRACTOR_STEP_SHORT: Record<ProtractorStepKind, string> = {
+  guess: "予想",
   place: "中心",
   align: "0の線",
   read: "読む",
 };
+
+/**
+ * 目分量の当たり具合。**外れ幅で段階に分ける。**
+ *
+ * この単元でいちばん多い誤りは、60度を120度と読むこと。
+ * 道具の当て方を直しても、**そもそも見当がついていない**子は、
+ * 出てきた数がおかしいことに気づけない。
+ *
+ * そこで測る前に「だいたい何度だと思う？」を1手置く。
+ * ここに正解・不正解はない（予想なので外れて当たり前）。
+ * 大事なのは、**測ったあとに自分の予想と見くらべられる**こと。
+ * 予想が 50°くらいだったのに 130° と読んだなら、読み方のほうが間違っている。
+ */
+export type GuessGrade = "spot" | "close" | "rough" | "far";
+
+export function gradeGuess(guess: number, actual: number): GuessGrade {
+  const gap = Math.abs(guess - actual);
+  if (gap === 0) return "spot";
+  if (gap <= 10) return "close";
+  if (gap <= 25) return "rough";
+  return "far";
+}
+
+export const GUESS_WORD: Record<GuessGrade, string> = {
+  spot: "ピッタリ！",
+  close: "いい線いってる！",
+  rough: "まあまあ",
+  far: "だいぶ ちがったね",
+};
+
+/** 予想したあとに返す言葉。直角より上か下かだけでも当たっていれば、そこを認める。 */
+export function guessComment(guess: number, actual: number): string {
+  const gap = Math.abs(guess - actual);
+  const sameSide = (guess < 90) === (actual < 90);
+
+  if (gap === 0) return "ぴったり 当てたね。分度器で たしかめてみよう";
+  if (gap <= 10) return `ズレは ${gap}度。かなり 近いよ。分度器で たしかめてみよう`;
+  if (sameSide) {
+    return `ズレは ${gap}度。でも 直角（90度）より ${actual < 90 ? "小さい" : "大きい"} ことは 当たっているね`;
+  }
+  return `ズレは ${gap}度。この角は 直角（90度）より ${actual < 90 ? "小さい" : "大きい"} よ。よく見てみよう`;
+}
 
 // 手の並びは PROTRACTOR_STEP_KINDS の順そのもの。
 // 当ててから読む、という順序自体が練習になるので入れかえない。
 
 export function protractorStepPrompt(kind: ProtractorStepKind): string {
   switch (kind) {
+    case "guess":
+      return "はかる前に、目分量で。この角は だいたい 何度だと 思う？";
     case "place":
       return "分度器の 中心を、角の いただきに 合わせよう（分度器を ドラッグ）";
     case "align":
@@ -102,23 +148,40 @@ export function diagnoseProtractorStep(
   kind: ProtractorStepKind,
   plan: AnglePlan,
   pose: Pose,
-  typed: number
+  typed: number,
+  guess: number | null = null
 ): string {
   switch (kind) {
+    case "guess":
+      return "";
     case "place":
       return diagnosePlace(plan, pose);
     case "align":
       return diagnoseAlign(plan, pose);
-    case "read":
+    case "read": {
+      // 自分の予想のほうが合っていたなら、まずそこに気づかせる。
+      // 「内側と外側を取りちがえた」の正体は、たいていこれ
+      if (guess !== null && typed === 180 - plan.angle) {
+        const toActual = Math.abs(guess - plan.angle);
+        const toTyped = Math.abs(guess - typed);
+        if (toActual + 15 < toTyped) {
+          return `自分で ${guess}度くらいと 予想したのに、${typed}度 と 読んだね。予想のほうが 合っているよ。0 を 合わせた 辺から 数えなおそう`;
+        }
+      }
       return diagnoseRead(plan, alignedSide(plan, pose) ?? "base", typed);
+    }
   }
 }
 
 /** 同率のときの優先順。道具の当て方を、読みより先に見る。 */
-export const PROTRACTOR_ADVICE_PRIORITY: ProtractorStepKind[] = ["align", "place", "read"];
+export const PROTRACTOR_ADVICE_PRIORITY: ProtractorStepKind[] = ["align", "place", "read", "guess"];
 
 export function protractorAdviceFor(kind: ProtractorStepKind): { text: string } {
   switch (kind) {
+    case "guess":
+      return {
+        text: "目分量の 予想が よく 当たっていたよ。この 見当が つくと、目もりを 読みまちがえても 自分で 気づける",
+      };
     case "place":
       return {
         text: "分度器の 中心を 合わせる ところで つまずいていたよ。まず「まん中の しるしを いただきに」、これだけを 先に やろう",

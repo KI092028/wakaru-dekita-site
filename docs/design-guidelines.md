@@ -44,6 +44,24 @@
 ただし分けてよいのは**盤面と進行だけ**。数字キーパッド、間違えたときの流れ
 （止まる→指摘→正答→自分で打ち直す）、言い回しはドリルと共通のものを使う。
 
+#### 教科を増やすときに直す場所
+
+単元マスタ（`lib/quiz/units.ts`）に `subject` を持たせ、**画面はそこから組み立てる。**
+教科を足すときに直すのは `SUBJECT_LABEL`（`lib/quiz/types.ts`）と `units.ts` の2か所だけ。
+
+`/learn` とトップページの単元一覧は `subjectsInUse()` と `unitsByGrade(subject)` を使って
+「教科 → 学年」の2段で組んでいるので、**画面側は直さなくてよい。**
+
+#### 近さに意味がある場面では、正誤の2つで終わらせない
+
+都道府県の「となりの県」、分度器の目分量の「ズレ」のように、
+**外し方に幅がある場面では、二値の判定は情報を捨てている。**
+段階に分けて、どちらの向きに外れたかまで返す（→ [game-elements.md](./game-elements.md) 4章）。
+
+逆に、近さに意味がない場面（九九の答え）で無理に段階にしても何も増えない。
+**新しいゲーム性を足すときは、その要素を抜いて中核が残るかを先に見ること。**
+残るなら外側の層で、それは前に効かなかった道（→ concept-review.md）。
+
 #### 答えを当てさせない単元がある
 
 単位量あたり（`components/rate/`）は、**数を打たせる場面を持たない。**
@@ -164,6 +182,9 @@ components/
   rate/
     rate-game.tsx           単位量あたりの進行
     number-line.tsx         二重数直線と、そろえたあとを見くらべる帯
+  geo/
+    geo-game.tsx            都道府県の進行（範囲えらび・出題・結果）
+    japan-map.tsx           マス目の模式図。記録の表示もかねる
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -193,6 +214,10 @@ lib/
     plan.ts               1つ分にそろえた値、答えの向き、差でくらべた場合
     steps.ts              1手ごとの問い・誤答の型・見立て
     generate.ts           場面ごとの出題（差と食い違う組を選ぶ）
+  geo/
+    prefectures.ts        47県のデータと模式図のマス。方角もここ
+    quiz.ts               出題と3段階の判定
+    progress.ts           県ごとの おぼえた／まだ（localStorage）
   rec/
     types.ts              学級レクの型（時間・声・隊形・準備物）
     activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
@@ -226,7 +251,7 @@ docs/                     本ドキュメント群
 `metadata` によるタイトル・説明の指定はページ側で行う。
 状態を持つのはドリルUI・ひっ算UI・学級レクの絞り込みだけなので、`"use client"` は
 `components/quiz/`・`components/division/`・`components/column/`・`components/multiply/`・
-`components/protractor/`・`components/rate/`・`components/teachers/` の中に限定する。
+`components/protractor/`・`components/rate/`・`components/geo/`・`components/teachers/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 

@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { HeroDemo } from "@/components/home/hero-demo";
+import { subjectsInUse } from "@/lib/quiz/units";
+import { SUBJECT_LABEL } from "@/lib/quiz/types";
 
 /**
  * スマホでは 見出し → その場で解けるカード → 説明とボタン の順に並べる。
@@ -9,6 +11,9 @@ import { HeroDemo } from "@/components/home/hero-demo";
  * 画面が広いときは、左に文・右にカードの2列に組み直す。
  */
 export function Hero() {
+  // 「算数と社会」。教科が増えたら units.ts を足すだけでここも変わる
+  const subjects = subjectsInUse().map((s) => SUBJECT_LABEL[s]).join("と");
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-12 md:py-20">
       <div className="grid gap-6 md:grid-cols-2 md:items-center md:gap-12">
@@ -17,7 +22,7 @@ export function Hero() {
           <h1 className="text-4xl font-bold leading-tight md:text-5xl">
             わかる、できる。
             <br />
-            算数がすきになる。
+            {subjects}が すきになる。
           </h1>
         </div>
 
@@ -28,7 +33,7 @@ export function Hero() {
 
         <div className="order-3 md:col-start-1 md:row-start-2">
           <p className="mb-8 text-lg text-muted-foreground">
-            小学校の算数を、学年・単元ごとに練習できる無料サイト。
+            小学校の{subjects}を、学年・単元ごとに練習できる無料サイト。
             答えを選ぶのではなく自分で書き、ひっ算や分度器は
             <strong className="font-bold text-foreground">1手ずつ</strong>
             進めるので、どこでつまずいたのかが自分で分かります。

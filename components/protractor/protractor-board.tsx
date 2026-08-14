@@ -42,6 +42,8 @@ type Props = {
   onPoseChange: (pose: Pose) => void;
   /** 答え合わせのときだけ、測った角に色をつける */
   reveal?: boolean;
+  /** 目分量で予想する手では、分度器を出さない */
+  hideProtractor?: boolean;
 };
 
 const R = PROTRACTOR_RADIUS;
@@ -70,6 +72,7 @@ export function ProtractorBoard({
   interactive,
   onPoseChange,
   reveal,
+  hideProtractor = false,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<Drag | null>(null);
@@ -167,7 +170,8 @@ export function ProtractorBoard({
         />
       )}
 
-      {/* 分度器 */}
+      {/* 分度器。目分量の手では出さない */}
+      {!hideProtractor && (
       <g
         transform={`translate(${pose.x} ${pose.y}) rotate(${-pose.rotation})`}
         onPointerDown={handleDown}
@@ -241,6 +245,7 @@ export function ProtractorBoard({
           <line x1={0} y1={-9} x2={0} y2={9} />
         </g>
       </g>
+      )}
 
       {reveal && side !== null && (
         <text

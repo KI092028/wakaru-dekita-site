@@ -4,9 +4,9 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
 const siteName = "わかる・できる";
-const title = "わかる・できる | 小学生向け算数の練習サイト";
+const title = "わかる・できる | 小学生向け 算数・社会の練習サイト";
 const description =
-  "小学校の算数を学年・単元ごとに練習できる無料サイト。ひっ算や分度器は1手ずつ進めるので、どこでつまずいたのかが分かります。登録不要・完全無料。";
+  "小学校の算数と社会を学年・単元ごとに練習できる無料サイト。ひっ算や分度器は1手ずつ進め、都道府県は地図の上でさがします。登録不要・完全無料。";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://wakaru-dekita-site.com"),

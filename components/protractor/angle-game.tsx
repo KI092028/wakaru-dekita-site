@@ -16,11 +16,14 @@ import {
 } from "@/lib/protractor/generate";
 import { nearestAlignment, type Pose } from "@/lib/protractor/plan";
 import {
+  GUESS_WORD,
   PROTRACTOR_ADVICE_PRIORITY,
   PROTRACTOR_STEP_KINDS,
   PROTRACTOR_STEP_LABEL,
   PROTRACTOR_STEP_SHORT,
   diagnoseProtractorStep,
+  gradeGuess,
+  guessComment,
   isStepDone,
   protractorAdviceFor,
   protractorStepPrompt,
@@ -56,6 +59,10 @@ export function AngleGame() {
   const [problemIndex, setProblemIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [pose, setPose] = useState<Pose>({ x: 0, y: 0, rotation: 0 });
+  /** 目分量の予想。答え合わせのときに、じっさいの角と見くらべる */
+  const [guess, setGuess] = useState<number | null>(null);
+  /** 1セット分の、予想と じっさいの ズレの合計 */
+  const [guessGap, setGuessGap] = useState(0);
   const [input, setInput] = useState<AnswerInput>(EMPTY);
   const [phase, setPhase] = useState<Phase>("answering");
   const [hint, setHint] = useState<string | null>(null);
@@ -90,7 +97,16 @@ export function AngleGame() {
   }, [finished, saved, problems, errors, attempts, perfectCount]);
 
   if (finished) {
-    return <Result errors={errors} perfect={perfectCount} record={record} onRestart={restart} />;
+    return (
+      <Result
+        errors={errors}
+        perfect={perfectCount}
+        record={record}
+        guessGap={guessGap}
+        rounds={problems?.length ?? 0}
+        onRestart={restart}
+      />
+    );
   }
 
   if (problems === null || problem === null) {
@@ -123,7 +139,7 @@ export function AngleGame() {
 
   function fail(typed: number) {
     if (problem === null || step === undefined) return;
-    setHint(diagnoseProtractorStep(step, problem, pose, typed));
+    setHint(diagnoseProtractorStep(step, problem, pose, typed, guess));
     setPhase("wrong");
     setErrors((prev) => ({ ...prev, [step]: prev[step] + 1 }));
     setMistakesInProblem((n) => n + 1);
@@ -137,6 +153,21 @@ export function AngleGame() {
   function commit() {
     if (problem === null || step === undefined) return;
     const retry = phase === "retry";
+
+    // 目分量の予想に正解・不正解はない。外れて当たり前なので、そのまま次へ進む。
+    // 当たり具合は、分度器で測ったあとに見くらべる
+    if (step === "guess") {
+      if (digits === "") return;
+      const value = Number(digits);
+      if (value < 1 || value > 179) {
+        setHint("1 から 179 のあいだで 予想してみよう");
+        return;
+      }
+      setGuess(value);
+      setGuessGap((total) => total + Math.abs(value - problem.angle));
+      advanceStep(pose);
+      return;
+    }
 
     if (step === "read") {
       if (digits === "") return;
@@ -163,6 +194,7 @@ export function AngleGame() {
   function nextProblem() {
     const next = problems?.[problemIndex + 1];
     if (next) setPose(next.start);
+    setGuess(null);
     setProblemIndex((i) => i + 1);
     setStepIndex(0);
     setInput(EMPTY);
@@ -175,6 +207,8 @@ export function AngleGame() {
     const next = generateAngleProblems();
     setProblems(next);
     setPose(next[0].start);
+    setGuess(null);
+    setGuessGap(0);
     setProblemIndex(0);
     setStepIndex(0);
     setInput(EMPTY);
@@ -207,16 +241,31 @@ export function AngleGame() {
               plan={problem}
               pose={pose}
               step={step ?? "read"}
-              interactive={phase === "answering" || phase === "retry"}
+              interactive={(phase === "answering" || phase === "retry") && step !== "guess"}
               onPoseChange={setPose}
               reveal={done}
+              hideProtractor={step === "guess"}
             />
           </div>
 
           {done ? (
             <div className="text-center">
               <p className="wd-pop-in mb-2 text-lg font-bold text-success">はかれた！</p>
-              <p className="mb-6 text-2xl font-bold tabular-nums">{problem.angle}°</p>
+              <p className="mb-3 text-2xl font-bold tabular-nums">{problem.angle}°</p>
+              {guess !== null && (
+                // 予想したことの意味は、ここで自分の見当と見くらべられること
+                <div className="mx-auto mb-6 max-w-xs rounded-xl bg-muted/60 px-4 py-3">
+                  <p className="mb-1 text-sm font-bold text-primary">
+                    {GUESS_WORD[gradeGuess(guess, problem.angle)]}
+                  </p>
+                  <p className="text-sm tabular-nums">
+                    予想 {guess}° → じっさい {problem.angle}°
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {guessComment(guess, problem.angle)}
+                  </p>
+                </div>
+              )}
               <Button size="lg" onClick={nextProblem}>
                 {problemIndex + 1 >= problems.length ? "けっかを見る" : "つぎの もんだいへ"}
               </Button>
@@ -240,12 +289,12 @@ export function AngleGame() {
               <p className="mb-4 text-center text-sm font-medium">
                 {step ? protractorStepPrompt(step) : ""}
               </p>
-              {step === "read" ? (
+              {step === "read" || step === "guess" ? (
                 <NumberPad
                   onDigit={(digit) => setInput((c) => appendDigit(c, digit, MAX_DIGITS))}
                   onBackspace={() => setInput((c) => backspace(c))}
                   onPrimary={commit}
-                  primaryLabel="けってい"
+                  primaryLabel={step === "guess" ? "これで 予想する" : "けってい"}
                   primaryEnabled={digits !== ""}
                 />
               ) : (
@@ -295,11 +344,16 @@ function Result({
   errors,
   perfect,
   record,
+  guessGap,
+  rounds,
   onRestart,
 }: {
   errors: Tally;
   perfect: number;
   record: PracticeRecord | null;
+  /** 目分量の予想と じっさいの ズレの合計 */
+  guessGap: number;
+  rounds: number;
   onRestart: () => void;
 }) {
   const stumbles = PROTRACTOR_STEP_KINDS.filter((kind) => errors[kind] > 0);
@@ -320,7 +374,21 @@ function Result({
         <p className="mb-1 text-5xl font-bold text-primary">
           {perfect} <span className="text-2xl text-foreground">/ {ANGLE_PROBLEM_COUNT} もん</span>
         </p>
-        <p className="mb-6 text-sm text-muted-foreground">1回で さいごまで できた もんだい</p>
+        <p className="mb-4 text-sm text-muted-foreground">1回で さいごまで できた もんだい</p>
+
+        {/* 得点とは別の軸。当て方が正しくなっても、見当がつくかは別の力 */}
+        {rounds > 0 && (
+          <div className="mb-6 rounded-xl bg-muted/60 px-4 py-3">
+            <p className="text-xs font-bold text-muted-foreground">目分量の 合計ズレ</p>
+            <p className="text-2xl font-bold tabular-nums text-primary">
+              {guessGap}
+              <span className="text-base text-foreground">°</span>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {rounds}問ぶん・1問あたり {Math.round(guessGap / rounds)}° のズレ
+            </p>
+          </div>
+        )}
 
         {stumbles.length > 0 ? (
           <div className="mb-6 rounded-xl bg-muted/60 px-4 py-3 text-left">
