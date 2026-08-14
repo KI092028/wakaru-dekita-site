@@ -16,6 +16,7 @@ const KIND_STYLE: Record<string, string> = {
   steps: "bg-primary/10 text-primary",
   figure: "bg-success/10 text-success",
   game: "bg-danger/10 text-danger",
+  tool: "bg-foreground/10 text-foreground",
 };
 
 function UnitCard({ unit }: { unit: QuizUnit }) {
@@ -80,6 +81,12 @@ export default function LearnPage() {
               ゲーム
             </span>
             さがす・当てる
+          </li>
+          <li>
+            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.tool}`}>
+              道具
+            </span>
+            書くときに使う
           </li>
         </ul>
 

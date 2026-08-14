@@ -31,6 +31,7 @@
 | `/learn/angle` | 角の大きさ（分度器） | 図で考える |
 | `/learn/per-unit` | 単位量あたりの大きさ | 図で考える |
 | `/learn/prefectures` | 都道府県（社会） | ゲーム |
+| `/learn/manuscript` | 原稿用紙（国語） | 道具 |
 | `/teachers` | 先生の方へ（学級レク・授業での利用） | — |
 | `/about` `/privacy` `/terms` `/contact` | 固定ページ | — |
 

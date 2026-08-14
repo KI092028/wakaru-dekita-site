@@ -118,6 +118,16 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "manuscript",
+    title: "原稿用紙",
+    subject: "japanese",
+    grade: 1,
+    gradeLabel: "全学年",
+    kind: "tool",
+    description: "300字づめ（15行×20マス）。打った文がマスに入り、文字数も数えます。A4で印刷できます。",
+    available: true,
+  },
+  {
     slug: "time",
     title: "時こく・時間",
     subject: "math",

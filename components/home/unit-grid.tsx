@@ -17,6 +17,7 @@ const KIND_STYLE: Record<string, string> = {
   steps: "bg-primary/10 text-primary",
   figure: "bg-success/10 text-success",
   game: "bg-danger/10 text-danger",
+  tool: "bg-foreground/10 text-foreground",
 };
 
 export function UnitGrid() {
