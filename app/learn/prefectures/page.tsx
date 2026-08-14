@@ -24,6 +24,20 @@ export default function PrefecturesPage() {
           社会・4年生〜／地図の上で さがして おぼえる
         </p>
         <GeoGame />
+
+        {/* CC BY 4.0 は出典の表示が条件 */}
+        <p className="mt-8 text-center text-[11px] text-muted-foreground">
+          白地図：
+          <a
+            href="https://github.com/VictorCazanave/svg-maps"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            @svg-maps/japan
+          </a>
+          （Victor Cazanave, CC BY 4.0）
+        </p>
       </div>
     </main>
   );

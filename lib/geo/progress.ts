@@ -58,6 +58,16 @@ export function loadGeoProgress(): GeoProgress {
   }
 }
 
+/** 記録を消して、はじめからやり直せるようにする。 */
+export function clearGeoProgress(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    // 消せなくても練習は続けられるので握りつぶす
+  }
+}
+
 export function saveGeoProgress(progress: GeoProgress): void {
   if (typeof window === "undefined") return;
   try {

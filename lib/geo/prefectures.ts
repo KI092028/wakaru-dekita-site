@@ -1,21 +1,22 @@
 /**
- * 47都道府県のデータと、地図の模式図。
+ * 47都道府県のデータ。
  *
- * ## 正確な地図ではなく、マス目の模式図にしている
+ * ## 地図は実際の県境を使う
  *
- * 県の形をそのまま使うと、スマホでは香川県や大阪府が指で押せない大きさになる。
- * ここで覚えたいのは県の形ではなく**どこにあるか（並びと地方）**なので、
- * 1県＝1マスの模式図にして、どのマスも同じ大きさで押せるようにした。
+ * 形は `@svg-maps/japan`（CC BY 4.0）のパスをそのまま描く。
+ * viewBox は 0 0 438 516 で、`cx` `cy` `box` はその座標系の値。
  *
- * マスの位置（col は西→東、row は北→南）は、実際の並びをなぞってある。
- * 隣どうしのマスは、だいたい実際にも隣。
- * **正確な地図ではないことは画面にも書く。**
+ * - `cx` `cy`：名前を置く場所。**離島があると bbox の中心が海の上に来る**ので、
+ *   中心が本体の中に入っているときだけ bbox の中心を使い、
+ *   入らない県（東京・長崎・沖縄など9県）は輪郭をたどって点が集まるところを使った
+ * - `box`：その県の外わく。地方だけを大きく描くときの範囲に使う
  *
- * ## 方角のヒントはマスの差から出す
+ * これらは実際のパスから測って書き出した値で、手で置いたものではない。
+ *
+ * ## 方角のヒントは実際の座標から出す
  *
  * 47県ぶんの「隣接する県の一覧」を手で書くと間違えるので持たない。
- * かわりに、押したマスと正解のマスの差から「もっと 北 のほうだよ」を作る。
- * 模式図の並びが実際をなぞっているので、これで用が足りる。
+ * かわりに、押した県と正解の県の座標の差から「もっと 北 のほうだよ」を作る。
  */
 
 export type Region =
@@ -60,66 +61,70 @@ export type Prefecture = {
   suffix: "都" | "道" | "府" | "県";
   kana: string;
   region: Region;
-  /** 模式図のマス。col は西→東、row は北→南 */
-  col: number;
-  row: number;
+  /** @svg-maps/japan のパスID */
+  mapId: string;
+  /** 名前を置く場所（本体の中） */
+  cx: number;
+  cy: number;
+  /** [x, y, width, height]。地方を大きく描くときの範囲 */
+  box: [number, number, number, number];
 };
 
 export const PREFECTURES: Prefecture[] = [
-  { code: 1, name: "北海道", suffix: "道", kana: "ほっかいどう", region: "hokkaido", col: 9, row: 0 },
+  { code: 1, name: "北海道", suffix: "道", kana: "ほっかいどう", region: "hokkaido", mapId: "hokkaido", cx: 373.8, cy: 56.1, box: [310.5, 0.3, 126.4, 111.7] },
 
-  { code: 2, name: "青森", suffix: "県", kana: "あおもり", region: "tohoku", col: 9, row: 1 },
-  { code: 3, name: "岩手", suffix: "県", kana: "いわて", region: "tohoku", col: 9, row: 2 },
-  { code: 5, name: "秋田", suffix: "県", kana: "あきた", region: "tohoku", col: 8, row: 2 },
-  { code: 4, name: "宮城", suffix: "県", kana: "みやぎ", region: "tohoku", col: 9, row: 3 },
-  { code: 6, name: "山形", suffix: "県", kana: "やまがた", region: "tohoku", col: 8, row: 3 },
-  { code: 7, name: "福島", suffix: "県", kana: "ふくしま", region: "tohoku", col: 9, row: 4 },
+  { code: 2, name: "青森", suffix: "県", kana: "あおもり", region: "tohoku", mapId: "aomori", cx: 344.2, cy: 118, box: [319.6, 108, 35.9, 34.5] },
+  { code: 3, name: "岩手", suffix: "県", kana: "いわて", region: "tohoku", mapId: "iwate", cx: 349.2, cy: 158.3, box: [335.3, 136.7, 27.8, 43.2] },
+  { code: 5, name: "秋田", suffix: "県", kana: "あきた", region: "tohoku", mapId: "akita", cx: 329.1, cy: 155.9, box: [316.3, 135.1, 25.7, 41.7] },
+  { code: 4, name: "宮城", suffix: "県", kana: "みやぎ", region: "tohoku", mapId: "miyagi", cx: 341.6, cy: 189, box: [327.8, 173.7, 27.5, 30.7] },
+  { code: 6, name: "山形", suffix: "県", kana: "やまがた", region: "tohoku", mapId: "yamagata", cx: 324.3, cy: 187.8, box: [313.4, 170.3, 21.6, 35.1] },
+  { code: 7, name: "福島", suffix: "県", kana: "ふくしま", region: "tohoku", mapId: "fukushima", cx: 324.4, cy: 213.9, box: [305.9, 199.3, 36.9, 29.2] },
 
-  { code: 8, name: "茨城", suffix: "県", kana: "いばらき", region: "kanto", col: 10, row: 5 },
-  { code: 9, name: "栃木", suffix: "県", kana: "とちぎ", region: "kanto", col: 9, row: 5 },
-  { code: 10, name: "群馬", suffix: "県", kana: "ぐんま", region: "kanto", col: 8, row: 5 },
-  { code: 11, name: "埼玉", suffix: "県", kana: "さいたま", region: "kanto", col: 9, row: 6 },
-  { code: 12, name: "千葉", suffix: "県", kana: "ちば", region: "kanto", col: 10, row: 6 },
-  { code: 13, name: "東京", suffix: "都", kana: "とうきょう", region: "kanto", col: 9, row: 7 },
-  { code: 14, name: "神奈川", suffix: "県", kana: "かながわ", region: "kanto", col: 9, row: 8 },
+  { code: 8, name: "茨城", suffix: "県", kana: "いばらき", region: "kanto", mapId: "ibaraki", cx: 327.9, cy: 239.7, box: [316.3, 224.8, 23.1, 29.8] },
+  { code: 9, name: "栃木", suffix: "県", kana: "とちぎ", region: "kanto", mapId: "tochigi", cx: 318.6, cy: 231.3, box: [309.1, 219.7, 18.9, 23.2] },
+  { code: 10, name: "群馬", suffix: "県", kana: "ぐんま", region: "kanto", mapId: "gunma", cx: 303.2, cy: 235.1, box: [290.8, 222, 24.9, 26.1] },
+  { code: 11, name: "埼玉", suffix: "県", kana: "さいたま", region: "kanto", mapId: "saitama", cx: 308.7, cy: 247.4, box: [297, 241.1, 23.4, 12.5] },
+  { code: 12, name: "千葉", suffix: "県", kana: "ちば", region: "kanto", mapId: "chiba", cx: 328.5, cy: 260, box: [317.4, 245.6, 22, 28.8] },
+  { code: 13, name: "東京", suffix: "都", kana: "とうきょう", region: "kanto", mapId: "tokyo", cx: 313.5, cy: 255.5, box: [301.6, 250.4, 19.7, 67.8] },
+  { code: 14, name: "神奈川", suffix: "県", kana: "かながわ", region: "kanto", mapId: "kanagawa", cx: 309.4, cy: 262.2, box: [301, 255.8, 16.7, 12.8] },
 
-  { code: 15, name: "新潟", suffix: "県", kana: "にいがた", region: "chubu", col: 8, row: 4 },
-  { code: 16, name: "富山", suffix: "県", kana: "とやま", region: "chubu", col: 7, row: 5 },
-  { code: 17, name: "石川", suffix: "県", kana: "いしかわ", region: "chubu", col: 6, row: 5 },
-  { code: 18, name: "福井", suffix: "県", kana: "ふくい", region: "chubu", col: 6, row: 6 },
-  { code: 20, name: "長野", suffix: "県", kana: "ながの", region: "chubu", col: 8, row: 6 },
-  { code: 21, name: "岐阜", suffix: "県", kana: "ぎふ", region: "chubu", col: 7, row: 6 },
-  { code: 19, name: "山梨", suffix: "県", kana: "やまなし", region: "chubu", col: 8, row: 7 },
-  { code: 23, name: "愛知", suffix: "県", kana: "あいち", region: "chubu", col: 7, row: 7 },
-  { code: 22, name: "静岡", suffix: "県", kana: "しずおか", region: "chubu", col: 8, row: 8 },
+  { code: 15, name: "新潟", suffix: "県", kana: "にいがた", region: "chubu", mapId: "niigata", cx: 298.1, cy: 207.5, box: [275.8, 185, 44.6, 44.9] },
+  { code: 16, name: "富山", suffix: "県", kana: "とやま", region: "chubu", mapId: "toyama", cx: 268.6, cy: 232.5, box: [258.9, 223.9, 19.4, 17.3] },
+  { code: 17, name: "石川", suffix: "県", kana: "いしかわ", region: "chubu", mapId: "ishikawa", cx: 259.3, cy: 228.2, box: [248.3, 210.2, 22, 36] },
+  { code: 18, name: "福井", suffix: "県", kana: "ふくい", region: "chubu", mapId: "fukui", cx: 246.3, cy: 252.2, box: [232.7, 240.6, 27.3, 23.1] },
+  { code: 20, name: "長野", suffix: "県", kana: "ながの", region: "chubu", mapId: "nagano", cx: 283.6, cy: 245, box: [269.7, 222.7, 27.8, 44.5] },
+  { code: 21, name: "岐阜", suffix: "県", kana: "ぎふ", region: "chubu", mapId: "gifu", cx: 262.5, cy: 252.5, box: [249, 236.6, 27.1, 31.9] },
+  { code: 19, name: "山梨", suffix: "県", kana: "やまなし", region: "chubu", mapId: "yamanashi", cx: 295.9, cy: 258.2, box: [286.5, 248.6, 18.7, 19.2] },
+  { code: 23, name: "愛知", suffix: "県", kana: "あいち", region: "chubu", mapId: "aichi", cx: 268.1, cy: 271.9, box: [256.7, 261.8, 22.9, 20.2] },
+  { code: 22, name: "静岡", suffix: "県", kana: "しずおか", region: "chubu", mapId: "shizuoka", cx: 289.1, cy: 269, box: [272.7, 256.5, 32.8, 25.1] },
 
-  { code: 26, name: "京都", suffix: "府", kana: "きょうと", region: "kinki", col: 5, row: 6 },
-  { code: 25, name: "滋賀", suffix: "県", kana: "しが", region: "kinki", col: 6, row: 7 },
-  { code: 28, name: "兵庫", suffix: "県", kana: "ひょうご", region: "kinki", col: 4, row: 6 },
-  { code: 27, name: "大阪", suffix: "府", kana: "おおさか", region: "kinki", col: 5, row: 7 },
-  { code: 29, name: "奈良", suffix: "県", kana: "なら", region: "kinki", col: 6, row: 8 },
-  { code: 24, name: "三重", suffix: "県", kana: "みえ", region: "kinki", col: 7, row: 8 },
-  { code: 30, name: "和歌山", suffix: "県", kana: "わかやま", region: "kinki", col: 5, row: 8 },
+  { code: 26, name: "京都", suffix: "府", kana: "きょうと", region: "kinki", mapId: "kyoto", cx: 232.8, cy: 266.2, box: [221.2, 253.4, 23.2, 25.7] },
+  { code: 25, name: "滋賀", suffix: "県", kana: "しが", region: "kinki", mapId: "shiga", cx: 245.7, cy: 266, box: [239, 255.1, 13.5, 21.9] },
+  { code: 28, name: "兵庫", suffix: "県", kana: "ひょうご", region: "kinki", mapId: "hyogo", cx: 221.1, cy: 273.5, box: [209.1, 255.7, 23.9, 35.5] },
+  { code: 27, name: "大阪", suffix: "府", kana: "おおさか", region: "kinki", mapId: "osaka", cx: 233.7, cy: 279.3, box: [225.6, 270.8, 12.9, 18.5] },
+  { code: 29, name: "奈良", suffix: "県", kana: "なら", region: "kinki", mapId: "nara", cx: 241.2, cy: 288, box: [234.5, 277.2, 13.5, 21.5] },
+  { code: 24, name: "三重", suffix: "県", kana: "みえ", region: "kinki", mapId: "mie", cx: 251.3, cy: 284.1, box: [240.7, 265.8, 21.1, 36.5] },
+  { code: 30, name: "和歌山", suffix: "県", kana: "わかやま", region: "kinki", mapId: "wakayama", cx: 234.3, cy: 297.9, box: [224.9, 286.7, 18.8, 22.4] },
 
-  { code: 32, name: "島根", suffix: "県", kana: "しまね", region: "chugoku", col: 2, row: 6 },
-  { code: 31, name: "鳥取", suffix: "県", kana: "とっとり", region: "chugoku", col: 3, row: 6 },
-  { code: 35, name: "山口", suffix: "県", kana: "やまぐち", region: "chugoku", col: 1, row: 7 },
-  { code: 34, name: "広島", suffix: "県", kana: "ひろしま", region: "chugoku", col: 2, row: 7 },
-  { code: 33, name: "岡山", suffix: "県", kana: "おかやま", region: "chugoku", col: 3, row: 7 },
+  { code: 32, name: "島根", suffix: "県", kana: "しまね", region: "chugoku", mapId: "shimane", cx: 187.3, cy: 244.2, box: [140.9, 209.8, 51.1, 78.8] },
+  { code: 31, name: "鳥取", suffix: "県", kana: "とっとり", region: "chugoku", mapId: "tottori", cx: 200.7, cy: 263.9, box: [187.2, 257.2, 27.1, 13.4] },
+  { code: 35, name: "山口", suffix: "県", kana: "やまぐち", region: "chugoku", mapId: "yamaguchi", cx: 158.1, cy: 289.7, box: [142.2, 279.6, 31.7, 20] },
+  { code: 34, name: "広島", suffix: "県", kana: "ひろしま", region: "chugoku", mapId: "hiroshima", cx: 179.4, cy: 281.6, box: [165.5, 269.5, 27.9, 24.2] },
+  { code: 33, name: "岡山", suffix: "県", kana: "おかやま", region: "chugoku", mapId: "okayama", cx: 201, cy: 274.7, box: [189.7, 263.6, 22.5, 22.3] },
 
-  { code: 38, name: "愛媛", suffix: "県", kana: "えひめ", region: "shikoku", col: 2, row: 8 },
-  { code: 37, name: "香川", suffix: "県", kana: "かがわ", region: "shikoku", col: 3, row: 8 },
-  { code: 36, name: "徳島", suffix: "県", kana: "とくしま", region: "shikoku", col: 4, row: 8 },
-  { code: 39, name: "高知", suffix: "県", kana: "こうち", region: "shikoku", col: 3, row: 9 },
+  { code: 38, name: "愛媛", suffix: "県", kana: "えひめ", region: "shikoku", mapId: "ehime", cx: 181.5, cy: 307, box: [164.9, 292.4, 33.1, 29.1] },
+  { code: 37, name: "香川", suffix: "県", kana: "かがわ", region: "shikoku", mapId: "kagawa", cx: 204.3, cy: 290.8, box: [195.7, 286.2, 17.2, 9.3] },
+  { code: 36, name: "徳島", suffix: "県", kana: "とくしま", region: "shikoku", mapId: "tokushima", cx: 208.1, cy: 298.2, box: [197.4, 290, 21.4, 16.3] },
+  { code: 39, name: "高知", suffix: "県", kana: "こうち", region: "shikoku", mapId: "kochi", cx: 182.1, cy: 319.4, box: [176.8, 298.6, 33.3, 27.2] },
 
-  { code: 41, name: "佐賀", suffix: "県", kana: "さが", region: "kyushu", col: 0, row: 8 },
-  { code: 40, name: "福岡", suffix: "県", kana: "ふくおか", region: "kyushu", col: 1, row: 8 },
-  { code: 42, name: "長崎", suffix: "県", kana: "ながさき", region: "kyushu", col: 0, row: 9 },
-  { code: 43, name: "熊本", suffix: "県", kana: "くまもと", region: "kyushu", col: 1, row: 9 },
-  { code: 44, name: "大分", suffix: "県", kana: "おおいた", region: "kyushu", col: 2, row: 9 },
-  { code: 46, name: "鹿児島", suffix: "県", kana: "かごしま", region: "kyushu", col: 1, row: 10 },
-  { code: 45, name: "宮崎", suffix: "県", kana: "みやざき", region: "kyushu", col: 2, row: 10 },
-  { code: 47, name: "沖縄", suffix: "県", kana: "おきなわ", region: "kyushu", col: 0, row: 11 },
+  { code: 41, name: "佐賀", suffix: "県", kana: "さが", region: "kyushu", mapId: "saga", cx: 127, cy: 309.6, box: [118.2, 299, 17.7, 21.3] },
+  { code: 40, name: "福岡", suffix: "県", kana: "ふくおか", region: "kyushu", mapId: "fukuoka", cx: 137.4, cy: 307.8, box: [126, 296.4, 22.7, 22.7] },
+  { code: 42, name: "長崎", suffix: "県", kana: "ながさき", region: "kyushu", mapId: "nagasaki", cx: 122.8, cy: 320.6, box: [97.6, 278.9, 35.1, 50.4] },
+  { code: 43, name: "熊本", suffix: "県", kana: "くまもと", region: "kyushu", mapId: "kumamoto", cx: 132.4, cy: 333.2, box: [124.6, 314.8, 26.9, 25.7] },
+  { code: 44, name: "大分", suffix: "県", kana: "おおいた", region: "kyushu", mapId: "oita", cx: 153.9, cy: 314.2, box: [141.6, 303, 24.7, 22.4] },
+  { code: 46, name: "鹿児島", suffix: "県", kana: "かごしま", region: "kyushu", mapId: "kagoshima", cx: 134.4, cy: 354.3, box: [118.5, 338.2, 30.5, 44.9] },
+  { code: 45, name: "宮崎", suffix: "県", kana: "みやざき", region: "kyushu", mapId: "miyazaki", cx: 150.7, cy: 340.1, box: [139.1, 323.1, 23.1, 34] },
+  { code: 47, name: "沖縄", suffix: "県", kana: "おきなわ", region: "kyushu", mapId: "okinawa", cx: 83.7, cy: 466.3, box: [0.3, 421.3, 125.6, 94.3] },
 ];
 
 export const prefectureByCode = (code: number): Prefecture =>
@@ -132,14 +137,16 @@ export const fullName = (p: Prefecture): string =>
 export const prefecturesOf = (region: Region): Prefecture[] =>
   PREFECTURES.filter((p) => p.region === region);
 
-/** その範囲のマスがどこからどこまでか。地方だけを大きく描くのに使う。 */
-export function bounds(list: Prefecture[]): { minCol: number; maxCol: number; minRow: number; maxRow: number } {
-  return {
-    minCol: Math.min(...list.map((p) => p.col)),
-    maxCol: Math.max(...list.map((p) => p.col)),
-    minRow: Math.min(...list.map((p) => p.row)),
-    maxRow: Math.max(...list.map((p) => p.row)),
-  };
+/** 地図ぜんたいの大きさ（@svg-maps/japan の viewBox）。 */
+export const MAP_VIEW_BOX = { width: 438, height: 516 };
+
+/** その県ぜんぶが入る四角。地方だけを大きく描くのに使う。 */
+export function bounds(list: Prefecture[]): { x: number; y: number; width: number; height: number } {
+  const minX = Math.min(...list.map((p) => p.box[0]));
+  const minY = Math.min(...list.map((p) => p.box[1]));
+  const maxX = Math.max(...list.map((p) => p.box[0] + p.box[2]));
+  const maxY = Math.max(...list.map((p) => p.box[1] + p.box[3]));
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
 type Direction = { dx: number; dy: number; label: string };
@@ -155,10 +162,10 @@ const DIRECTIONS: Direction[] = [
   { dx: -1, dy: -1, label: "北西" },
 ];
 
-/** 押したマスから見て、正解はどの方角か。 */
+/** 押した県から見て、正解はどの方角か。 */
 export function directionTo(from: Prefecture, to: Prefecture): string {
-  const dx = to.col - from.col;
-  const dy = to.row - from.row;
+  const dx = to.cx - from.cx;
+  const dy = to.cy - from.cy;
   let best = DIRECTIONS[0];
   let bestScore = -Infinity;
   const length = Math.hypot(dx, dy) || 1;

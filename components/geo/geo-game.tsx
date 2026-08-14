@@ -22,6 +22,7 @@ import {
   type GeoVerdict,
 } from "@/lib/geo/quiz";
 import {
+  clearGeoProgress,
   loadGeoProgress,
   masteredCount,
   nearMasteryCount,
@@ -134,8 +135,14 @@ export function GeoGame() {
     }
   }
 
+  function reset() {
+    clearGeoProgress();
+    setProgress({});
+    setMapProgress({});
+  }
+
   if (phase === "choosing") {
-    return <ScopePicker progress={progress} onStart={start} />;
+    return <ScopePicker progress={progress} onStart={start} onReset={reset} />;
   }
 
   if (phase === "finished") {
@@ -204,7 +211,7 @@ export function GeoGame() {
               </>
             ) : (
               <p className="pt-4 text-xs text-muted-foreground">
-                この地図は マスに 置きかえた 図で、じっさいの 形とは ちがいます
+                小さい県は、まわりを 押しても とれるように なっています
               </p>
             )}
           </div>
@@ -224,11 +231,14 @@ export function GeoGame() {
 function ScopePicker({
   progress,
   onStart,
+  onReset,
 }: {
   progress: GeoProgress;
   onStart: (region: Region | null) => void;
+  onReset: () => void;
 }) {
   const all = masteredCount(progress, null);
+  const [confirming, setConfirming] = useState(false);
 
   return (
     <div className="mx-auto max-w-lg space-y-4">
@@ -238,10 +248,46 @@ function ScopePicker({
           <p className="mb-4 text-center text-4xl font-bold text-primary">
             {all} <span className="text-xl text-foreground">/ 47</span>
           </p>
-          <JapanMap region={null} progress={progress} interactive={false} showNames={false} />
+          <JapanMap region={null} progress={progress} interactive={false} />
           <div className="mt-3">
             <MapLegend />
           </div>
+
+          {/* 何度もやり直せるように。消えると困る記録なので、1回たしかめる */}
+          {all > 0 && (
+            <div className="mt-4 border-t pt-3 text-center">
+              {confirming ? (
+                <>
+                  <p className="mb-2 text-xs text-danger">
+                    おぼえた {all} 県の きろくを ぜんぶ 消します。もどせません
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        onReset();
+                        setConfirming(false);
+                      }}
+                    >
+                      消す
+                    </Button>
+                    <Button size="sm" onClick={() => setConfirming(false)}>
+                      やめる
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirming(true)}
+                  className="text-xs text-muted-foreground underline hover:text-danger"
+                >
+                  きろくを ぜんぶ 消して はじめから
+                </button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -340,7 +386,7 @@ function Result({
         </div>
 
         <div className="mb-6">
-          <JapanMap region={region} progress={progress} interactive={false} showNames />
+          <JapanMap region={region} progress={progress} interactive={false} showAllNames />
         </div>
 
         <div className="flex flex-col gap-2">
