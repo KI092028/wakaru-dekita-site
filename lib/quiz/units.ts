@@ -51,6 +51,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "angle",
+    title: "角の大きさ",
+    gradeLabel: "4年生",
+    description: "分度器を 自分で 当てて はかる。内がわ・外がわの 読みちがいも その場で。",
+    available: true,
+  },
+  {
     slug: "fractions",
     title: "分数",
     gradeLabel: "4〜5年生",

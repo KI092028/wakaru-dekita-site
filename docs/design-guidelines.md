@@ -148,6 +148,9 @@ components/
   multiply/
     multiply-game.tsx       かけ算のひっ算の進行
     multiply-board.tsx      部分積の行を持つ盤面。段のずらしもここ
+  protractor/
+    angle-game.tsx          角の大きさの進行
+    protractor-board.tsx    動かせる分度器（SVG）。ドラッグと回転もここ
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -167,6 +170,10 @@ lib/
     rounds.ts             整数／小数を同じ形にそろえて UI に渡す
   multiply/
     plan.ts               部分積ごとに展開する。最後のたし算は column/plan.ts を使う
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           段階ごとの出題
+  protractor/
+    plan.ts               角と分度器の幾何。合っているかの判定もここ
     steps.ts              1手ごとの問い・誤答の型・見立て
     generate.ts           段階ごとの出題
   rec/
@@ -202,7 +209,7 @@ docs/                     本ドキュメント群
 `metadata` によるタイトル・説明の指定はページ側で行う。
 状態を持つのはドリルUI・ひっ算UI・学級レクの絞り込みだけなので、`"use client"` は
 `components/quiz/`・`components/division/`・`components/column/`・`components/multiply/`・
-`components/teachers/` の中に限定する。
+`components/protractor/`・`components/teachers/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
