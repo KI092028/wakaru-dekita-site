@@ -65,6 +65,13 @@ export const quizUnits: QuizUnit[] = [
     available: true,
   },
   {
+    slug: "per-unit",
+    title: "単位量あたりの大きさ",
+    gradeLabel: "5年生",
+    description: "こみぐあい・こさ・速さ。1つ分に そろえて くらべる 考え方を 図で。",
+    available: true,
+  },
+  {
     slug: "time",
     title: "時こく・時間",
     gradeLabel: "2〜3年生",

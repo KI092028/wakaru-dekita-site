@@ -44,6 +44,16 @@
 ただし分けてよいのは**盤面と進行だけ**。数字キーパッド、間違えたときの流れ
 （止まる→指摘→正答→自分で打ち直す）、言い回しはドリルと共通のものを使う。
 
+#### 答えを当てさせない単元がある
+
+単位量あたり（`components/rate/`）は、**数を打たせる場面を持たない。**
+ここで練習するのは計算ではなく「どちらの量を 1 にそろえるか」と
+「そろえた数が何を表すか」なので、答えを当てさせる形にすると練習にならない。
+
+**この種の単元に、あとから正答率や点数を足さないこと。**
+公式を覚えて計算できてしまうことが、そもそもこの単元の問題だから。
+結果画面が出すのは「1回で最後までできた問題数」と「まよったところ」だけにする。
+
 #### 手続き単元どうしでも、盤と手順の型は共有しない
 
 わり算・列のひっ算・かけ算はいずれも `plan → steps → 盤 → 記録` の同じ形をとるが、
@@ -151,6 +161,9 @@ components/
   protractor/
     angle-game.tsx          角の大きさの進行
     protractor-board.tsx    動かせる分度器（SVG）。ドラッグと回転もここ
+  rate/
+    rate-game.tsx           単位量あたりの進行
+    number-line.tsx         二重数直線と、そろえたあとを見くらべる帯
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -176,6 +189,10 @@ lib/
     plan.ts               角と分度器の幾何。合っているかの判定もここ
     steps.ts              1手ごとの問い・誤答の型・見立て
     generate.ts           段階ごとの出題
+  rate/
+    plan.ts               1つ分にそろえた値、答えの向き、差でくらべた場合
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           場面ごとの出題（差と食い違う組を選ぶ）
   rec/
     types.ts              学級レクの型（時間・声・隊形・準備物）
     activities.ts         掲載する学級レク。掲載条件は class-rec-spec.md 2.3
@@ -209,7 +226,7 @@ docs/                     本ドキュメント群
 `metadata` によるタイトル・説明の指定はページ側で行う。
 状態を持つのはドリルUI・ひっ算UI・学級レクの絞り込みだけなので、`"use client"` は
 `components/quiz/`・`components/division/`・`components/column/`・`components/multiply/`・
-`components/protractor/`・`components/teachers/` の中に限定する。
+`components/protractor/`・`components/rate/`・`components/teachers/` の中に限定する。
 
 ### 3.2 注意：サーバーからクライアントへ関数を渡せない
 
