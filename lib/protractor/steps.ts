@@ -2,6 +2,7 @@ import {
   ALIGN_TOLERANCE,
   alignedSide,
   distance,
+  isFlipped,
   isPlaced,
   nearestAlignment,
   normalizeDeg,
@@ -68,6 +69,9 @@ function diagnosePlace(plan: AnglePlan, pose: Pose): string {
 }
 
 function diagnoseAlign(plan: AnglePlan, pose: Pose): string {
+  if (isFlipped(plan, pose)) {
+    return "へりは 辺に 合っているけれど、はかりたい 角が 分度器の 外に 出ているよ。半円の 中に 角が 入るように、ひっくり返そう";
+  }
   const gap = normalizeDeg(pose.rotation - nearestAlignment(plan, pose));
   if (Math.abs(gap) <= ALIGN_TOLERANCE * 3) {
     return gap > 0 ? "あと すこし 右に まわそう" : "あと すこし 左に まわそう";

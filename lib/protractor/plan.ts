@@ -87,6 +87,19 @@ export function zeroEnd(side: "base" | "other"): "right" | "left" {
   return side === "base" ? "right" : "left";
 }
 
+/**
+ * へりは辺に重なっているが、**はかりたい角が分度器の外**に出ている置き方。
+ *
+ * 左の 0 を使う形の問題で必ず通る道。水平な辺にそのままへりを重ねると、
+ * 半円が反対側を向いて角が入らない。ここは「へりがずれている」のではなく
+ * 「ひっくり返す」と言わないと、何を直せばよいのか分からない。
+ */
+export function isFlipped(plan: AnglePlan, pose: Pose): boolean {
+  return [plan.baseDeg + 180, otherDeg(plan)].some(
+    (deg) => Math.abs(normalizeDeg(pose.rotation - deg)) <= ALIGN_TOLERANCE * 2
+  );
+}
+
 /** いちばん近い正しい向き。回しすぎ／足りないを言うのに使う。 */
 export function nearestAlignment(plan: AnglePlan, pose: Pose): number {
   const candidates = [plan.baseDeg, otherDeg(plan) + 180];

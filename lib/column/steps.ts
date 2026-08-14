@@ -46,6 +46,21 @@ export type ColumnStep = {
 };
 
 /**
+ * その位の計算を**まとめて打った値**（1+7+8 を 16 と打つ）。
+ * くり上がりのあるたし算のときだけ返す。
+ *
+ * 頭の中では 16 まで出してから 6 を書き 1 を くり上げるので、
+ * 16 と打つのは手順を分かっていない証拠ではなく、むしろ自然な打ち方。
+ * これを誤答にすると、正しく計算できた子に「ざんねん」を返すことになる。
+ */
+export function columnWholeValue(plan: ColumnPlan, step: ColumnStep): number | null {
+  if (step.kind !== "write" || plan.op !== "+") return null;
+  const column = plan.columns[step.index];
+  const full = column.top + column.bottom + column.carryIn;
+  return full >= 10 ? full : null;
+}
+
+/**
  * 手の並び。位ごとに右から左へ進む。
  * ひき算は「借りてから引く」、たし算は「書いてからくり上げる」の順。
  */
@@ -112,19 +127,17 @@ export function columnStepPrompt(plan: ColumnPlan, step: ColumnStep): string {
       const top = column.top - (column.lent ? 1 : 0) + (column.borrows ? 10 : 0);
       return `${place}：${top} − ${column.bottom} は いくつ？`;
     }
-    case "carry":
-      return "くり上がりの 1 は どこに 書く？ 上のわくを タップ";
+    case "carry": {
+      const full = column.top + column.bottom + column.carryIn;
+      return `${full} の くり上がりの 1 は どこに 書く？ 上のわくを タップ`;
+    }
   }
 }
 
 /** たし算で「くり上がった分も書いてしまう」など、書く数の誤り。 */
 function diagnoseWriteAdd(plan: ColumnPlan, index: number, typed: number): string | null {
   const column = plan.columns[index];
-  const full = column.top + column.bottom + column.carryIn;
 
-  if (typed === full && full >= 10) {
-    return `${full} のうち、この位に 書くのは 一の位の ${column.answer} だけ。${Math.floor(full / 10)} は くり上げるよ`;
-  }
   if (column.carryIn === 1 && typed === (column.top + column.bottom) % 10) {
     return "右の位から くり上がってきた 1 を たしわすれていないかな";
   }

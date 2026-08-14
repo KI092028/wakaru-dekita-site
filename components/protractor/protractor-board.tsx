@@ -86,6 +86,12 @@ export function ProtractorBoard({
   /** 分度器の中心から見た、その点の向き（度）。 */
   const bearing = (p: Point) => (Math.atan2(-(p.y - pose.y), p.x - pose.x) * 180) / Math.PI;
 
+  /**
+   * 中心のすぐそばでは「どちらの向きか」が決まらない。
+   * ここを無視しないと、中心をまたいで指を動かしたときに分度器が飛ぶ。
+   */
+  const DEAD_ZONE = 14;
+
   function handleDown(event: ReactPointerEvent<SVGGElement>) {
     if (!interactive || step === "read") return;
     const p = toLocal(event);
@@ -105,6 +111,7 @@ export function ProtractorBoard({
       const next = clampPose(p.x - state.dx, p.y - state.dy);
       onPoseChange({ ...pose, ...next });
     } else {
+      if (Math.hypot(p.x - pose.x, p.y - pose.y) < DEAD_ZONE) return;
       onPoseChange({ ...pose, rotation: state.startRotation + (bearing(p) - state.startPointer) });
     }
   }

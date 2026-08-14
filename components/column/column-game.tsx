@@ -15,6 +15,7 @@ import {
   COLUMN_STEP_LABEL,
   buildColumnSteps,
   columnAdviceFor,
+  columnWholeValue,
   columnStepPrompt,
   diagnoseColumnStep,
   type ColumnStepKind,
@@ -133,7 +134,8 @@ export function ColumnGame({ mode }: { mode: ColumnMode }) {
 
   function resolve(value: number) {
     if (step === undefined) return;
-    const correct = value === step.answer;
+    // 16 のように その位の計算をまとめて打った値も正解にする（→ steps.ts columnWholeValue）
+    const correct = value === step.answer || value === columnWholeValue(plan!, step);
 
     if (phase === "retry") {
       if (correct) advanceStep();

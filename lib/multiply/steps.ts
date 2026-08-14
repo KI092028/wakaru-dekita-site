@@ -111,6 +111,21 @@ function cellOf(plan: MultiplyPlan, step: MultiplyStep): { partial: Partial; cel
   return { partial, cell: partial.cells[step.cell] };
 }
 
+/**
+ * その九九を**まとめて打った値**（7×6 を 42 と打つ）。
+ *
+ * 頭の中では 42 まで出してから 2 を書き 4 を くり上げるので、
+ * 42 と打つのは自然な打ち方。誤答にすると、正しく九九を言えた子に
+ * 「ざんねん」を返すことになる（列のひっ算と同じ扱い）。
+ */
+export function multiplyWholeValue(plan: MultiplyPlan, step: MultiplyStep): number | null {
+  if (step.kind !== "product") return null;
+  const { cell } = cellOf(plan, step);
+  if (isOverflowCell(plan, cell)) return null;
+  const total = cellTotal(cell);
+  return total >= 10 ? total : null;
+}
+
 export function multiplyStepPrompt(plan: MultiplyPlan, step: MultiplyStep): string {
   if (step.kind === "add") {
     const column = plan.sumPlan!.columns[step.cell];
@@ -153,9 +168,6 @@ function diagnoseProduct(plan: MultiplyPlan, step: MultiplyStep, typed: number):
   if (isOverflowCell(plan, cell)) {
     const prev = partial.cells[step.cell - 1];
     return `${cellTotal(prev)} の 十の位の ${cell.carryIn} を、いちばん 左に 書くよ`;
-  }
-  if (typed === total && total >= 10) {
-    return `${total} のうち、この位に 書くのは 一の位の ${cell.digit} だけ。${cell.carryOut} は くり上げるよ`;
   }
   if (cell.carryIn > 0 && typed === cell.product % 10) {
     return `くり上がりの ${cell.carryIn} を たしわすれていないかな`;

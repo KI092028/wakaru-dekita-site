@@ -24,6 +24,7 @@ import {
   diagnoseMultiplyStep,
   multiplyAdviceFor,
   multiplyStepPrompt,
+  multiplyWholeValue,
   type MultiplyStepKind,
 } from "@/lib/multiply/steps";
 import {
@@ -125,7 +126,8 @@ export function MultiplyGame() {
 
   function resolve(value: number) {
     if (step === undefined) return;
-    const correct = value === step.answer;
+    // 42 のように 九九の答えをまとめて打った値も正解にする（→ steps.ts multiplyWholeValue）
+    const correct = value === step.answer || value === multiplyWholeValue(plan!, step);
 
     if (phase === "retry") {
       if (correct) advanceStep();
