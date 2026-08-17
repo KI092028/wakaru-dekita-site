@@ -27,6 +27,7 @@ import { COLUMN_STORAGE_KEY } from "@/lib/column/rounds";
 import { DIVISION_STORAGE_KEY } from "@/lib/division/record";
 import { GEO_STORAGE_KEY } from "@/lib/geo/progress";
 import { MANUSCRIPT_STORAGE_KEY } from "@/lib/manuscript/layout";
+import { MIXED_STORAGE_KEY } from "@/lib/mixed/generate";
 import { MULTIPLY_STORAGE_KEY } from "@/lib/multiply/generate";
 import { PERCENT_STORAGE_KEY } from "@/lib/percent/generate";
 import { ANGLE_STORAGE_KEY } from "@/lib/protractor/generate";
@@ -114,6 +115,13 @@ export const storedItems: StoredItem[] = [
     key: DIVISION_STORAGE_KEY["two-digit"],
     slug: "long-division-2",
     label: "わり算のひっ算（2けたでわる）",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: MIXED_STORAGE_KEY,
+    slug: "mixed",
+    label: "仮分数・帯分数",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },

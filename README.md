@@ -30,9 +30,12 @@
 | `/learn/long-division-2` | わり算のひっ算（2けたでわる） | 1手ずつ |
 | `/learn/angle` | 角の大きさ（分度器） | 図で考える |
 | `/learn/per-unit` | 単位量あたりの大きさ | 図で考える |
+| `/learn/rounding` | がい数（四捨五入） | 1手ずつ |
+| `/learn/mixed` | 仮分数・帯分数 | 1手ずつ |
 | `/learn/percent` | 割合・百分率 | 図で考える |
 | `/learn/time` | 時こく・時間 | 図で考える |
 | `/learn/prefectures` | 都道府県（社会） | ゲーム |
+| `/learn/capitals` | 県庁所在地（社会） | ゲーム |
 | `/learn/manuscript` | 原稿用紙（国語） | 道具 |
 | `/record` | じぶんの記録（端末に残っているもの・削除できる） | — |
 | `/teachers` | 先生の方へ（学級レク・授業での利用） | — |

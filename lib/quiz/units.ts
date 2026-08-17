@@ -118,6 +118,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット6問・右まわり左まわり両方",
   },
   {
+    slug: "mixed",
+    title: "仮分数・帯分数",
+    subject: "math",
+    grade: 4,
+    gradeLabel: "4年生",
+    kind: "steps",
+    description: "7/3 と 2と1/3 は同じ大きさ。帯の図を見ながら、両方の向きに書きかえます。",
+    available: true,
+    scale: "1セット4問・両方の向き",
+  },
+  {
     slug: "fractions",
     title: "分数",
     subject: "math",

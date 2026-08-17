@@ -11,6 +11,7 @@ import { ADVICE_PRIORITY, NO_ERRORS, STEP_LABEL, type StepKind } from "@/lib/div
 import { loadGeoProgress } from "@/lib/geo/progress";
 import { poolFor } from "@/lib/geo/quiz";
 import { count, layoutText, type Orientation } from "@/lib/manuscript/layout";
+import { MIXED_ADVICE_PRIORITY, MIXED_STEP_KINDS, MIXED_STEP_LABEL } from "@/lib/mixed/steps";
 import {
   MULTIPLY_ADVICE_PRIORITY,
   MULTIPLY_STEP_KINDS,
@@ -91,6 +92,12 @@ const PRACTICE: Record<
     kinds: Object.keys(NO_ERRORS) as StepKind[],
     label: STEP_LABEL,
     priority: ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  mixed: {
+    kinds: MIXED_STEP_KINDS,
+    label: MIXED_STEP_LABEL,
+    priority: MIXED_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   rounding: {
