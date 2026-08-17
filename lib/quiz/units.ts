@@ -1,4 +1,4 @@
-import type { QuizUnit, Subject } from "./types";
+import type { QuizUnit, Subject, UnitKind } from "./types";
 
 /**
  * 単元マスタ。**教科書でならう順に並べる。**
@@ -16,6 +16,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "drill",
     description: "20までのかずで、たし算とひき算をれんしゅうしよう。",
     available: true,
+    scale: "1セット10問・20までのかず",
   },
   {
     slug: "times-table",
@@ -26,6 +27,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "drill",
     description: "1の段から9の段まで、九九をマスターしよう。",
     available: true,
+    scale: "9段81マス・1セット10問",
   },
   {
     slug: "column-add-sub",
@@ -36,6 +38,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "steps",
     description: "くり上がりの1を書く、となりから借りる。1手ずつ進めます。",
     available: true,
+    scale: "1セット6問・4段階",
   },
   {
     slug: "column-multiply",
@@ -46,6 +49,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "steps",
     description: "2だんめを ひとつ 左に ずらす理由から。九九・くり上がりも1手ずつ。",
     available: true,
+    scale: "1セット4問・4段階",
   },
   {
     slug: "long-division",
@@ -56,6 +60,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "steps",
     description: "たてる・かける・ひく・おろすを1手ずつ。どこでつまずくかが分かります。",
     available: true,
+    scale: "1セット4問・4段階",
   },
   {
     slug: "long-division-2",
@@ -66,6 +71,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "steps",
     description: "がい数で 見当を つけて、合わなければ ひとつ 増減する れんしゅう。",
     available: true,
+    scale: "1セット4問・見当をつける練習",
   },
   {
     slug: "column-decimal",
@@ -76,6 +82,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "steps",
     description: "けたをそろえて、小数点をたてにそろえる練習。",
     available: true,
+    scale: "1セット6問・4段階",
   },
   {
     slug: "angle",
@@ -86,6 +93,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "figure",
     description: "分度器を 自分で 当てて はかる。内がわ・外がわの 読みちがいも その場で。",
     available: true,
+    scale: "1セット6問・右まわり左まわり両方",
   },
   {
     slug: "fractions",
@@ -96,6 +104,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "drill",
     description: "通分・約分をふくむ、分数のたし算・ひき算にちょうせん。",
     available: true,
+    scale: "1セット10問・通分と約分",
   },
   {
     slug: "per-unit",
@@ -106,6 +115,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "figure",
     description: "こみぐあい・こさ・速さ。1つ分に そろえて くらべる 考え方を 図で。",
     available: true,
+    scale: "1セット4問・4つの場面",
   },
   {
     slug: "prefectures",
@@ -116,6 +126,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "game",
     description: "地図の上でさがす。おしいときは「同じ地方だよ」「もっと北だよ」と方角が返ります。",
     available: true,
+    scale: "全47県・地方ごとに選べる",
   },
   {
     slug: "manuscript",
@@ -126,6 +137,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "tool",
     description: "300字づめ（15行×20マス）。打った文がマスに入り、文字数も数えます。A4で印刷できます。",
     available: true,
+    scale: "300字づめ（15行×20マス）",
   },
   {
     slug: "time",
@@ -136,6 +148,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "drill",
     description: "とけいの読み方や時間の計算をれんしゅうしよう。",
     available: false,
+    scale: "1セット10問",
   },
   {
     slug: "figures",
@@ -146,6 +159,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "figure",
     description: "面積・体積など、図形の問題にちょうせん。",
     available: false,
+    scale: "1セット10問",
   },
 ];
 
@@ -176,3 +190,42 @@ export function unitsByGrade(subject?: Subject): { grade: number; label: string;
 }
 
 export const upcomingUnits = (): QuizUnit[] => quizUnits.filter((unit) => !unit.available);
+
+/** 公開中の単元ぜんぶ。 */
+export const availableUnits = (): QuizUnit[] => quizUnits.filter((unit) => unit.available);
+
+/**
+ * 絞り込みに使う学年の選択肢。**単元がある学年だけを出す。**
+ * 空振りする選択肢を並べると、押しても何も起きない場所が増える。
+ */
+export function gradesInUse(): number[] {
+  const grades = new Set(availableUnits().map((unit) => unit.grade));
+  return [...grades].sort((a, b) => a - b);
+}
+
+/** 絞り込みに使う種類の選択肢。単元がある種類だけ。 */
+export function kindsInUse(): UnitKind[] {
+  const seen: UnitKind[] = [];
+  for (const unit of availableUnits()) {
+    if (!seen.includes(unit.kind)) seen.push(unit.kind);
+  }
+  return seen;
+}
+
+/**
+ * その日の1単元。**日付だけで決まる**ので、同じ日に何度開いても同じものが出る。
+ *
+ * ランダムにしないのは、「今日はこれ」と決まっていることに意味があるから。
+ * 開くたびに変わると、選ばなくていい入口ではなく、ただのくじ引きになる。
+ *
+ * 日付は端末の時計で決まるので、**呼び出しは useEffect の中から行うこと。**
+ * サーバー側の日付で書き出すと、日付が変わったあとも古いままになる。
+ */
+export function unitOfDay(date: Date): QuizUnit {
+  const units = availableUnits();
+  // 「その年の何日目か」ではなく通日にする。年をまたいでも並びが飛ばない
+  const days = Math.floor(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000
+  );
+  return units[((days % units.length) + units.length) % units.length];
+}

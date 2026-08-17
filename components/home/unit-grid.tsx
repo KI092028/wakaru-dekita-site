@@ -1,73 +1,83 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { subjectsInUse, unitsByGrade } from "@/lib/quiz/units";
-import { SUBJECT_LABEL, UNIT_KIND_LABEL } from "@/lib/quiz/types";
+import { KindBadge } from "@/components/learn/unit-card";
+import { availableUnits, subjectsInUse, unitsOfSubject } from "@/lib/quiz/units";
+import { SUBJECT_LABEL, type Subject } from "@/lib/quiz/types";
 
 /**
- * トップページの単元一覧。
+ * トップページの「たなの地図」。
  *
- * 単元が増えたので、**カードを全部並べるのはやめて学年ごとの行にした。**
- * 12枚のカードを縦に積むと、トップページの大半が単元一覧になってしまい、
- * 学年で探している人にはかえって見つけにくい。
- * ここでは名前を並べるだけにして、詳しくは /learn にまかせる。
+ * **枚数は教科の数で固定される。** 単元が何十に増えても、
+ * トップに出るのは教科の数だけのカードで、中身の数だけが増えていく。
+ * かつてここは単元を全部並べていて、単元が12になった時点で
+ * トップページの大半が単元一覧になっていた。
+ *
+ * カードの中には、その教科の単元名を先頭からいくつかだけ出す。
+ * 全部出すと結局伸びるので、**数を言い切って残りは /learn にまかせる。**
  */
-const KIND_STYLE: Record<string, string> = {
-  drill: "bg-secondary/10 text-secondary",
-  steps: "bg-primary/10 text-primary",
-  figure: "bg-success/10 text-success",
-  game: "bg-danger/10 text-danger",
-  tool: "bg-foreground/10 text-foreground",
-};
+
+/** 1枚のカードに出す単元名の数。これ以上は「ほか◯こ」にまとめる。 */
+const NAMES_PER_CARD = 4;
+
+function ShelfCard({ subject, index }: { subject: Subject; index: number }) {
+  const units = unitsOfSubject(subject);
+  const shown = units.slice(0, NAMES_PER_CARD);
+  const rest = units.length - shown.length;
+
+  return (
+    <Link
+      href="/learn"
+      className="group flex flex-col rounded-2xl border-2 p-5 transition-colors hover:border-primary hover:bg-primary/5"
+    >
+      <div className="mb-3 flex items-baseline gap-2">
+        <span className="text-xs font-bold tabular-nums text-primary">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <h3 className="text-lg font-bold">{SUBJECT_LABEL[subject]}</h3>
+        <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+          {units.length} たんげん
+        </span>
+      </div>
+
+      <ul className="flex-1 space-y-1.5 text-sm text-muted-foreground">
+        {shown.map((unit) => (
+          <li key={unit.slug} className="flex items-center gap-2">
+            <span className="truncate">{unit.title}</span>
+            <KindBadge kind={unit.kind} />
+          </li>
+        ))}
+        {rest > 0 && <li className="text-xs">ほか {rest} こ</li>}
+      </ul>
+
+      <span className="mt-4 text-sm font-bold text-primary">
+        {SUBJECT_LABEL[subject]}の たなへ →
+      </span>
+    </Link>
+  );
+}
 
 export function UnitGrid() {
   const subjects = subjectsInUse();
+  const total = availableUnits().length;
 
   return (
     <section className="py-16">
       <div className="mx-auto max-w-4xl px-6">
-        <h2 className="mb-2 text-center text-2xl font-bold">学べる単元</h2>
+        <h2 className="mb-2 text-center text-2xl font-bold">たなの地図</h2>
         <p className="mb-10 text-center text-sm text-muted-foreground">
-          学年ごとに、ならう順に並べています。
+          たなは{subjects.length}つ、ぜんぶで{total}たんげん。えらんで はじめるだけ。登録は いりません。
         </p>
 
-        <div className="space-y-10">
-          {subjects.map((subject) => (
-            <div key={subject}>
-              <h3 className="mb-4 text-center text-lg font-bold">{SUBJECT_LABEL[subject]}</h3>
-              <div className="space-y-4">
-          {unitsByGrade(subject).map((group) => (
-            <div key={group.grade} className="sm:flex sm:gap-6">
-              <h3 className="mb-2 shrink-0 pt-1 text-sm font-bold text-muted-foreground sm:w-24">
-                {group.label}
-              </h3>
-              <ul className="flex flex-1 flex-wrap gap-2">
-                {group.units.map((unit) => (
-                  <li key={unit.slug}>
-                    <Link
-                      href={`/learn/${unit.slug}`}
-                      className="flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm transition-colors hover:border-primary hover:bg-primary/5"
-                    >
-                      <span className="font-medium">{unit.title}</span>
-                      <span
-                        className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${KIND_STYLE[unit.kind]}`}
-                      >
-                        {UNIT_KIND_LABEL[unit.kind]}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-              </div>
-            </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {subjects.map((subject, i) => (
+            <ShelfCard key={subject} subject={subject} index={i} />
           ))}
         </div>
 
         <div className="mt-10 text-center">
           <Button variant="outline" asChild>
-            <Link href="/learn">単元をくわしく見る</Link>
+            <Link href="/learn">たんげんを ぜんぶ 見る</Link>
           </Button>
         </div>
       </div>

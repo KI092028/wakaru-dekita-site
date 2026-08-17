@@ -1,58 +1,31 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
+import { UnitBrowser } from "@/components/learn/unit-browser";
+import { KIND_STYLE } from "@/components/learn/unit-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { subjectsInUse, unitsByGrade, upcomingUnits } from "@/lib/quiz/units";
-import { SUBJECT_LABEL, UNIT_KIND_LABEL, type QuizUnit } from "@/lib/quiz/types";
+import {
+  availableUnits,
+  gradesInUse,
+  kindsInUse,
+  subjectsInUse,
+  upcomingUnits,
+} from "@/lib/quiz/units";
 
 export const metadata: Metadata = {
   title: "まなぶ | わかる・できる",
   description:
-    "学年・単元ごとの算数の練習ページ一覧。ドリルのほか、ひっ算や分度器を1手ずつ進める練習もあります。登録不要・完全無料。",
+    "学年・単元ごとの練習ページ一覧。算数・社会・国語。ドリルのほか、ひっ算や分度器を1手ずつ進める練習、地図や原稿用紙などの道具もあります。登録不要・完全無料。",
 };
-
-const KIND_STYLE: Record<string, string> = {
-  drill: "bg-secondary/10 text-secondary",
-  steps: "bg-primary/10 text-primary",
-  figure: "bg-success/10 text-success",
-  game: "bg-danger/10 text-danger",
-  tool: "bg-foreground/10 text-foreground",
-};
-
-function UnitCard({ unit }: { unit: QuizUnit }) {
-  return (
-    <Link href={`/learn/${unit.slug}`} className="block">
-      <Card className="h-full border-primary/30 transition-shadow hover:shadow-md">
-        <CardHeader>
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-primary-foreground">
-              {unit.gradeLabel}
-            </span>
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${KIND_STYLE[unit.kind]}`}
-            >
-              {UNIT_KIND_LABEL[unit.kind]}
-            </span>
-          </div>
-          <CardTitle className="text-xl">{unit.title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{unit.description}</p>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
 
 export default function LearnPage() {
-  const subjects = subjectsInUse();
+  const units = availableUnits();
   const upcoming = upcomingUnits();
 
   return (
     <main className="flex-1 bg-white py-16">
       <div className="mx-auto max-w-5xl px-6">
         <h1 className="mb-2 text-center text-3xl font-bold">まなぶ</h1>
-        <p className="mb-8 text-center text-muted-foreground">
+        <p className="mb-10 text-center text-muted-foreground">
           すきな単元をえらんで、さっそくれんしゅうしよう。
         </p>
 
@@ -90,51 +63,35 @@ export default function LearnPage() {
           </li>
         </ul>
 
-        <div className="space-y-14">
-          {/* 教科 → 学年 の2段で区切る。教科が増えてもここは直さずに済む */}
-          {subjects.map((subject) => (
-            <section key={subject}>
-              <h2 className="mb-6 text-center text-2xl font-bold">{SUBJECT_LABEL[subject]}</h2>
-              <div className="space-y-8">
-                {unitsByGrade(subject).map((group) => (
-                  <div key={group.grade}>
-                    <h3 className="mb-4 border-b pb-2 text-sm font-bold text-muted-foreground">
-                      {group.label}
-                    </h3>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      {group.units.map((unit) => (
-                        <UnitCard key={unit.slug} unit={unit} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+        <UnitBrowser
+          units={units}
+          subjects={subjectsInUse()}
+          grades={gradesInUse()}
+          kinds={kindsInUse()}
+        />
 
-          {upcoming.length > 0 && (
-            <section>
-              <h2 className="mb-6 text-center text-2xl font-bold text-muted-foreground">準備中</h2>
-              <div className="grid gap-6 sm:grid-cols-2">
-                {upcoming.map((unit) => (
-                  <Card key={unit.slug} className="h-full border-dashed opacity-60">
-                    <CardHeader>
-                      <div className="mb-2 flex items-center gap-2">
-                        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
-                          {unit.gradeLabel}
-                        </span>
-                      </div>
-                      <CardTitle className="text-xl">{unit.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{unit.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
+        {upcoming.length > 0 && (
+          <section className="mt-16">
+            <h2 className="mb-6 text-center text-2xl font-bold text-muted-foreground">準備中</h2>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {upcoming.map((unit) => (
+                <Card key={unit.slug} className="h-full border-dashed opacity-60">
+                  <CardHeader>
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
+                        {unit.gradeLabel}
+                      </span>
+                    </div>
+                    <CardTitle className="text-xl">{unit.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{unit.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
