@@ -30,6 +30,7 @@ import { MANUSCRIPT_STORAGE_KEY } from "@/lib/manuscript/layout";
 import { MULTIPLY_STORAGE_KEY } from "@/lib/multiply/generate";
 import { PERCENT_STORAGE_KEY } from "@/lib/percent/generate";
 import { ANGLE_STORAGE_KEY } from "@/lib/protractor/generate";
+import { ROUND_STORAGE_KEY } from "@/lib/round/generate";
 import { TIMES_TABLE_STORAGE_KEY } from "@/lib/quiz/progress";
 import { RATE_STORAGE_KEY } from "@/lib/rate/generate";
 
@@ -113,6 +114,13 @@ export const storedItems: StoredItem[] = [
     key: DIVISION_STORAGE_KEY["two-digit"],
     slug: "long-division-2",
     label: "わり算のひっ算（2けたでわる）",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: ROUND_STORAGE_KEY,
+    slug: "rounding",
+    label: "がい数（四捨五入）",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },

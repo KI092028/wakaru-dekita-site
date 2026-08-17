@@ -96,6 +96,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット6問・4段階",
   },
   {
+    slug: "rounding",
+    title: "がい数（四捨五入）",
+    subject: "math",
+    grade: 4,
+    gradeLabel: "4年生",
+    kind: "steps",
+    description: "「百の位まで」で見るのは十の位。四捨五入する位を自分でタップしてさがします。",
+    available: true,
+    scale: "1セット4問・位の指定と上からのけた",
+  },
+  {
     slug: "angle",
     title: "角の大きさ",
     subject: "math",

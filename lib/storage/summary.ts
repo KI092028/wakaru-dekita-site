@@ -29,6 +29,7 @@ import {
 } from "@/lib/protractor/steps";
 import { loadProgress, masteredCount, TOTAL_CELLS } from "@/lib/quiz/progress";
 import { RATE_ADVICE_PRIORITY, RATE_STEP_KINDS, RATE_STEP_LABEL } from "@/lib/rate/steps";
+import { ROUND_ADVICE_PRIORITY, ROUND_STEP_KINDS, ROUND_STEP_LABEL } from "@/lib/round/steps";
 import type { StoredItem } from "./keys";
 
 export type Summary =
@@ -90,6 +91,12 @@ const PRACTICE: Record<
     kinds: Object.keys(NO_ERRORS) as StepKind[],
     label: STEP_LABEL,
     priority: ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  rounding: {
+    kinds: ROUND_STEP_KINDS,
+    label: ROUND_STEP_LABEL,
+    priority: ROUND_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   angle: {
