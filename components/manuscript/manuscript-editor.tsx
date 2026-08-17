@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ManuscriptSheets } from "@/components/manuscript/manuscript-sheet";
 import { cn } from "@/lib/utils";
-import { CHARS_PER_SHEET, count, layoutText, type Orientation } from "@/lib/manuscript/layout";
+import {
+  CHARS_PER_SHEET,
+  count,
+  layoutText,
+  MANUSCRIPT_STORAGE_KEY,
+  type Orientation,
+} from "@/lib/manuscript/layout";
 
 /**
  * 原稿用紙。書いた文が、そのままマスに流し込まれる。
@@ -23,8 +29,6 @@ import { CHARS_PER_SHEET, count, layoutText, type Orientation } from "@/lib/manu
  * サーバーには送らない。
  */
 
-const STORAGE_KEY = "wakaru-dekita:manuscript:v1";
-
 export function ManuscriptEditor() {
   const [text, setText] = useState("");
   const [orientation, setOrientation] = useState<Orientation>("vertical");
@@ -33,7 +37,7 @@ export function ManuscriptEditor() {
   // 読み出しは描画後（静的書き出しなので、初回描画と食い違わせない）
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
+      const saved = window.localStorage.getItem(MANUSCRIPT_STORAGE_KEY);
       if (saved !== null) {
         const parsed: unknown = JSON.parse(saved);
         if (typeof parsed === "object" && parsed !== null) {
@@ -53,7 +57,7 @@ export function ManuscriptEditor() {
   useEffect(() => {
     if (!loaded) return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ text, orientation }));
+      window.localStorage.setItem(MANUSCRIPT_STORAGE_KEY, JSON.stringify({ text, orientation }));
     } catch {
       // 保存できなくても書きつづけられる
     }

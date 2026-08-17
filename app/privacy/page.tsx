@@ -1,3 +1,12 @@
+import Link from "next/link";
+
+import { storedItems } from "@/lib/storage/keys";
+
+/**
+ * 保存しているものの一覧は `lib/storage/keys.ts` から作る。
+ * ここに手で書くと、単元を足したときに必ず書き忘れる
+ * （実際に一度、原稿用紙の追加で書き足すのを忘れかけている）。
+ */
 export default function PrivacyPage() {
   return (
     <main className="flex-1 mx-auto max-w-3xl px-6 py-16">
@@ -13,15 +22,32 @@ export default function PrivacyPage() {
         <section>
           <h2 className="mb-3 text-xl font-semibold text-foreground">学習の記録について</h2>
           <p>
-            九九ドリルでは「どの九九を覚えたか」を、都道府県では「どの県を覚えたか」を、ひっ算や分度器など手順を1手ずつ進める単元では
-            「どの手順でつまずいたか」と取り組んだ回数を、原稿用紙では書きかけの文章を、
-            お使いの端末のブラウザ内（localStorage）にのみ保存します。
+            学習の記録は、お使いの端末のブラウザ内（localStorage）にのみ保存します。
             この記録がサーバーや外部に送信されることはありません。
             記録するのは学習に関する情報のみで、氏名や連絡先など個人を特定する情報は一切扱いません。
           </p>
-          <p className="mt-3">
+
+          <p className="mb-2 mt-4 font-medium text-foreground">保存している内容</p>
+          <ul className="space-y-1.5">
+            {storedItems.map((item) => (
+              <li key={item.key} className="text-sm">
+                <span className="font-medium text-foreground">{item.label}</span>
+                <span className="mx-1.5">…</span>
+                <span>{item.what}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-4">
             記録は端末・ブラウザごとに保存されるため、別の端末では引き継がれません。
             ブラウザの設定でデータを削除した場合や、閲覧履歴の消去を行った場合には記録も消えます。
+          </p>
+          <p className="mt-3">
+            保存されている記録は
+            <Link href="/record" className="mx-1 font-medium text-primary underline-offset-4 hover:underline">
+              じぶんの記録
+            </Link>
+            のページで確認でき、単元ごとにも、まとめても削除できます。
           </p>
         </section>
         <section>

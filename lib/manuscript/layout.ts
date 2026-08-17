@@ -18,6 +18,9 @@
 
 export type Orientation = "vertical" | "horizontal";
 
+/** 書きかけの保存先。一覧は lib/storage/keys.ts にまとめてある。 */
+export const MANUSCRIPT_STORAGE_KEY = "wakaru-dekita:manuscript:v1";
+
 /** 1行のマス数。横書きなら20、縦書きなら15。 */
 export const COLUMNS = 20;
 export const ROWS = 15;

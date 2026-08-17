@@ -23,7 +23,7 @@ import {
 import {
   MODE_TITLE,
   ROUND_COUNT,
-  STORAGE_KEY,
+  COLUMN_STORAGE_KEY,
   buildRounds,
   type ColumnMode,
   type ColumnRound,
@@ -84,11 +84,11 @@ export function ColumnGame({ mode }: { mode: ColumnMode }) {
   useEffect(() => {
     if (!finished || saved || problems === null) return;
     const next = addSet(
-      loadRecord(STORAGE_KEY[mode], COLUMN_STEP_KINDS),
+      loadRecord(COLUMN_STORAGE_KEY[mode], COLUMN_STEP_KINDS),
       { errors, attempts, perfect: perfectCount, problems: problems.length },
       COLUMN_STEP_KINDS
     );
-    saveRecord(STORAGE_KEY[mode], next);
+    saveRecord(COLUMN_STORAGE_KEY[mode], next);
     setRecord(next);
     setSaved(true);
   }, [finished, saved, problems, errors, attempts, perfectCount, mode]);

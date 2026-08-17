@@ -13,7 +13,7 @@
 
 import { PREFECTURES, type Region } from "./prefectures";
 
-const KEY = "wakaru-dekita:prefectures:v1";
+export const GEO_STORAGE_KEY = "wakaru-dekita:prefectures:v1";
 
 export const MASTERY_STREAK = 2;
 
@@ -44,7 +44,7 @@ function isCellState(value: unknown): value is CellState {
 export function loadGeoProgress(): GeoProgress {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(KEY);
+    const raw = window.localStorage.getItem(GEO_STORAGE_KEY);
     if (!raw) return {};
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return {};
@@ -62,7 +62,7 @@ export function loadGeoProgress(): GeoProgress {
 export function clearGeoProgress(): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.removeItem(KEY);
+    window.localStorage.removeItem(GEO_STORAGE_KEY);
   } catch {
     // 消せなくても練習は続けられるので握りつぶす
   }
@@ -71,7 +71,7 @@ export function clearGeoProgress(): void {
 export function saveGeoProgress(progress: GeoProgress): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(progress));
+    window.localStorage.setItem(GEO_STORAGE_KEY, JSON.stringify(progress));
   } catch {
     // 保存できなくても練習は続けられるので握りつぶす
   }

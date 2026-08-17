@@ -31,6 +31,20 @@ import {
  * 押しても0件になる選択肢は、探している人の手を止めるだけなので置かない。
  */
 
+/**
+ * 種類の意味。**1問にかかる時間もやることも違う**ので、開く前に分かるようにする。
+ * 選んだ種類の説明だけを出す。5つ並べても読まれない。
+ */
+const KIND_NOTE: Record<UnitKind, string> = {
+  drill: "1セット10問。1問10秒ほどで、答えを打ちます",
+  steps: "ひっ算を手順どおりに1手ずつ進めます。どこで止まったかが残ります",
+  figure: "図を自分で動かしてたしかめます。答えを打たない単元もあります",
+  game: "さがす・当てる。おしいときは、どちらに外れたかが返ります",
+  tool: "問題は出ません。書くときに使う道具です",
+};
+
+const KIND_NOTE_ALL = "やることの種類でしぼれます。えらぶと、それが何をするものかが出ます。";
+
 type Props = {
   units: QuizUnit[];
   subjects: Subject[];
@@ -125,6 +139,14 @@ export function UnitBrowser({ units, subjects, grades, kinds }: Props) {
             />
           ))}
         </FilterRow>
+
+        {/* 種類の意味は、その種類をえらぶボタンのすぐ下に置く。
+            離して置くと、同じ言葉が画面に2度出るだけで意味が結びつかない */}
+        <p className="pl-16 text-xs leading-relaxed text-muted-foreground">
+          {kind === null
+            ? KIND_NOTE_ALL
+            : `${UNIT_KIND_LABEL[kind]}…${KIND_NOTE[kind]}`}
+        </p>
       </div>
 
       <div className="mb-6 flex items-center justify-between gap-3">

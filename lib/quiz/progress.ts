@@ -3,7 +3,7 @@
  * サーバーには一切送らないため、端末やブラウザを変えると引き継がれない。
  */
 
-const STORAGE_KEY = "wakaru-dekita:times-table:v1";
+export const TIMES_TABLE_STORAGE_KEY = "wakaru-dekita:times-table:v1";
 
 /**
  * マスターと判定するのに必要な連続正解数。
@@ -54,7 +54,7 @@ function isCellState(value: unknown): value is CellState {
 export function loadProgress(): Progress {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(TIMES_TABLE_STORAGE_KEY);
     if (!raw) return {};
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return {};
@@ -72,7 +72,7 @@ export function loadProgress(): Progress {
 export function saveProgress(progress: Progress): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    window.localStorage.setItem(TIMES_TABLE_STORAGE_KEY, JSON.stringify(progress));
   } catch {
     // 保存できなくても学習そのものは続けられるので、握りつぶす
   }
@@ -81,7 +81,7 @@ export function saveProgress(progress: Progress): void {
 export function clearProgress(): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(TIMES_TABLE_STORAGE_KEY);
   } catch {
     // 同上
   }

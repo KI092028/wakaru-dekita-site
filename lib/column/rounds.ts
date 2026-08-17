@@ -27,7 +27,7 @@ export type ColumnRound = {
 
 export const ROUND_COUNT = 6;
 
-export const STORAGE_KEY: Record<ColumnMode, string> = {
+export const COLUMN_STORAGE_KEY: Record<ColumnMode, string> = {
   integer: "wakaru-dekita:column-add-sub:v1",
   decimal: "wakaru-dekita:column-decimal:v1",
 };

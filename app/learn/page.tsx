@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { UnitBrowser } from "@/components/learn/unit-browser";
-import { KIND_STYLE } from "@/components/learn/unit-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   availableUnits,
@@ -28,40 +27,6 @@ export default function LearnPage() {
         <p className="mb-10 text-center text-muted-foreground">
           すきな単元をえらんで、さっそくれんしゅうしよう。
         </p>
-
-        {/* 単元によって、やることも1問にかかる時間もちがう。開く前に分かるようにしておく */}
-        <ul className="mx-auto mb-12 flex max-w-2xl flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-          <li>
-            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.drill}`}>
-              ドリル
-            </span>
-            10問・1問10秒ほど
-          </li>
-          <li>
-            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.steps}`}>
-              1手ずつ
-            </span>
-            ひっ算を手順どおりに進める
-          </li>
-          <li>
-            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.figure}`}>
-              図で考える
-            </span>
-            図を動かしてたしかめる
-          </li>
-          <li>
-            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.game}`}>
-              ゲーム
-            </span>
-            さがす・当てる
-          </li>
-          <li>
-            <span className={`mr-1.5 rounded-full px-2 py-0.5 font-bold ${KIND_STYLE.tool}`}>
-              道具
-            </span>
-            書くときに使う
-          </li>
-        </ul>
 
         <UnitBrowser
           units={units}

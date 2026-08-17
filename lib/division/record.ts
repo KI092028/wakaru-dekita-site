@@ -19,7 +19,7 @@ import {
  */
 
 /** 1けたでわる／2けたでわるは別の単元なので、記録も分けて持つ。 */
-const STORAGE_KEY: Record<DivisionLevel, string> = {
+export const DIVISION_STORAGE_KEY: Record<DivisionLevel, string> = {
   "one-digit": "wakaru-dekita:long-division:v1",
   "two-digit": "wakaru-dekita:long-division-2:v1",
 };
@@ -41,11 +41,11 @@ export type Weakness = GenericWeakness & { kind: StepKind };
 export const EMPTY_RECORD = emptyRecord(STEP_KINDS) as DivisionRecord;
 
 export function loadRecord(level: DivisionLevel): DivisionRecord {
-  return loadGeneric(STORAGE_KEY[level], STEP_KINDS) as DivisionRecord;
+  return loadGeneric(DIVISION_STORAGE_KEY[level], STEP_KINDS) as DivisionRecord;
 }
 
 export function saveRecord(level: DivisionLevel, record: DivisionRecord): void {
-  saveGeneric(STORAGE_KEY[level], record);
+  saveGeneric(DIVISION_STORAGE_KEY[level], record);
 }
 
 export function addSet(record: DivisionRecord, result: SetResult): DivisionRecord {

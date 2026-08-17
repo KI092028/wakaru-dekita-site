@@ -17,6 +17,12 @@ export function SiteHeader() {
           <Link href="/learn" className="text-muted-foreground transition-colors hover:text-foreground">
             まなぶ
           </Link>
+          <Link
+            href="/record"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            きろく
+          </Link>
           {/* 狭い画面では省略。フッターから辿れる */}
           <Link
             href="/about"

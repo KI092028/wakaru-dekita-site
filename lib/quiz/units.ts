@@ -137,7 +137,7 @@ export const quizUnits: QuizUnit[] = [
     kind: "tool",
     description: "300字づめ（15行×20マス）。打った文がマスに入り、文字数も数えます。A4で印刷できます。",
     available: true,
-    scale: "300字づめ（15行×20マス）",
+    scale: "1まい300字・A4で印刷できる",
   },
   {
     slug: "time",
