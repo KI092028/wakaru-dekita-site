@@ -31,8 +31,19 @@ import { geoStatus, type GeoProgress } from "@/lib/geo/progress";
  * パスは丸より上にあるので、県の中を押せばその県が取れ、
  * すこし外れたときだけ近くの丸が拾う。
  *
- * 地方だけを練習するときは、その地方の範囲まで viewBox を寄せる。
- * 範囲をせまくしたぶんが、そのまま県の大きさに回る。
+ * ## 全国表示では、タップは「答える」ではなく「寄る」
+ *
+ * 北海道から沖縄までを1画面に入れると、香川・大阪・東京は指では押せないし、
+ * そもそも見えない。**当たり判定を広げても、見えないものは押せない。**
+ *
+ * そこで全国表示では、タップは「その地方に寄る」だけにした。
+ * 答えるのは寄ったあと。手数は1回増えるが、
+ *
+ * - 小さい県を正確に押す必要がなくなる（だいたいの場所でよい）
+ * - 日本 → 地方 → 県 という、教わる順序とそろう
+ * - 「同じ地方だよ」「もっと北のほう」という返しが、操作と噛み合う
+ *
+ * 地方をえらんで始めたときは、はじめからその地方に寄っている。
  *
  * ## 沖縄も本当の位置に描く
  *
@@ -43,8 +54,15 @@ import { geoStatus, type GeoProgress } from "@/lib/geo/progress";
  */
 
 type Props = {
-  /** null なら全国 */
+  /** 出題の範囲。null なら全国 */
   region: Region | null;
+  /**
+   * いま寄せて見ている地方。null なら日本ぜんたい。
+   * `region` とは別に持つ。出題は全国でも、見ているのは近畿、ということがあるため。
+   */
+  zoom?: Region | null;
+  /** 全国表示で県を押したときに呼ぶ。渡さなければ、押しても寄らない */
+  onZoom?: (region: Region) => void;
   progress: GeoProgress;
   /** 押せるか */
   interactive: boolean;
@@ -86,6 +104,8 @@ const PATHS: Record<string, string> = Object.fromEntries(
 
 export function JapanMap({
   region,
+  zoom = null,
+  onZoom,
   progress,
   interactive,
   onPick,
@@ -93,18 +113,24 @@ export function JapanMap({
   reveal,
   showAllNames = false,
 }: Props) {
+  // 出題の範囲にある県だけを描く。そのうえで、寄せて見る範囲を決める
   const list = region === null ? PREFECTURES : prefecturesOf(region);
+  const focus = zoom ?? region;
   const view =
-    region === null
+    focus === null
       ? { x: 0, y: 0, width: MAP_VIEW_BOX.width, height: MAP_VIEW_BOX.height }
-      : padded(bounds(list));
+      : padded(bounds(prefecturesOf(focus)));
+
+  /** 全国を見ているあいだは、押しても答えにならず、その地方へ寄るだけ */
+  const zoomingOnly = interactive && focus === null && onZoom !== undefined;
+  const tap = (p: Prefecture) => (zoomingOnly ? onZoom?.(p.region) : onPick?.(p));
 
   // 表示している範囲の広さで、文字と線の太さを決める（地方表示では大きくなる）
   const scale = view.width / MAP_VIEW_BOX.width;
   const fontSize = Math.max(4.5, 9 * scale);
   const hitRadius = Math.max(5, 9 * scale);
 
-  const shownRegions = region === null ? REGIONS : [region];
+  const shownRegions = focus === null ? REGIONS : [focus];
 
   const fillOf = (p: Prefecture): string | null => {
     if (reveal?.code === p.code) return "fill-success";
@@ -155,9 +181,9 @@ export function JapanMap({
     <svg
       viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
       className="mx-auto block w-full select-none"
-      style={{ touchAction: "manipulation", maxHeight: "62vh" }}
+      style={{ touchAction: "manipulation", maxHeight: "68vh" }}
       role="group"
-      aria-label={region === null ? "日本全国の白地図" : `${REGION_LABEL[region]}地方の白地図`}
+      aria-label={focus === null ? "日本全国の白地図" : `${REGION_LABEL[focus]}地方の白地図`}
     >
       {/* 当たり判定の丸。パスより下に敷き、押しそこねを拾う */}
       {interactive &&
@@ -171,7 +197,8 @@ export function JapanMap({
             className="cursor-pointer"
             aria-hidden="true"
             data-pref={p.name}
-            onClick={() => onPick?.(p)}
+            data-region={p.region}
+            onClick={() => tap(p)}
           />
         ))}
 
@@ -186,8 +213,8 @@ export function JapanMap({
             stroke={regionLine(p.region)}
             strokeWidth={0.5 * scale}
             role={interactive ? "button" : undefined}
-            aria-label={interactive ? p.name : undefined}
-            onClick={interactive ? () => onPick?.(p) : undefined}
+            aria-label={interactive ? (zoomingOnly ? `${REGION_LABEL[p.region]}地方に よる` : p.name) : undefined}
+            onClick={interactive ? () => tap(p) : undefined}
           />
         );
       })}
@@ -224,6 +251,54 @@ function padded(box: { x: number; y: number; width: number; height: number }) {
     width: box.width + pad * 2,
     height: box.height + pad * 2,
   };
+}
+
+/**
+ * 地方に寄るための帯。地図の上に置く。
+ *
+ * 地図を直接タップしても寄れるが、**押せる的をはっきり見せておく。**
+ * 「どこを押せばいいのか分からない」ままでは、寄れることに気づかれない。
+ */
+export function RegionZoomBar({
+  zoom,
+  onZoom,
+}: {
+  zoom: Region | null;
+  onZoom: (region: Region | null) => void;
+}) {
+  return (
+    <div className="mb-2 flex flex-wrap justify-center gap-1.5">
+      <button
+        type="button"
+        onClick={() => onZoom(null)}
+        aria-pressed={zoom === null}
+        className={cn(
+          "rounded-full border px-2.5 py-1 text-xs font-bold transition-colors",
+          zoom === null
+            ? "border-foreground bg-foreground text-white"
+            : "border-border text-muted-foreground hover:text-foreground"
+        )}
+      >
+        日本ぜんたい
+      </button>
+      {REGIONS.map((r) => (
+        <button
+          key={r}
+          type="button"
+          onClick={() => onZoom(r)}
+          aria-pressed={zoom === r}
+          className="rounded-full border px-2.5 py-1 text-xs font-bold transition-colors"
+          style={
+            zoom === r
+              ? { borderColor: regionLine(r), backgroundColor: regionLine(r), color: "white" }
+              : { borderColor: regionLine(r), backgroundColor: regionTint(r), color: regionLine(r) }
+          }
+        >
+          {REGION_LABEL[r]}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 /** 地図の色の意味。地図だけだと何色が何か分からないので添える。 */

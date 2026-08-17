@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { JapanMap, MapLegend } from "@/components/geo/japan-map";
+import { JapanMap, MapLegend, RegionZoomBar } from "@/components/geo/japan-map";
 import { cn } from "@/lib/utils";
 
 import {
@@ -82,6 +82,14 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
    * 答えが見えてしまう。** 記録そのものは動かし、色だけ次の問題まで据え置く。
    */
   const [mapProgress, setMapProgress] = useState<GeoProgress>({});
+  /**
+   * いま寄せて見ている地方。
+   *
+   * 全国から出題するときだけ意味がある。北海道から沖縄までを1画面に入れると
+   * 小さい県は指で押せないので、**全国表示でのタップは「寄る」だけ**にしてある。
+   * 答えるのは寄ったあと（→ components/geo/japan-map.tsx）。
+   */
+  const [zoom, setZoom] = useState<Region | null>(null);
 
   // 記録の読み出しは描画後（静的書き出しなので、初回描画と食い違わせない）
   useEffect(() => {
@@ -109,6 +117,7 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
     setMissedHere(false);
     setMasteredAtStart(masteredCount(progress, next));
     setMapProgress(progress);
+    setZoom(null);
     setPhase("asking");
   }
 
@@ -128,6 +137,8 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
         saveGeoProgress(mode, next);
         setProgress(next);
       }
+      // 正解の県が大きく見えるように、その地方へ寄せておく
+      setZoom(question.answer.region);
       setPhase("judged");
     } else {
       if (!missedHere) {
@@ -145,6 +156,8 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
     setPicked(null);
     setVerdict(null);
     setMissedHere(false);
+    // 前の問題の地方に寄ったままだと、そこから探してしまう。ぜんたいに戻す
+    setZoom(null);
     if (index + 1 >= questions.length) setPhase("finished");
     else {
       setIndex((i) => i + 1);
@@ -191,20 +204,33 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
           </div>
 
           <p className="mb-1 text-center text-sm text-muted-foreground">
-            地図の上で さがして タップ
+            {region === null && zoom === null
+              ? "まず 地方に よろう。おした ところの 地方が 大きくなります"
+              : "地図の上で さがして タップ"}
           </p>
           <p className="mb-4 text-center text-3xl font-bold">
             {question ? promptFor(question.answer, mode) : ""}
           </p>
 
-          <JapanMap
-            region={region}
-            progress={mapProgress}
-            interactive={phase === "asking"}
-            onPick={pick}
-            picked={correct ? null : picked}
-            reveal={phase === "judged" ? question?.answer ?? null : null}
-          />
+          {/* 出題が全国のときだけ、寄る先をえらべるようにする */}
+          {region === null && (
+            <RegionZoomBar zoom={zoom} onZoom={(next) => phase === "asking" && setZoom(next)} />
+          )}
+
+          {/* 地図だけはカードの左右いっぱいまで広げる。
+              せまい画面では、カードの余白ぶん（48px）がそのまま県の大きさに回る */}
+          <div className="-mx-4 sm:mx-0">
+            <JapanMap
+              region={region}
+              zoom={zoom}
+              onZoom={setZoom}
+              progress={mapProgress}
+              interactive={phase === "asking"}
+              onPick={pick}
+              picked={correct ? null : picked}
+              reveal={phase === "judged" ? question?.answer ?? null : null}
+            />
+          </div>
 
           <div className="mt-4 min-h-[5.5rem] text-center">
             {phase === "judged" ? (
@@ -229,7 +255,9 @@ export function GeoGame({ mode = "prefecture" }: Props = {}) {
               </>
             ) : (
               <p className="pt-4 text-xs text-muted-foreground">
-                小さい県は、まわりを 押しても とれるように なっています
+                {region === null && zoom === null
+                  ? "だいたいの ところで いいよ。おした 地方が 大きくなります"
+                  : "小さい県は、まわりを 押しても とれるように なっています"}
               </p>
             )}
           </div>
