@@ -15,6 +15,11 @@ import {
   MULTIPLY_STEP_KINDS,
   MULTIPLY_STEP_LABEL,
 } from "@/lib/multiply/steps";
+import {
+  PERCENT_ADVICE_PRIORITY,
+  PERCENT_STEP_KINDS,
+  PERCENT_STEP_LABEL,
+} from "@/lib/percent/steps";
 import { loadRecord, weakness } from "@/lib/practice/record";
 import {
   PROTRACTOR_ADVICE_PRIORITY,
@@ -84,6 +89,12 @@ const PRACTICE: Record<
     kinds: PROTRACTOR_STEP_KINDS,
     label: PROTRACTOR_STEP_LABEL,
     priority: PROTRACTOR_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  percent: {
+    kinds: PERCENT_STEP_KINDS,
+    label: PERCENT_STEP_LABEL,
+    priority: PERCENT_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   "per-unit": {

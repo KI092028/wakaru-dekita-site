@@ -118,6 +118,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット4問・4つの場面",
   },
   {
+    slug: "percent",
+    title: "割合・百分率",
+    subject: "math",
+    grade: 5,
+    gradeLabel: "5年生",
+    kind: "figure",
+    description: "式は書かない。もとにする量をさがして、その上に100%を置くと、割合の目もりが生まれます。",
+    available: true,
+    scale: "1セット4問・ふえる／へるも",
+  },
+  {
     slug: "prefectures",
     title: "都道府県",
     subject: "social",

@@ -27,6 +27,7 @@ import { DIVISION_STORAGE_KEY } from "@/lib/division/record";
 import { GEO_STORAGE_KEY } from "@/lib/geo/progress";
 import { MANUSCRIPT_STORAGE_KEY } from "@/lib/manuscript/layout";
 import { MULTIPLY_STORAGE_KEY } from "@/lib/multiply/generate";
+import { PERCENT_STORAGE_KEY } from "@/lib/percent/generate";
 import { ANGLE_STORAGE_KEY } from "@/lib/protractor/generate";
 import { TIMES_TABLE_STORAGE_KEY } from "@/lib/quiz/progress";
 import { RATE_STORAGE_KEY } from "@/lib/rate/generate";
@@ -113,6 +114,13 @@ export const storedItems: StoredItem[] = [
     label: "単位量あたりの大きさ",
     kind: "practice",
     what: "どの手順でまよったかと、取り組んだ回数",
+  },
+  {
+    key: PERCENT_STORAGE_KEY,
+    slug: "percent",
+    label: "割合・百分率",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
   },
   {
     key: MANUSCRIPT_STORAGE_KEY,
