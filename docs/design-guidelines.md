@@ -72,6 +72,28 @@
 公式を覚えて計算できてしまうことが、そもそもこの単元の問題だから。
 結果画面が出すのは「1回で最後までできた問題数」と「まよったところ」だけにする。
 
+#### 入口の数を、中身の数で増やさない
+
+単元を全部並べる作りは、**単元が増えると入口そのものが伸びていく。**
+実際に12単元の時点で、トップページの大半が単元一覧になっていた。
+
+- トップの「たなの地図」（`components/home/unit-grid.tsx`）は**教科の数で固定**。
+  カードの中に出す単元名は4つまでで、残りは「ほか◯こ」と数で言う
+- `/learn` の絞り込み（`components/learn/unit-browser.tsx`）も同じ地図を上に置く。
+  押すと下の一覧が絞られる。**別の場所へ飛ばさない**（飛ばす作りだと、
+  絞り込みと併用したときに「飛んだ先が隠れている」が起きる）
+- 学年・種類の候補は、実際に単元がある値だけを出す（`gradesInUse` / `kindsInUse`）。
+  押しても0件になる選択肢は、探している人の手を止めるだけ
+
+単元カードの見た目は `components/learn/unit-card.tsx` の1か所に集約する。
+かつて一覧とトップで二重管理になり、トップだけ古いまま（廃止した4択の見本）が残っていた。
+
+#### 単元には「大きさ」を持たせる
+
+`QuizUnit.scale` に「9段81マス・1セット10問」「全47県・地方ごとに選べる」を書く。
+説明文は「何をするか」、`scale` は「どれだけあるか」で、**片方だけでは
+5分で終わるのか毎日使えるのかが分からない。**
+
 #### 手続き単元どうしでも、盤と手順の型は共有しない
 
 わり算・列のひっ算・かけ算はいずれも `plan → steps → 盤 → 記録` の同じ形をとるが、
@@ -134,6 +156,26 @@ type Value = number | Fraction;
 - 保存するのは学習に関する情報のみ。個人を特定する情報は扱わない
 - 保存を追加・変更したら、**プライバシーポリシーの記載も合わせて更新する**
 
+#### 保存キーの一覧を1か所に持つ
+
+保存キーは単元ごとのファイルに散らばるので、**`lib/storage/keys.ts` に一覧を置く。**
+キーの文字列は各単元から import する（書き写すと片方だけ直したときに気づけない）。
+
+新しく保存する単元を作ったら、必ずこの表に1行足す。足し忘れは
+
+```bash
+npx tsx@4 --tsconfig tsconfig.json scripts/check-storage-keys.ts
+```
+
+で機械的に落ちる（ソースの `"wakaru-dekita:"` 文字列と表を突き合わせ、
+未登録・未使用・重複・バージョンなしを見る）。
+
+この一覧から、**プライバシーポリシーの「保存している内容」と
+`/record`（じぶんの記録）の両方を組み立てる。** 手で書くと必ず書き忘れる。
+
+まとめて消すときも `localStorage.clear()` は使わない。
+同じドメインの他のものを巻き添えにするため、一覧のキーだけを消す。
+
 #### 九九マップは九九だけの機能
 
 81マスの習得状況を持つのは九九だけなので、マップの表示は `usesProgress(unit)` で分岐する。
@@ -149,6 +191,9 @@ type Value = number | Fraction;
 app/                      ルーティングとページ（App Router）
   layout.tsx              全ページ共通のレイアウト、サイト全体のmetadata
   page.tsx                トップページ（LP）
+  not-found.tsx           404。静的書き出しで 404.html になる
+  sitemap.ts              sitemap.xml。単元マスタから作る
+  record/page.tsx         じぶんの記録（端末に残っているもの）
   learn/
     page.tsx              単元一覧
     add-sub/page.tsx      各単元のページ。QuizGame を置くだけの薄い層
@@ -188,6 +233,17 @@ components/
   manuscript/
     manuscript-editor.tsx   原稿用紙の入力・カウント・印刷
     manuscript-sheet.tsx    原稿用紙1まいの描画（SVG）
+  learn/
+    unit-card.tsx           単元カードの見た目（ここが正）と種類の色
+    unit-browser.tsx        たなの地図と絞り込み（/learn）
+  record/
+    record-list.tsx         端末に残っている記録の一覧と削除
+  percent/
+    percent-game.tsx        割合の進行
+    percent-line.tsx        量と割合の二重数直線。100%を置くと目もりが生まれる
+  clock/
+    clock-game.tsx          時こく・時間の進行
+    clock-face.tsx          動かせる時計。回した量を積み上げる
   teachers/
     rec-browser.tsx         学級レクの一覧と絞り込み（教員向け）
   division/
@@ -219,6 +275,17 @@ lib/
     generate.ts           場面ごとの出題（差と食い違う組を選ぶ）
   manuscript/
     layout.ts             文章をマスに流し込む。禁則処理と枚数の切り分け
+  storage/
+    keys.ts               保存キーの一覧（ここが正）。消す操作もここ
+    summary.ts            端末の記録を、単元ごとに1行の要約にそろえる
+  percent/
+    plan.ts               もとにする量と割合の対応。目もりの決まり方もここ
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           場面ごとの出題（ふえる・へるを両方入れる）
+  clock/
+    plan.ts               時計の幾何と、12またぎの判定
+    steps.ts              1手ごとの問い・誤答の型・見立て
+    generate.ts           4問の並び（またぐ／またがない × すすめる／もどす）
   geo/
     prefectures.ts        47県のデータと地図上の座標。方角もここ
     quiz.ts               出題と3段階の判定
