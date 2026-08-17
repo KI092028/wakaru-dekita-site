@@ -61,11 +61,18 @@ export const storedItems: StoredItem[] = [
     what: "81マスのうち、どの九九を覚えたか",
   },
   {
-    key: GEO_STORAGE_KEY,
+    key: GEO_STORAGE_KEY.prefecture,
     slug: "prefectures",
     label: "都道府県",
     kind: "map",
     what: "47県のうち、どの県を覚えたか",
+  },
+  {
+    key: GEO_STORAGE_KEY.capital,
+    slug: "capitals",
+    label: "県庁所在地",
+    kind: "map",
+    what: "県名とちがう18県のうち、どこを覚えたか",
   },
   {
     key: CLOCK_STORAGE_KEY,

@@ -1,13 +1,15 @@
 import {
   PREFECTURES,
   REGION_LABEL,
+  capitalDiffers,
+  capitalName,
   directionTo,
   fullName,
   prefecturesOf,
   type Prefecture,
   type Region,
 } from "./prefectures";
-import { geoStatus, type GeoProgress } from "./progress";
+import { geoStatus, type GeoMode, type GeoProgress } from "./progress";
 
 /**
  * 出題と、答え合わせの言葉。
@@ -81,8 +83,12 @@ const shuffle = <T,>(list: T[]): T[] => {
  * 「にがて」と「あと1回」を先に、そのあと「まだ」を混ぜる。
  * 範囲の県が10未満のとき（四国・北海道など）は、あるだけ出す。
  */
-export function buildGeoQuestions(progress: GeoProgress, region: Region | null): GeoQuestion[] {
-  const pool = region === null ? PREFECTURES : prefecturesOf(region);
+export function buildGeoQuestions(
+  progress: GeoProgress,
+  region: Region | null,
+  mode: GeoMode = "prefecture"
+): GeoQuestion[] {
+  const pool = poolFor(region, mode);
   const sorted = shuffle(pool).sort((a, b) => priority(progress, a) - priority(progress, b));
   return sorted
     .slice(0, Math.min(QUESTION_COUNT, pool.length))
@@ -91,3 +97,30 @@ export function buildGeoQuestions(progress: GeoProgress, region: Region | null):
 
 export const scopeLabel = (region: Region | null): string =>
   region === null ? "日本全国" : `${REGION_LABEL[region]}地方`;
+
+
+/**
+ * その範囲・その遊び方で出す県。
+ *
+ * **県庁所在地では、名前がちがう18道府県だけを出す。**
+ * 同じ名前の29県を混ぜると、半分以上が「県名をそのまま言えばよい問題」になり、
+ * 覚えるところを練習していないのに正解が積み上がってしまう。
+ */
+export function poolFor(region: Region | null, mode: GeoMode): Prefecture[] {
+  const inRegion = region === null ? PREFECTURES : prefecturesOf(region);
+  return mode === "capital" ? inRegion.filter(capitalDiffers) : inRegion;
+}
+
+/** 出題の文。押すのはどちらも地図の上の県。 */
+export const promptFor = (answer: Prefecture, mode: GeoMode): string =>
+  mode === "capital" ? capitalName(answer) : fullName(answer);
+
+/** 遊び方ごとの言い回し。 */
+export const MODE_ASK: Record<GeoMode, string> = {
+  prefecture: "どこ？ 地図の 上で さがそう",
+  capital: "は どこの 県庁所在地？ 地図の 上で さがそう",
+};
+
+/** 正解したときに、あわせて見せておきたいこと。 */
+export const answerNote = (answer: Prefecture, mode: GeoMode): string | null =>
+  mode === "capital" ? `${capitalName(answer)}は ${fullName(answer)}の 県庁所在地` : null;

@@ -151,6 +151,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "全47県・地方ごとに選べる",
   },
   {
+    slug: "capitals",
+    title: "県庁所在地",
+    subject: "social",
+    grade: 4,
+    gradeLabel: "4年生〜",
+    kind: "game",
+    description: "「盛岡市はどこの県？」を地図でさがす。県名とちがう18県だけを出します。",
+    available: true,
+    scale: "県名とちがう18県",
+  },
+  {
     slug: "manuscript",
     title: "原稿用紙",
     subject: "japanese",

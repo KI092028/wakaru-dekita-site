@@ -13,7 +13,19 @@
 
 import { PREFECTURES, type Region } from "./prefectures";
 
-export const GEO_STORAGE_KEY = "wakaru-dekita:prefectures:v1";
+/**
+ * どちらのゲームの記録か。
+ *
+ * 地図の上でさがすゲームは2つある（県の名前・県庁所在地）。
+ * **記録は分けて持つ。** 県の位置は分かっていても県庁所在地は言えない、
+ * ということが普通に起きるので、混ぜるとどちらを覚えたのか分からなくなる。
+ */
+export type GeoMode = "prefecture" | "capital";
+
+export const GEO_STORAGE_KEY: Record<GeoMode, string> = {
+  prefecture: "wakaru-dekita:prefectures:v1",
+  capital: "wakaru-dekita:capitals:v1",
+};
 
 export const MASTERY_STREAK = 2;
 
@@ -41,10 +53,10 @@ function isCellState(value: unknown): value is CellState {
 }
 
 /** 保存内容が壊れていても例外を投げず、記録なしとして扱う。 */
-export function loadGeoProgress(): GeoProgress {
+export function loadGeoProgress(mode: GeoMode): GeoProgress {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(GEO_STORAGE_KEY);
+    const raw = window.localStorage.getItem(GEO_STORAGE_KEY[mode]);
     if (!raw) return {};
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return {};
@@ -59,19 +71,19 @@ export function loadGeoProgress(): GeoProgress {
 }
 
 /** 記録を消して、はじめからやり直せるようにする。 */
-export function clearGeoProgress(): void {
+export function clearGeoProgress(mode: GeoMode): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.removeItem(GEO_STORAGE_KEY);
+    window.localStorage.removeItem(GEO_STORAGE_KEY[mode]);
   } catch {
     // 消せなくても練習は続けられるので握りつぶす
   }
 }
 
-export function saveGeoProgress(progress: GeoProgress): void {
+export function saveGeoProgress(mode: GeoMode, progress: GeoProgress): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(GEO_STORAGE_KEY, JSON.stringify(progress));
+    window.localStorage.setItem(GEO_STORAGE_KEY[mode], JSON.stringify(progress));
   } catch {
     // 保存できなくても練習は続けられるので握りつぶす
   }

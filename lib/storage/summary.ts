@@ -8,8 +8,8 @@
 import { CLOCK_ADVICE_PRIORITY, CLOCK_STEP_KINDS, CLOCK_STEP_LABEL } from "@/lib/clock/steps";
 import { COLUMN_ADVICE_PRIORITY, COLUMN_STEP_KINDS, COLUMN_STEP_LABEL } from "@/lib/column/steps";
 import { ADVICE_PRIORITY, NO_ERRORS, STEP_LABEL, type StepKind } from "@/lib/division/steps";
-import { PREFECTURES } from "@/lib/geo/prefectures";
-import { loadGeoProgress, masteredCount as geoMastered } from "@/lib/geo/progress";
+import { loadGeoProgress } from "@/lib/geo/progress";
+import { poolFor } from "@/lib/geo/quiz";
 import { count, layoutText, type Orientation } from "@/lib/manuscript/layout";
 import {
   MULTIPLY_ADVICE_PRIORITY,
@@ -124,9 +124,17 @@ export function summarize(item: StoredItem): Summary | null {
       if (Object.keys(progress).length === 0) return null;
       return { kind: "map", done: masteredCount(progress), total: TOTAL_CELLS, unit: "マス" };
     }
-    const progress = loadGeoProgress();
+    // 都道府県と県庁所在地は同じ地図の別の遊び方。範囲がちがうので分けて数える
+    const mode = item.slug === "capitals" ? "capital" : "prefecture";
+    const progress = loadGeoProgress(mode);
     if (Object.keys(progress).length === 0) return null;
-    return { kind: "map", done: geoMastered(progress), total: PREFECTURES.length, unit: "県" };
+    const scope = poolFor(null, mode);
+    return {
+      kind: "map",
+      done: scope.filter((p) => progress[String(p.code)]?.mastered).length,
+      total: scope.length,
+      unit: "県",
+    };
   }
 
   if (item.kind === "draft") {

@@ -15,7 +15,11 @@ import {
   type Region,
 } from "@/lib/geo/prefectures";
 import {
+  MODE_ASK,
+  answerNote,
   buildGeoQuestions,
+  poolFor,
+  promptFor,
   judge,
   scopeLabel,
   type GeoQuestion,
@@ -24,6 +28,7 @@ import {
 import {
   clearGeoProgress,
   loadGeoProgress,
+  type GeoMode,
   masteredCount,
   nearMasteryCount,
   recordGeoAnswer,
@@ -47,7 +52,19 @@ import {
 
 type Phase = "choosing" | "asking" | "judged" | "finished";
 
-export function GeoGame() {
+type Props = {
+  /**
+   * 何をさがすゲームか。
+   *
+   * 地図・方角の返し・記録の仕組みはそのまま共有し、
+   * **出す文と、出す県の範囲だけを変える。**
+   * 県の位置は分かっていても県庁所在地は言えない、ということが普通に起きるので、
+   * 記録だけは別に持つ（→ lib/geo/progress.ts）。
+   */
+  mode?: GeoMode;
+};
+
+export function GeoGame({ mode = "prefecture" }: Props = {}) {
   const [progress, setProgress] = useState<GeoProgress | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [questions, setQuestions] = useState<GeoQuestion[] | null>(null);
@@ -68,7 +85,7 @@ export function GeoGame() {
 
   // 記録の読み出しは描画後（静的書き出しなので、初回描画と食い違わせない）
   useEffect(() => {
-    setProgress(loadGeoProgress());
+    setProgress(loadGeoProgress(mode));
   }, []);
 
   if (progress === null) {
@@ -84,7 +101,7 @@ export function GeoGame() {
   function start(next: Region | null) {
     if (progress === null) return;
     setRegion(next);
-    setQuestions(buildGeoQuestions(progress, next));
+    setQuestions(buildGeoQuestions(progress, next, mode));
     setIndex(0);
     setScore(0);
     setPicked(null);
@@ -108,14 +125,14 @@ export function GeoGame() {
       if (!missedHere) {
         setScore((s) => s + 1);
         const next = recordGeoAnswer(progress, question.answer.code, true);
-        saveGeoProgress(next);
+        saveGeoProgress(mode, next);
         setProgress(next);
       }
       setPhase("judged");
     } else {
       if (!missedHere) {
         const next = recordGeoAnswer(progress, question.answer.code, false);
-        saveGeoProgress(next);
+        saveGeoProgress(mode, next);
         setProgress(next);
       }
       setMissedHere(true);
@@ -136,19 +153,20 @@ export function GeoGame() {
   }
 
   function reset() {
-    clearGeoProgress();
+    clearGeoProgress(mode);
     setProgress({});
     setMapProgress({});
   }
 
   if (phase === "choosing") {
-    return <ScopePicker progress={progress} onStart={start} onReset={reset} />;
+    return <ScopePicker progress={progress} mode={mode} onStart={start} onReset={reset} />;
   }
 
   if (phase === "finished") {
     return (
       <Result
         progress={progress}
+        mode={mode}
         region={region}
         score={score}
         total={questions?.length ?? 0}
@@ -176,7 +194,7 @@ export function GeoGame() {
             地図の上で さがして タップ
           </p>
           <p className="mb-4 text-center text-3xl font-bold">
-            {question ? fullName(question.answer) : ""}
+            {question ? promptFor(question.answer, mode) : ""}
           </p>
 
           <JapanMap
@@ -195,7 +213,7 @@ export function GeoGame() {
                   {missedHere ? "そこだよ！" : "せいかい！"}
                 </p>
                 <p className="mb-3 text-sm text-muted-foreground">
-                  {question && REGION_LABEL[question.answer.region]}地方
+                  {question && (answerNote(question.answer, mode) ?? `${REGION_LABEL[question.answer.region]}地方`)}
                 </p>
                 <Button size="lg" onClick={next}>
                   {index + 1 >= (questions?.length ?? 0) ? "けっかを見る" : "つぎの もんだいへ"}
@@ -230,23 +248,32 @@ export function GeoGame() {
 /** どの範囲でやるかを選ぶ。地方ごとの進みぐあいもここに出す。 */
 function ScopePicker({
   progress,
+  mode,
   onStart,
   onReset,
 }: {
   progress: GeoProgress;
+  mode: GeoMode;
   onStart: (region: Region | null) => void;
   onReset: () => void;
 }) {
-  const all = masteredCount(progress, null);
+  const scope = (region: Region | null) => poolFor(region, mode);
+  const inScope = (region: Region | null, p: { code: number }) =>
+    scope(region).some((q) => q.code === p.code);
+  const countIn = (region: Region | null) =>
+    scope(region).filter((p) => progress[String(p.code)]?.mastered).length;
+  const all = countIn(null);
   const [confirming, setConfirming] = useState(false);
 
   return (
     <div className="mx-auto max-w-lg space-y-4">
       <Card className="border-primary/30">
         <CardContent className="py-6">
-          <p className="mb-1 text-center text-sm text-muted-foreground">おぼえた 都道府県</p>
+          <p className="mb-1 text-center text-sm text-muted-foreground">
+            おぼえた {mode === "capital" ? "県庁所在地" : "都道府県"}
+          </p>
           <p className="mb-4 text-center text-4xl font-bold text-primary">
-            {all} <span className="text-xl text-foreground">/ 47</span>
+            {all} <span className="text-xl text-foreground">/ {scope(null).length}</span>
           </p>
           <JapanMap region={null} progress={progress} interactive={false} />
           <div className="mt-3">
@@ -299,13 +326,13 @@ function ScopePicker({
           </p>
 
           <Button size="lg" className="mb-3 w-full" onClick={() => onStart(null)}>
-            日本全国（47）
+            日本全国（{scope(null).length}）
           </Button>
 
           <div className="grid grid-cols-2 gap-2">
             {REGIONS.map((region) => {
-              const done = masteredCount(progress, region);
-              const total = totalOf(region);
+              const done = countIn(region);
+              const total = scope(region).length;
               return (
                 <button
                   key={region}
@@ -335,6 +362,7 @@ function ScopePicker({
 
 function Result({
   progress,
+  mode,
   region,
   score,
   total,
@@ -343,6 +371,7 @@ function Result({
   onChangeScope,
 }: {
   progress: GeoProgress;
+  mode: GeoMode;
   region: Region | null;
   score: number;
   total: number;
@@ -350,9 +379,13 @@ function Result({
   onRetry: () => void;
   onChangeScope: () => void;
 }) {
-  const mastered = masteredCount(progress, region);
-  const near = nearMasteryCount(progress, region);
-  const scopeTotal = totalOf(region);
+  const scope = poolFor(region, mode);
+  const mastered = scope.filter((p) => progress[String(p.code)]?.mastered).length;
+  const near = scope.filter((p) => {
+    const cell = progress[String(p.code)];
+    return cell !== undefined && !cell.mastered && cell.streak >= 1;
+  }).length;
+  const scopeTotal = scope.length;
   const gained = mastered - masteredAtStart;
 
   return (
