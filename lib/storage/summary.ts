@@ -30,6 +30,11 @@ import {
 } from "@/lib/protractor/steps";
 import { loadProgress, masteredCount, TOTAL_CELLS } from "@/lib/quiz/progress";
 import { RATE_ADVICE_PRIORITY, RATE_STEP_KINDS, RATE_STEP_LABEL } from "@/lib/rate/steps";
+import {
+  SAKURA_ADVICE_PRIORITY,
+  SAKURA_STEP_KINDS,
+  SAKURA_STEP_LABEL,
+} from "@/lib/sakura/steps";
 import { ROUND_ADVICE_PRIORITY, ROUND_STEP_KINDS, ROUND_STEP_LABEL } from "@/lib/round/steps";
 import type { StoredItem } from "./keys";
 
@@ -58,6 +63,12 @@ const PRACTICE: Record<
   string,
   { kinds: readonly string[]; label: Record<string, string>; priority: readonly string[]; showsPerfect: boolean }
 > = {
+  carry: {
+    kinds: SAKURA_STEP_KINDS,
+    label: SAKURA_STEP_LABEL,
+    priority: SAKURA_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
   time: {
     kinds: CLOCK_STEP_KINDS,
     label: CLOCK_STEP_LABEL,

@@ -19,6 +19,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット10問・20までのかず",
   },
   {
+    slug: "carry",
+    title: "くり上がり・くり下がり",
+    subject: "math",
+    grade: 1,
+    gradeLabel: "1〜2年生",
+    kind: "steps",
+    description: "8+5、13−8。さくらんぼの図と10のわくで、10のまとまりを作る手を1つずつ。",
+    available: true,
+    scale: "1セット4問・たし算とひき算",
+  },
+  {
     slug: "times-table",
     title: "九九",
     subject: "math",
