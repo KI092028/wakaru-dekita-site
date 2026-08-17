@@ -29,6 +29,7 @@ import {
   PROTRACTOR_STEP_LABEL,
 } from "@/lib/protractor/steps";
 import { loadProgress, masteredCount, TOTAL_CELLS } from "@/lib/quiz/progress";
+import { loadTensProgress, masteredPairs, TOTAL_PAIR_KEYS } from "@/lib/tens/progress";
 import { RATE_ADVICE_PRIORITY, RATE_STEP_KINDS, RATE_STEP_LABEL } from "@/lib/rate/steps";
 import {
   SAKURA_ADVICE_PRIORITY,
@@ -144,6 +145,11 @@ const PRACTICE: Record<
  */
 export function summarize(item: StoredItem): Summary | null {
   if (item.kind === "map") {
+    if (item.slug === "tens") {
+      const progress = loadTensProgress();
+      if (Object.keys(progress).length === 0) return null;
+      return { kind: "map", done: masteredPairs(progress), total: TOTAL_PAIR_KEYS, unit: "組" };
+    }
     if (item.slug === "times-table") {
       const progress = loadProgress();
       if (Object.keys(progress).length === 0) return null;

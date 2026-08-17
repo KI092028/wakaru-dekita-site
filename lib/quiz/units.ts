@@ -19,6 +19,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット10問・20までのかず",
   },
   {
+    slug: "tens",
+    title: "10のなかま",
+    subject: "math",
+    grade: 1,
+    gradeLabel: "1年生〜",
+    kind: "drill",
+    description: "「7といくつで10？」ぜんぶで9つ。くり上がり・くり下がりの土台です。",
+    available: true,
+    scale: "9組・1セット10問",
+  },
+  {
     slug: "carry",
     title: "くり上がり・くり下がり",
     subject: "math",

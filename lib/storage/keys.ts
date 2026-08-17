@@ -24,6 +24,7 @@
 
 import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
+import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
 import { COLUMN_STORAGE_KEY } from "@/lib/column/rounds";
 import { DIVISION_STORAGE_KEY } from "@/lib/division/record";
 import { GEO_STORAGE_KEY } from "@/lib/geo/progress";
@@ -76,6 +77,13 @@ export const storedItems: StoredItem[] = [
     label: "県庁所在地",
     kind: "map",
     what: "県名とちがう18県のうち、どこを覚えたか",
+  },
+  {
+    key: TENS_STORAGE_KEY,
+    slug: "tens",
+    label: "10のなかま",
+    kind: "map",
+    what: "9つの なかまのうち、どれを覚えたか",
   },
   {
     key: SAKURA_STORAGE_KEY,
