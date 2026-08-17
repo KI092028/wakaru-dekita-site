@@ -23,6 +23,7 @@
 | `/learn/add-sub` | たし算・ひき算 | ドリル |
 | `/learn/tens` | 10のなかま（10の合成・分解） | ドリル |
 | `/learn/carry` | くり上がり・くり下がり（さくらんぼ） | 1手ずつ |
+| `/learn/times-meaning` | かけ算の意味（1つ分といくつ分） | 図で考える |
 | `/learn/times-table` | 九九（81マスの九九マップ付き） | ドリル |
 | `/learn/fractions` | 分数（通分・約分） | ドリル |
 | `/learn/column-add-sub` | たし算・ひき算のひっ算 | 1手ずつ |

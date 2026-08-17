@@ -41,6 +41,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット4問・たし算とひき算",
   },
   {
+    slug: "times-meaning",
+    title: "かけ算の意味",
+    subject: "math",
+    grade: 2,
+    gradeLabel: "2〜3年生",
+    kind: "figure",
+    description: "九九は言えるのに文しょうだいで式が立てられない、を正面から。絵から1つ分といくつ分をさがします。",
+    available: true,
+    scale: "1セット4問・入れかえも見る",
+  },
+  {
     slug: "times-table",
     title: "九九",
     subject: "math",

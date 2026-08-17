@@ -30,6 +30,11 @@ import {
 } from "@/lib/protractor/steps";
 import { loadProgress, masteredCount, TOTAL_CELLS } from "@/lib/quiz/progress";
 import { loadTensProgress, masteredPairs, TOTAL_PAIR_KEYS } from "@/lib/tens/progress";
+import {
+  TIMES_ADVICE_PRIORITY,
+  TIMES_STEP_KINDS,
+  TIMES_STEP_LABEL,
+} from "@/lib/times/steps";
 import { RATE_ADVICE_PRIORITY, RATE_STEP_KINDS, RATE_STEP_LABEL } from "@/lib/rate/steps";
 import {
   SAKURA_ADVICE_PRIORITY,
@@ -64,6 +69,12 @@ const PRACTICE: Record<
   string,
   { kinds: readonly string[]; label: Record<string, string>; priority: readonly string[]; showsPerfect: boolean }
 > = {
+  "times-meaning": {
+    kinds: TIMES_STEP_KINDS,
+    label: TIMES_STEP_LABEL,
+    priority: TIMES_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
   carry: {
     kinds: SAKURA_STEP_KINDS,
     label: SAKURA_STEP_LABEL,
