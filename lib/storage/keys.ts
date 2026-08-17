@@ -22,6 +22,7 @@
  * ここに書き写すと、片方だけ直したときに気づけない。
  */
 
+import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
 import { COLUMN_STORAGE_KEY } from "@/lib/column/rounds";
 import { DIVISION_STORAGE_KEY } from "@/lib/division/record";
 import { GEO_STORAGE_KEY } from "@/lib/geo/progress";
@@ -65,6 +66,13 @@ export const storedItems: StoredItem[] = [
     label: "都道府県",
     kind: "map",
     what: "47県のうち、どの県を覚えたか",
+  },
+  {
+    key: CLOCK_STORAGE_KEY,
+    slug: "time",
+    label: "時こく・時間",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
   },
   {
     key: COLUMN_STORAGE_KEY.integer,

@@ -5,6 +5,7 @@
  * 画面側で分岐せずに済むよう、ここで同じ形にそろえてから渡す。
  */
 
+import { CLOCK_ADVICE_PRIORITY, CLOCK_STEP_KINDS, CLOCK_STEP_LABEL } from "@/lib/clock/steps";
 import { COLUMN_ADVICE_PRIORITY, COLUMN_STEP_KINDS, COLUMN_STEP_LABEL } from "@/lib/column/steps";
 import { ADVICE_PRIORITY, NO_ERRORS, STEP_LABEL, type StepKind } from "@/lib/division/steps";
 import { PREFECTURES } from "@/lib/geo/prefectures";
@@ -55,6 +56,12 @@ const PRACTICE: Record<
   string,
   { kinds: readonly string[]; label: Record<string, string>; priority: readonly string[]; showsPerfect: boolean }
 > = {
+  time: {
+    kinds: CLOCK_STEP_KINDS,
+    label: CLOCK_STEP_LABEL,
+    priority: CLOCK_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
   "column-add-sub": {
     kinds: COLUMN_STEP_KINDS,
     label: COLUMN_STEP_LABEL,
