@@ -184,6 +184,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット10問・通分と約分",
   },
   {
+    slug: "triangle-area",
+    title: "三角形・平行四辺形の面積",
+    subject: "math",
+    grade: 5,
+    gradeLabel: "5年生",
+    kind: "figure",
+    description: "なぜ÷2なのか、高さはどこか。切ってうつす・回してつける手から公式を出します。",
+    available: true,
+    scale: "1セット4問・高さが外に出る形も",
+  },
+  {
     slug: "per-unit",
     title: "単位量あたりの大きさ",
     subject: "math",

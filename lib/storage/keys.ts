@@ -27,6 +27,7 @@ import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
 import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
 import { TIMES_STORAGE_KEY } from "@/lib/times/generate";
+import { TRI_STORAGE_KEY } from "@/lib/tri/generate";
 import { COLUMN_STORAGE_KEY } from "@/lib/column/rounds";
 import { DIVISION_STORAGE_KEY } from "@/lib/division/record";
 import { GEO_STORAGE_KEY } from "@/lib/geo/progress";
@@ -105,6 +106,13 @@ export const storedItems: StoredItem[] = [
     key: AREA_STORAGE_KEY,
     slug: "area-perimeter",
     label: "面積と周りの長さ",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: TRI_STORAGE_KEY,
+    slug: "triangle-area",
+    label: "三角形・平行四辺形の面積",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },
