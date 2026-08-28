@@ -140,6 +140,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット4問・位の指定と上からのけた",
   },
   {
+    slug: "area-perimeter",
+    title: "面積と周りの長さ",
+    subject: "math",
+    grade: 4,
+    gradeLabel: "4年生",
+    kind: "figure",
+    description: "まわりの長さは ふちを なぞる、面積は マスを 数える。同じまわりでも面積が変わることを動かして見ます。",
+    available: true,
+    scale: "1セット4問・形を変える2問つき",
+  },
+  {
     slug: "angle",
     title: "角の大きさ",
     subject: "math",

@@ -22,6 +22,7 @@ import {
   PERCENT_STEP_KINDS,
   PERCENT_STEP_LABEL,
 } from "@/lib/percent/steps";
+import { AREA_ADVICE_PRIORITY, AREA_STEP_KINDS, AREA_STEP_LABEL } from "@/lib/area/steps";
 import { loadRecord, weakness } from "@/lib/practice/record";
 import {
   PROTRACTOR_ADVICE_PRIORITY,
@@ -69,6 +70,12 @@ const PRACTICE: Record<
   string,
   { kinds: readonly string[]; label: Record<string, string>; priority: readonly string[]; showsPerfect: boolean }
 > = {
+  "area-perimeter": {
+    kinds: AREA_STEP_KINDS,
+    label: AREA_STEP_LABEL,
+    priority: AREA_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
   "times-meaning": {
     kinds: TIMES_STEP_KINDS,
     label: TIMES_STEP_LABEL,

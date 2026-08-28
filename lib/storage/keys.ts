@@ -22,6 +22,7 @@
  * ここに書き写すと、片方だけ直したときに気づけない。
  */
 
+import { AREA_STORAGE_KEY } from "@/lib/area/generate";
 import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
 import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
@@ -97,6 +98,13 @@ export const storedItems: StoredItem[] = [
     key: TIMES_STORAGE_KEY,
     slug: "times-meaning",
     label: "かけ算の意味",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: AREA_STORAGE_KEY,
+    slug: "area-perimeter",
+    label: "面積と周りの長さ",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },
