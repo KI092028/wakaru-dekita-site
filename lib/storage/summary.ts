@@ -29,6 +29,11 @@ import {
   FACTOR_STEP_KINDS,
   FACTOR_STEP_LABEL,
 } from "@/lib/factors/steps";
+import {
+  DECIMAL_ADVICE_PRIORITY,
+  DECIMAL_STEP_KINDS,
+  DECIMAL_STEP_LABEL,
+} from "@/lib/decimal/steps";
 import { loadRecord, weakness } from "@/lib/practice/record";
 import {
   PROTRACTOR_ADVICE_PRIORITY,
@@ -92,6 +97,12 @@ const PRACTICE: Record<
     kinds: FACTOR_STEP_KINDS,
     label: FACTOR_STEP_LABEL,
     priority: FACTOR_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  "decimal-size": {
+    kinds: DECIMAL_STEP_KINDS,
+    label: DECIMAL_STEP_LABEL,
+    priority: DECIMAL_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   "times-meaning": {

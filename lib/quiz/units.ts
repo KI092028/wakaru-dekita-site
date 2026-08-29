@@ -184,6 +184,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット10問・通分と約分",
   },
   {
+    slug: "decimal-size",
+    title: "小数のかけ算・わり算",
+    subject: "math",
+    grade: 5,
+    gradeLabel: "5年生",
+    kind: "figure",
+    description: "6×0.8は6より小さい。計算する前に、答えが大きくなるか小さくなるかを数直線で決めます。",
+    available: true,
+    scale: "1セット4問・きまりの表つき",
+  },
+  {
     slug: "multiples-factors",
     title: "公倍数・公約数",
     subject: "math",

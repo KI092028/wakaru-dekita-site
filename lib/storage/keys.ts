@@ -24,6 +24,7 @@
 
 import { AREA_STORAGE_KEY } from "@/lib/area/generate";
 import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
+import { DECIMAL_STORAGE_KEY } from "@/lib/decimal/generate";
 import { FACTOR_STORAGE_KEY } from "@/lib/factors/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
 import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
@@ -121,6 +122,13 @@ export const storedItems: StoredItem[] = [
     key: FACTOR_STORAGE_KEY,
     slug: "multiples-factors",
     label: "公倍数・公約数",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: DECIMAL_STORAGE_KEY,
+    slug: "decimal-size",
+    label: "小数のかけ算・わり算",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },

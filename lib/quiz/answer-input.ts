@@ -28,11 +28,27 @@ export function emptyInput(answer: Value): AnswerInput {
  *
  * 先頭の 0 は「0」単独のときだけ許す。たし算・ひき算では答えが 0 になりうるので
  * 0 そのものは入力できる必要があるが、「05」は入力させたくない。
+ *
+ * ## 小数点
+ *
+ * `.` を送れるのは、小数を打たせる単元だけ（キーパッド側で `.` の
+ * キーを出したときだけ送られてくる）。ここでは
+ *
+ * - **2つめの `.` は受けつけない**
+ * - **先頭には置けない**（`.5` ではなく `0.5` と打たせる）
+ * - 桁数の上限は**数字だけ**で数える。`.` で1桁ぶん損をしないように
+ *
+ * の3つだけを見る。0.5 のような値を扱う単元がこれまで無かったので、
+ * 既存の単元は `.` を送らず、動きは何も変わらない。
  */
 function pushDigit(current: string, digit: string, maxDigits: number): string {
+  if (digit === ".") {
+    if (current === "" || current.includes(".")) return current;
+    return current + ".";
+  }
   if (current === "") return digit;
   if (current === "0") return digit === "0" ? current : digit;
-  if (current.length >= maxDigits) return current;
+  if (current.replace(".", "").length >= maxDigits) return current;
   return current + digit;
 }
 
@@ -71,7 +87,8 @@ export function selectSlot(input: AnswerInput, slot: Slot): AnswerInput {
 
 export function isComplete(input: AnswerInput): boolean {
   return input.kind === "number"
-    ? input.digits !== ""
+    ? // 「4.」のように小数点で終わっている間は、まだ打ちおわっていない
+      input.digits !== "" && !input.digits.endsWith(".")
     : input.numerator !== "" && input.denominator !== "";
 }
 
