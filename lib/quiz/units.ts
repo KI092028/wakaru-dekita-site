@@ -272,6 +272,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "県名とちがう18県",
   },
   {
+    slug: "romaji",
+    title: "ローマ字",
+    subject: "japanese",
+    grade: 3,
+    gradeLabel: "3年生〜",
+    kind: "drill",
+    description: "かなを見てローマ字で打つ。si でも shi でも正解にして、学校でならうほうを伝えます。",
+    available: true,
+    scale: "清音46字・1セット10問",
+  },
+  {
     slug: "manuscript",
     title: "原稿用紙",
     subject: "japanese",

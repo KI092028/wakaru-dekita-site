@@ -46,6 +46,11 @@ import {
   PROTRACTOR_STEP_LABEL,
 } from "@/lib/protractor/steps";
 import { loadProgress, masteredCount, TOTAL_CELLS } from "@/lib/quiz/progress";
+import {
+  loadRomajiProgress,
+  masteredCount as masteredKana,
+  TOTAL_KANA,
+} from "@/lib/romaji/progress";
 import { loadTensProgress, masteredPairs, TOTAL_PAIR_KEYS } from "@/lib/tens/progress";
 import {
   TIMES_ADVICE_PRIORITY,
@@ -207,6 +212,11 @@ export function summarize(item: StoredItem): Summary | null {
       const progress = loadTensProgress();
       if (Object.keys(progress).length === 0) return null;
       return { kind: "map", done: masteredPairs(progress), total: TOTAL_PAIR_KEYS, unit: "組" };
+    }
+    if (item.slug === "romaji") {
+      const progress = loadRomajiProgress();
+      if (Object.keys(progress).length === 0) return null;
+      return { kind: "map", done: masteredKana(progress), total: TOTAL_KANA, unit: "字" };
     }
     if (item.slug === "times-table") {
       const progress = loadProgress();

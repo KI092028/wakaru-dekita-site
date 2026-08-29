@@ -28,6 +28,7 @@ import { FRACDIV_STORAGE_KEY } from "@/lib/fracdiv/generate";
 import { DECIMAL_STORAGE_KEY } from "@/lib/decimal/generate";
 import { FACTOR_STORAGE_KEY } from "@/lib/factors/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
+import { ROMAJI_STORAGE_KEY } from "@/lib/romaji/progress";
 import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
 import { TIMES_STORAGE_KEY } from "@/lib/times/generate";
 import { TRI_STORAGE_KEY } from "@/lib/tri/generate";
@@ -139,6 +140,13 @@ export const storedItems: StoredItem[] = [
     label: "分数のわり算",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: ROMAJI_STORAGE_KEY,
+    slug: "romaji",
+    label: "ローマ字",
+    kind: "map",
+    what: "46字のうち、どの字を書けたか",
   },
   {
     key: CLOCK_STORAGE_KEY,
