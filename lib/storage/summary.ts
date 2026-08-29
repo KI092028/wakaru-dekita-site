@@ -34,6 +34,11 @@ import {
   DECIMAL_STEP_KINDS,
   DECIMAL_STEP_LABEL,
 } from "@/lib/decimal/steps";
+import {
+  FRACDIV_ADVICE_PRIORITY,
+  FRACDIV_STEP_KINDS,
+  FRACDIV_STEP_LABEL,
+} from "@/lib/fracdiv/steps";
 import { loadRecord, weakness } from "@/lib/practice/record";
 import {
   PROTRACTOR_ADVICE_PRIORITY,
@@ -103,6 +108,12 @@ const PRACTICE: Record<
     kinds: DECIMAL_STEP_KINDS,
     label: DECIMAL_STEP_LABEL,
     priority: DECIMAL_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  "fraction-divide": {
+    kinds: FRACDIV_STEP_KINDS,
+    label: FRACDIV_STEP_LABEL,
+    priority: FRACDIV_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   "times-meaning": {

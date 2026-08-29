@@ -32,6 +32,7 @@
 | 三角形・平行四辺形の面積 | `/learn/triangle-area` |
 | 公倍数・公約数 | `/learn/multiples-factors` |
 | 小数のかけ算・わり算 | `/learn/decimal-size` |
+| 分数のわり算 | `/learn/fraction-divide` |
 | 単位量あたりの大きさ | `/learn/per-unit` |
 | 割合・百分率 | `/learn/percent` |
 | 時こく・時間 | `/learn/time` |

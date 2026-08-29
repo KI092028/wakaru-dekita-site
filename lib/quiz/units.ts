@@ -239,6 +239,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット4問・ふえる／へるも",
   },
   {
+    slug: "fraction-divide",
+    title: "分数のわり算",
+    subject: "math",
+    grade: 6,
+    gradeLabel: "6年生",
+    kind: "figure",
+    description: "なぜひっくり返してかけるのか。分けて集める2手に分けると、理由がそのまま見えます。",
+    available: true,
+    scale: "1セット4問・二重数直線",
+  },
+  {
     slug: "prefectures",
     title: "都道府県",
     subject: "social",

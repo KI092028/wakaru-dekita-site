@@ -24,6 +24,7 @@
 
 import { AREA_STORAGE_KEY } from "@/lib/area/generate";
 import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
+import { FRACDIV_STORAGE_KEY } from "@/lib/fracdiv/generate";
 import { DECIMAL_STORAGE_KEY } from "@/lib/decimal/generate";
 import { FACTOR_STORAGE_KEY } from "@/lib/factors/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
@@ -129,6 +130,13 @@ export const storedItems: StoredItem[] = [
     key: DECIMAL_STORAGE_KEY,
     slug: "decimal-size",
     label: "小数のかけ算・わり算",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: FRACDIV_STORAGE_KEY,
+    slug: "fraction-divide",
+    label: "分数のわり算",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },
