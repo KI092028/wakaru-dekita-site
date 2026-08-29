@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { RoundGame } from "@/components/round/round-game";
 
@@ -12,6 +13,12 @@ export default function RoundingPage() {
   return (
     <main className="flex-1 bg-white py-12">
       <div className="mx-auto max-w-3xl px-6">
+        <Link
+          href="/learn"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← たんげんいちらんに戻る
+        </Link>
         <h1 className="mb-2 text-center text-3xl font-bold">がい数（四捨五入）</h1>
         <p className="mb-8 text-center text-muted-foreground">
           四捨五入で 見る位を、じぶんで さがそう。

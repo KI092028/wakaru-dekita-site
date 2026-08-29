@@ -29,6 +29,14 @@ const ROOT = "out";
 const BASE = process.env.BASE ?? "http://localhost:8791";
 /** 指で押せる大きさの下限 */
 const MIN = 44;
+/**
+ * 1ページを何回ひらいて測るか。
+ *
+ * **出題は毎回ちがう。** 図の大きさが問題の形で変わる単元があり、
+ * 1回だけ測ると、通ったり落ちたりする（三角形で実際にそうなった）。
+ * 何回かひらいて、いちばん小さかったものを見る。
+ */
+const TRIES = 4;
 
 /**
  * 下回ってよいもの。**理由が書けるものだけ。**
@@ -46,6 +54,12 @@ const ALLOWED = [
   // 「ぶんぼへ」（下いっぱいの大きなボタン）で分母へ移れるようにしてある。
   // 枠のタップは、そこに気づいた人のための近道という位置づけ
   { selector: "[aria-label='ぶんし'], [aria-label='ぶんぼ']", why: "分数の枠（キーパッドに移動ボタンがある）" },
+  // 三角形の辺（底辺・高さ・ななめの辺）。実測 40px。
+  // 3本は頂点で交わるので、44pxに届かせると高さの帯の8割が他の辺と重なる。
+  // そうなると**外したときに「別の辺をえらんだ」ことになる。**
+  // 3つから1つをえらぶ手なので、外して何も起きない（もう一度押せる）ほうが安全。
+  // 図はカードのふちいっぱいまで広げてあり、40は重ならずに取れるいちばん大きい値
+  { selector: "[data-hit='triangle-segment']", why: "三角形の辺（重ねると誤答になるため40pxで止めている）" },
 ];
 
 const pages = [];
@@ -67,10 +81,12 @@ const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 const findings = [];
 
 for (const path of pages) {
-  await page.goto(BASE + path, { waitUntil: "networkidle" });
-  await page.waitForTimeout(120);
+  const small = [];
+  for (let attempt = 0; attempt < TRIES; attempt++) {
+    await page.goto(BASE + path, { waitUntil: "networkidle" });
+    await page.waitForTimeout(120);
 
-  const small = await page.evaluate(
+    small.push(...(await page.evaluate(
     ({ MIN, ALLOWED }) => {
       const allowed = new Set();
       for (const { selector } of ALLOWED) {
@@ -98,8 +114,9 @@ for (const path of pages) {
       }
       return out;
     },
-    { MIN, ALLOWED }
-  );
+      { MIN, ALLOWED }
+    )));
+  }
 
   // 同じ形のものが並んでいるときは、いちばん小さいものだけを出す
   const worst = new Map();

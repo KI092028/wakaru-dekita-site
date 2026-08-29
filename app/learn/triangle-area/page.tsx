@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { TriGame } from "@/components/tri/tri-game";
 
@@ -12,6 +13,12 @@ export default function TriangleAreaPage() {
   return (
     <main className="flex-1 bg-white py-12">
       <div className="mx-auto max-w-3xl px-6">
+        <Link
+          href="/learn"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← たんげんいちらんに戻る
+        </Link>
         <h1 className="mb-2 text-center text-3xl font-bold">三角形・平行四辺形の面積</h1>
         <p className="mb-8 text-balance text-center text-muted-foreground">
           切って うつす。回して つける。公式は そのあとで 出てくるよ。

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { NumberPad } from "@/components/quiz/number-pad";
 import { NumberPlaces } from "@/components/round/number-places";
@@ -352,9 +353,7 @@ function Result({
 
         {tip && <p className="mb-6 text-sm">{tip.text}</p>}
 
-        <Button size="lg" onClick={onRestart}>
-          もういちど挑戦する
-        </Button>
+        <FinishActions onRestart={onRestart} />
 
         <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
           きろくはこの端末のブラウザにだけ保存されます。

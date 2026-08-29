@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { FigureBoard } from "@/components/tri/figure-board";
 import { NumberPad } from "@/components/quiz/number-pad";
@@ -202,7 +203,9 @@ export function TriGame() {
             <p className="text-sm leading-relaxed">{problem.story}</p>
           </div>
 
-          <div className="mb-4 -mx-2 sm:mx-0">
+          {/* 図はカードのふちいっぱいまで広げる。
+              辺を押させるので、図が小さいと当たり判定もいっしょに縮む */}
+          <div className="mb-4 -mx-5 sm:-mx-2">
             <FigureBoard
               figure={shown}
               motion={problem.motion}
@@ -542,9 +545,7 @@ function Result({
 
         {tip && <p className="mb-6 text-balance text-sm">{tip.text}</p>}
 
-        <Button size="lg" onClick={onRestart}>
-          もういちど挑戦する
-        </Button>
+        <FinishActions onRestart={onRestart} />
 
         <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
           きろくはこの端末のブラウザにだけ保存されます。

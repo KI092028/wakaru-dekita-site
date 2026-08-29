@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { LetterPad } from "@/components/romaji/letter-pad";
 import { RomajiTable } from "@/components/romaji/romaji-table";
@@ -201,9 +202,7 @@ function Result({
             </p>
           )}
 
-          <Button size="lg" onClick={onRestart}>
-            もういちど挑戦する
-          </Button>
+          <FinishActions onRestart={onRestart} />
 
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
             きろくはこの端末のブラウザにだけ保存されます。

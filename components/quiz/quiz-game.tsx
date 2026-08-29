@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnswerSlot, valueLabel } from "@/components/quiz/answer-slot";
 import { NumberPad } from "@/components/quiz/number-pad";
@@ -232,9 +233,7 @@ export function QuizGame({ title, unit }: Props) {
                 <p className="mt-1">のこり {TOTAL_CELLS - mastered} マス</p>
               </div>
             )}
-            <Button size="lg" onClick={restart}>
-              もういちど挑戦する
-            </Button>
+            <FinishActions onRestart={restart} />
           </CardContent>
         </Card>
       ) : (

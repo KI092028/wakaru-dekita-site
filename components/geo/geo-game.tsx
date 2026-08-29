@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { JapanMap, MapLegend, RegionZoomBar } from "@/components/geo/japan-map";
 import { cn } from "@/lib/utils";
@@ -450,14 +451,11 @@ function Result({
           <JapanMap region={region} progress={progress} interactive={false} showAllNames />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Button size="lg" onClick={onRetry}>
-            もういちど（{scopeLabel(region)}）
-          </Button>
+        <FinishActions onRestart={onRetry} restartLabel={`もういちど（${scopeLabel(region)}）`}>
           <Button size="lg" variant="outline" onClick={onChangeScope}>
             ほかの地方を えらぶ
           </Button>
-        </div>
+        </FinishActions>
 
         <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
           きろくはこの端末のブラウザにだけ保存されます。

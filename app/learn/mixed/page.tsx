@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { MixedGame } from "@/components/mixed/mixed-game";
 
@@ -12,6 +13,12 @@ export default function MixedPage() {
   return (
     <main className="flex-1 bg-white py-12">
       <div className="mx-auto max-w-3xl px-6">
+        <Link
+          href="/learn"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← たんげんいちらんに戻る
+        </Link>
         <h1 className="mb-2 text-center text-3xl font-bold">仮分数・帯分数</h1>
         <p className="mb-8 text-center text-muted-foreground">
           帯を 見ながら、同じ 大きさに 書きかえよう。

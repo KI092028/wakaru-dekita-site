@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { DivisionBoard } from "@/components/division/division-board";
 import { TimesTableAid } from "@/components/division/times-table-aid";
@@ -398,9 +399,7 @@ function Result({
           </p>
         )}
 
-        <Button size="lg" onClick={onRestart}>
-          もういちど挑戦する
-        </Button>
+        <FinishActions onRestart={onRestart} />
 
         <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
           きろくはこの端末のブラウザにだけ保存されます。

@@ -46,8 +46,21 @@ const BAND = 16;
  * 見た目の帯をこの太さにすると図形をのみこんで、どの辺なのか分からなくなる。
  * そこで**透明な広い帯をかさねる。**
  * 見た目がどこを押すかを教え、当たり判定が指のぶんのゆとりを持つ。
+ *
+ * ## 40 で止めている理由（44px には届いていない）
+ *
+ * 3本の辺は 三角形の 頂点で 交わるので、**太くするほど 帯どうしが 重なる。**
+ * 44px に届かせようとすると、高さの帯（短い）の 8割ちかくが
+ * 底辺・ななめの辺と かさなってしまう。
+ *
+ * そうなると、ねらいを 外したときに **「別の辺を えらんだ」ことになる。**
+ * ここは 3つから 1つを えらぶ手なので、外して 何も 起きない（もう一度 押せる）
+ * ほうが、外して 別の答えに なるより ずっと 安全。
+ *
+ * 図そのものは カードの ふちいっぱいまで 広げてある（これで 37→40px）。
+ * この40は、重ならずに 取れる いちばん 大きい 値。
  */
-const HIT = 34;
+const HIT = 40;
 
 const PRIMARY = "hsl(24 95% 58%)";
 const COPY = "hsl(200 70% 50%)";
@@ -93,7 +106,7 @@ export function FigureBoard({
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="mx-auto block h-auto w-full max-w-[24rem]"
+      className="mx-auto block h-auto w-full max-w-[26rem]"
       role="img"
       aria-label={`底辺${figure.base}cm、高さ${figure.height}cm の${
         figure.kind === "parallelogram" ? "平行四辺形" : "三角形"
@@ -171,8 +184,10 @@ export function FigureBoard({
                 opacity={chosen ? 0.9 : 0.6}
                 pointerEvents="none"
               />
-              {/* 押せる範囲。見た目には出さないが、ここが指のねらうところ */}
+              {/* 押せる範囲。見た目には出さないが、ここが指のねらうところ。
+                  data-hit は、当たり判定を測るスクリプトから見分けるための印 */}
               <rect
+                data-hit="triangle-segment"
                 x={-length / 2}
                 y={-HIT / 2}
                 width={length}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { NumberPad } from "@/components/quiz/number-pad";
 import { TenFrame } from "@/components/sakura/cherry";
@@ -147,9 +148,7 @@ export function TensGame() {
             <PairMap progress={progress} />
           </div>
 
-          <Button size="lg" onClick={restart}>
-            もういちど挑戦する
-          </Button>
+          <FinishActions onRestart={restart} />
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
             きろくはこの端末のブラウザにだけ保存されます。
           </p>

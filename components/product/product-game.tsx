@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FinishActions } from "@/components/learn/finish-actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { PLAYER_LABEL, PLAYER_MARK, ProductBoard } from "@/components/product/product-board";
 import { cn } from "@/lib/utils";
@@ -92,9 +93,7 @@ export function ProductGame() {
                   ? "たて・よこ・ななめに 4つ ならびました"
                   : `もう 取れる マスが ありません。${counts[1]} 対 ${counts[2]}`}
               </p>
-              <Button size="lg" onClick={restart}>
-                もういちど
-              </Button>
+              <FinishActions onRestart={restart} restartLabel="もういちど" />
             </div>
           ) : (
             <>

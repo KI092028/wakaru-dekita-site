@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SakuraGame } from "@/components/sakura/sakura-game";
 
@@ -12,6 +13,12 @@ export default function CarryPage() {
   return (
     <main className="flex-1 bg-white py-12">
       <div className="mx-auto max-w-3xl px-6">
+        <Link
+          href="/learn"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← たんげんいちらんに戻る
+        </Link>
         <h1 className="mb-2 text-center text-3xl font-bold">くり上がり・くり下がり</h1>
         <p className="mb-8 text-center text-muted-foreground">
           10の まとまりを 作って、さくらんぼで 分けよう。
