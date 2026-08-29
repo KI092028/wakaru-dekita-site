@@ -5,7 +5,10 @@ import japanMap from "@svg-maps/japan";
 
 type MapLocation = { id: string; name: string; path: string };
 
+import { useId } from "react";
+
 import { cn } from "@/lib/utils";
+import { insetPlacement, largestIsland, padBox } from "@/lib/geo/inset";
 import {
   MAP_VIEW_BOX,
   PREFECTURES,
@@ -116,10 +119,39 @@ export function JapanMap({
   // 出題の範囲にある県だけを描く。そのうえで、寄せて見る範囲を決める
   const list = region === null ? PREFECTURES : prefecturesOf(region);
   const focus = zoom ?? region;
+
+  /**
+   * 九州・沖縄に寄ったときだけ、沖縄を別枠に出す。
+   *
+   * 沖縄は九州のはるか南西にあるので、そのまま入れると
+   * **枠の 82% が海になり、九州が 42% の大きさでしか描けない**
+   * （実測：沖縄こみ 167×237、九州だけ 69×104）。
+   * 紙の地図が沖縄を四角い別枠に出しているのと同じ理由。
+   *
+   * 別枠に出しても、**押せば答えになる**ことは変えない。
+   * 出題からは外さない（47県のうちの1つなので）。
+   */
+  // 別枠は中身を切り取るので、この地図だけの id が要る
+  // （けっか画面など、1つのページに地図が2つ出ることがある）
+  const clipId = `okinawa-inset-${useId()}`;
+
+  const insetting = focus === "kyushu";
+  const mainList = insetting ? list.filter((p) => p.code !== OKINAWA_CODE) : list;
+  const insetList = insetting ? list.filter((p) => p.code === OKINAWA_CODE) : [];
+
   const view =
     focus === null
       ? { x: 0, y: 0, width: MAP_VIEW_BOX.width, height: MAP_VIEW_BOX.height }
-      : padded(bounds(prefecturesOf(focus)));
+      : padded(
+          bounds(
+            insetting
+              ? prefecturesOf(focus).filter((p) => p.code !== OKINAWA_CODE)
+              : prefecturesOf(focus)
+          )
+        );
+
+  /** 別枠の位置と大きさ。**左下**に置く（紙の地図と同じで、ここは海しかない） */
+  const inset = insetList.length > 0 ? insetPlacement(view, OKINAWA_WINDOW) : null;
 
   /** 全国を見ているあいだは、押しても答えにならず、その地方へ寄るだけ */
   const zoomingOnly = interactive && focus === null && onZoom !== undefined;
@@ -177,17 +209,17 @@ export function JapanMap({
     );
   };
 
-  return (
-    <svg
-      viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
-      className="mx-auto block w-full select-none"
-      style={{ touchAction: "manipulation", maxHeight: "68vh" }}
-      role="group"
-      aria-label={focus === null ? "日本全国の白地図" : `${REGION_LABEL[focus]}地方の白地図`}
-    >
+  /**
+   * 県のひとまとまりを描く。当たり判定・かたち・地方のふちどり・名前の4枚。
+   *
+   * 本体と別枠で**同じものを2回**呼ぶ。別枠だけ別の描き方にすると、
+   * 色や名前の出しかたが片方だけ古くなる。
+   */
+  const layers = (items: Prefecture[]) => (
+    <>
       {/* 当たり判定の丸。パスより下に敷き、押しそこねを拾う */}
       {interactive &&
-        list.map((p) => (
+        items.map((p) => (
           <circle
             key={`hit-${p.code}`}
             cx={p.cx}
@@ -202,7 +234,7 @@ export function JapanMap({
           />
         ))}
 
-      {list.map((p) => {
+      {items.map((p) => {
         const fill = fillOf(p);
         return (
           <path
@@ -222,25 +254,94 @@ export function JapanMap({
       {/* 地方の枠。同じ地方の県を、その地方の色で太く縁どる */}
       {shownRegions.map((r) => (
         <g key={`edge-${r}`} className="pointer-events-none" fill="none">
-          {prefecturesOf(r).map((p) => (
-            <path
-              key={p.code}
-              d={PATHS[p.mapId]}
-              stroke={regionLine(r)}
-              strokeWidth={1.6 * scale}
-              strokeOpacity={0.55}
-              strokeLinejoin="round"
-            />
-          ))}
+          {items
+            .filter((p) => p.region === r)
+            .map((p) => (
+              <path
+                key={p.code}
+                d={PATHS[p.mapId]}
+                stroke={regionLine(r)}
+                strokeWidth={1.6 * scale}
+                strokeOpacity={0.55}
+                strokeLinejoin="round"
+              />
+            ))}
         </g>
       ))}
 
       {/* 名前。**一度でも正解した県には出る**（→ requirements 5.13） */}
-      {list.map((p) => nameOf(p))}
+      {items.map((p) => nameOf(p))}
+    </>
+  );
 
+  return (
+    <svg
+      viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
+      className="mx-auto block w-full select-none"
+      style={{ touchAction: "manipulation", maxHeight: "68vh" }}
+      role="group"
+      aria-label={focus === null ? "日本全国の白地図" : `${REGION_LABEL[focus]}地方の白地図`}
+    >
+      {layers(mainList)}
+
+      {/* 沖縄の別枠。**中身は本体とまったく同じもの**を、縮めて左下に置く */}
+      {inset && (
+        <>
+          <rect
+            x={inset.x}
+            y={inset.y}
+            width={inset.width}
+            height={inset.height}
+            rx={2 * scale}
+            fill="white"
+            stroke="hsl(20 15% 55%)"
+            strokeWidth={0.7 * scale}
+            strokeDasharray={`${2.5 * scale} ${1.8 * scale}`}
+          />
+          <clipPath id={clipId}>
+            <rect x={inset.x} y={inset.y} width={inset.width} height={inset.height} />
+          </clipPath>
+          {/* 本島から離れた島は、別枠からはみ出すので切り取る */}
+          <g clipPath={`url(#${clipId})`}>
+            <g transform={inset.transform}>{layers(insetList)}</g>
+          </g>
+          {/* 別枠ぜんたいを押せるようにする。
+              中を縮めているので、丸の当たり判定もいっしょに小さくなるため */}
+          {interactive && !zoomingOnly && (
+            <rect
+              x={inset.x}
+              y={inset.y}
+              width={inset.width}
+              height={inset.height}
+              fill="transparent"
+              className="cursor-pointer"
+              data-pref={insetList[0].name}
+              data-region={insetList[0].region}
+              aria-label={insetList[0].name}
+              role="button"
+              onClick={() => tap(insetList[0])}
+            />
+          )}
+        </>
+      )}
     </svg>
   );
 }
+
+/** 沖縄。九州・沖縄に寄ったときだけ、別枠に出す */
+const OKINAWA_CODE = 47;
+
+/**
+ * 別枠に映す範囲。**沖縄本島のまわりだけ。**
+ *
+ * 沖縄の輪郭ぜんたい（125.6×94.3）を別枠に入れると、
+ * こんどは別枠の中がほとんど海になる（本島はその 2%）。
+ * 本島だけに寄せると 9.2倍 大きく描ける。
+ * 離れた島は別枠からはみ出すので、切り取って見せない。
+ *
+ * 位置は地図データから計算する。書き写すと、地図が新しくなったときに気づけない。
+ */
+const OKINAWA_WINDOW = padBox(largestIsland(PATHS.okinawa), 0.22);
 
 /** 地方を大きく描くときに、まわりに少し余白をとる。 */
 function padded(box: { x: number; y: number; width: number; height: number }) {

@@ -611,6 +611,7 @@ Node.js から直接呼べる（UIに依存していないため）。多数の�
 | `scripts/audit-pages.mjs` | 書き出した**全ページ**をスマホ幅とPC幅で開き、JSエラー・**横のはみ出し**・`<title>`／`<h1>` の有無を見る |
 | `scripts/check-storage-keys.ts` | ソースにある `"wakaru-dekita:..."` と、`lib/storage/keys.ts` の一覧を突き合わせる |
 | `scripts/check-tap-targets.mjs` | 全ページの**押せるものの大きさ**をスマホ幅で測る（下限 44px） |
+| `scripts/check-geo.ts` | 日本地図の別枠（沖縄）。映す範囲・かぶり・押せる大きさ |
 | `scripts/check-<単元>.ts` | その単元の出題と判定。**500セット規模**で回す |
 
 使い方は各ファイルの先頭に書いてある。
