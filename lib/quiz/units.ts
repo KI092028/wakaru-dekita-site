@@ -52,6 +52,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット4問・入れかえも見る",
   },
   {
+    slug: "product-game",
+    title: "かけ算じんとり",
+    subject: "math",
+    grade: 3,
+    gradeLabel: "3年生〜",
+    kind: "game",
+    description: "1台を2人で。こまを1つ動かして、かけ算の答えのマスを取る。4つならべたら勝ち。",
+    available: true,
+    scale: "6×6の盤・2人で対戦",
+  },
+  {
     slug: "times-table",
     title: "九九",
     subject: "math",
