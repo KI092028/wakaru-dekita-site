@@ -244,7 +244,9 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "rounded-full px-3 py-1.5 text-sm font-bold transition-colors",
+        // 44px は指で押せる下限。py だけで高さを作ると文字の大きさに引きずられるので、
+        // min-h で下から支える
+        "inline-flex min-h-[44px] items-center rounded-full px-4 text-sm font-bold transition-colors",
         active
           ? "bg-primary text-primary-foreground"
           : (className ?? "bg-white text-muted-foreground hover:text-foreground")

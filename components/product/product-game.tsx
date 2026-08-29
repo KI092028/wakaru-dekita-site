@@ -222,7 +222,8 @@ function FactorRow({
         {label}
         {locked && "（この番は 動かせません）"}
       </p>
-      <div className="grid grid-cols-9 gap-1">
+      {/* 9列に並べると1つ33pxしかなく、指で押せない。5列2段にする */}
+      <div className="grid grid-cols-5 gap-1.5">
         {FACTORS.map((value) => {
           const chosen = here === value;
           const preview = state.opened ? previewOf(state, which, value) : null;
@@ -234,7 +235,7 @@ function FactorRow({
               disabled={disabled}
               onClick={() => onTap(which, value)}
               className={cn(
-                "flex flex-col items-center justify-center rounded-lg border-2 py-1 text-base font-bold tabular-nums transition-colors",
+                "flex min-h-[44px] flex-col items-center justify-center rounded-lg border-2 py-1.5 text-base font-bold tabular-nums transition-colors",
                 chosen
                   ? "border-foreground bg-foreground text-background"
                   : "border-input bg-background hover:border-primary",

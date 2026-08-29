@@ -12,7 +12,7 @@ export default function TeachersUsePage() {
     <main className="flex-1 mx-auto max-w-3xl px-6 py-16">
       <Link
         href="/teachers"
-        className="mb-6 inline-block text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         ← 先生の方へ
       </Link>

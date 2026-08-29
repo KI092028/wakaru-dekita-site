@@ -15,7 +15,7 @@ export default function PerUnitPage() {
       <div className="mx-auto max-w-3xl px-6">
         <Link
           href="/learn"
-          className="mb-6 inline-block text-sm text-muted-foreground hover:text-foreground"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground"
         >
           ← たんげんいちらんに戻る
         </Link>

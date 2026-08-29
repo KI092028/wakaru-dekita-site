@@ -16,7 +16,9 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-11 px-5 py-2",
-        sm: "h-9 rounded-full px-4",
+        // 指で押せる下限（44px）に合わせる。h-9 では 36px しかなく、
+        // 印刷・消す・はじめから のような、子どもが押すボタンが小さくなっていた
+        sm: "h-11 rounded-full px-4",
         lg: "h-14 rounded-full px-8 text-base"
       }
     },

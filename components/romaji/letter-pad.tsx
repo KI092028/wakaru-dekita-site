@@ -26,7 +26,7 @@ type Props = {
 };
 
 const keyClass =
-  "h-12 rounded-xl border-2 border-input bg-background text-xl font-bold lowercase transition-colors " +
+  "h-12 min-w-[44px] rounded-xl border-2 border-input bg-background text-xl font-bold lowercase transition-colors " +
   "hover:border-primary hover:bg-primary/5 active:bg-primary/10 " +
   "disabled:opacity-40 disabled:hover:border-input disabled:hover:bg-background";
 
@@ -52,7 +52,8 @@ export function LetterPad({ onLetter, onBackspace, onSubmit, submitEnabled, disa
 
       <div>
         <p className="mb-1 text-center text-[11px] font-bold text-muted-foreground">しいん</p>
-        <div className="grid grid-cols-6 gap-2">
+        {/* 6列だと1つ43px。母音と同じ5列にそろえる（並びも読みやすくなる） */}
+        <div className="grid grid-cols-5 gap-2">
           {CONSONANT_KEYS.map((letter) => (
             <button
               key={letter}

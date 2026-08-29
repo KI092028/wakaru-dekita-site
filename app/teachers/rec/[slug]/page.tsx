@@ -68,7 +68,7 @@ export default function RecDetailPage({ params }: Props) {
       <article className="mx-auto max-w-2xl px-6">
         <Link
           href="/teachers/rec"
-          className="mb-6 inline-block text-sm text-muted-foreground transition-colors hover:text-foreground print:hidden"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground print:hidden"
         >
           ← 学級レク一覧に戻る
         </Link>

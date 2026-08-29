@@ -68,7 +68,8 @@ function Chips<T extends string | number>({
           onClick={() => onChange(option.value)}
           aria-pressed={option.value === value}
           className={cn(
-            "rounded-full border px-3 py-1 text-sm transition-colors",
+            // 44px は指で押せる下限。py だけで高さを作ると文字の大きさに引きずられる
+            "inline-flex min-h-[44px] items-center rounded-full border px-4 text-sm transition-colors",
             option.value === value
               ? "border-primary bg-primary text-primary-foreground"
               : "border-input bg-background hover:border-primary hover:bg-primary/5"
@@ -123,7 +124,8 @@ export function RecBrowser({ activities }: { activities: RecActivity[] }) {
             onClick={() => setNoMaterials((v) => !v)}
             aria-pressed={noMaterials}
             className={cn(
-              "rounded-full border px-3 py-1 text-sm transition-colors",
+              // 44px は指で押せる下限。py だけで高さを作ると文字の大きさに引きずられる
+            "inline-flex min-h-[44px] items-center rounded-full border px-4 text-sm transition-colors",
               noMaterials
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-input bg-background hover:border-primary hover:bg-primary/5"

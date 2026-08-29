@@ -16,7 +16,7 @@ export default function RecListPage() {
       <div className="mx-auto max-w-4xl px-6">
         <Link
           href="/teachers"
-          className="mb-6 inline-block text-sm text-muted-foreground transition-colors hover:text-foreground print:hidden"
+          className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground transition-colors hover:text-foreground print:hidden"
         >
           ← 先生の方へ
         </Link>

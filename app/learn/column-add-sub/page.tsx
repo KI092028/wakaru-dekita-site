@@ -13,7 +13,7 @@ export default function ColumnAddSubPage() {
   return (
     <main className="flex-1 bg-muted/30 py-12">
       <div className="mx-auto max-w-3xl px-6">
-        <Link href="/learn" className="mb-6 inline-block text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/learn" className="mb-6 -mx-1 inline-block px-1 py-3 text-sm text-muted-foreground hover:text-foreground">
           ← たんげんいちらんに戻る
         </Link>
         <h1 className="mb-2 text-center text-2xl font-bold">たし算・ひき算のひっ算</h1>

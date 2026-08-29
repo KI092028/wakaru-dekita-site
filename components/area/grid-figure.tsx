@@ -39,8 +39,18 @@ type Props = {
 const CELL = 24;
 /** 方眼のまわりに あける ふち。辺の帯と 数字が 入る */
 const PAD = 26;
-/** 辺の帯の 太さ。指で 押せる 太さにする */
+/** 辺の帯の 太さ（見た目） */
 const BAND = 13;
+/**
+ * 押せる範囲の太さ。**見た目より ずっと 太くする。**
+ *
+ * 帯を見た目のまま太くすると、長方形を のみこんで 図が 読めなくなる。
+ * かといって 13 のままだと、画面上では 15〜20px にしか ならない
+ * （viewBox は 画面の幅に合わせて 縮むので、書いた数字と 画面の大きさは 別）。
+ * そこで**透明な広い帯を 上に かさねる。**
+ * 見た目が どこを 押すかを 教え、当たり判定が 指の ぶんの ゆとりを 持つ。
+ */
+const HIT = 34;
 /**
  * 帯の 両はしを 少し 縮める。
  *
@@ -71,17 +81,18 @@ export function GridFigure({
   const rectW = cols * CELL;
   const rectH = rows * CELL;
 
-  const bandOf = (edge: Edge) => {
+  /** thickness を変えると、見た目の帯と、その下の押せる帯の両方を作れる */
+  const bandOf = (edge: Edge, thickness: number) => {
     const g = Math.min(GAP, rectW / 4, rectH / 4);
     switch (edge) {
       case "top":
-        return { x: x0 + g, y: y0 - BAND / 2, w: rectW - g * 2, h: BAND };
+        return { x: x0 + g, y: y0 - thickness / 2, w: rectW - g * 2, h: thickness };
       case "bottom":
-        return { x: x0 + g, y: y0 + rectH - BAND / 2, w: rectW - g * 2, h: BAND };
+        return { x: x0 + g, y: y0 + rectH - thickness / 2, w: rectW - g * 2, h: thickness };
       case "left":
-        return { x: x0 - BAND / 2, y: y0 + g, w: BAND, h: rectH - g * 2 };
+        return { x: x0 - thickness / 2, y: y0 + g, w: thickness, h: rectH - g * 2 };
       case "right":
-        return { x: x0 + rectW - BAND / 2, y: y0 + g, w: BAND, h: rectH - g * 2 };
+        return { x: x0 + rectW - thickness / 2, y: y0 + g, w: thickness, h: rectH - g * 2 };
     }
   };
 
@@ -144,7 +155,8 @@ export function GridFigure({
       {/* ふちの帯。押すと なぞれる */}
       {traceable &&
         EDGES.map((edge) => {
-          const b = bandOf(edge);
+          const b = bandOf(edge, BAND);
+          const hit = bandOf(edge, HIT);
           const done = traced.includes(edge);
           return (
             <g key={edge}>
@@ -155,8 +167,7 @@ export function GridFigure({
                 height={b.h}
                 rx={BAND / 2}
                 fill={done ? "hsl(142 62% 40%)" : "hsl(24 20% 82%)"}
-                className={cn(!done && onTrace && "cursor-pointer")}
-                onClick={() => !done && onTrace?.(edge)}
+                pointerEvents="none"
               />
               <text
                 x={b.x + b.w / 2}
@@ -170,6 +181,16 @@ export function GridFigure({
               >
                 {edgeLength(rows, cols, edge)}
               </text>
+              {/* 押せる範囲。見た目には出さないが、ここが指の ねらう ところ */}
+              <rect
+                x={hit.x}
+                y={hit.y}
+                width={hit.w}
+                height={hit.h}
+                fill="transparent"
+                className={cn(!done && onTrace && "cursor-pointer")}
+                onClick={() => !done && onTrace?.(edge)}
+              />
             </g>
           );
         })}

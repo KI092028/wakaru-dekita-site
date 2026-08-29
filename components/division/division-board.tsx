@@ -24,7 +24,12 @@ type Props = {
   onColumnTap: (column: number) => void;
 };
 
-const CELL = "flex h-10 items-center justify-center text-2xl font-bold tabular-nums";
+/**
+ * 1マスの大きさ。**押せるマス（商を立てる・おろす）と同じ大きさにそろえる。**
+ * ひっ算はけたをそろえて見せるものなので、押せるマスだけ大きくはできない。
+ * 40px では指で押せないので、列の幅とあわせて 44px にしてある。
+ */
+const CELL = "flex h-11 items-center justify-center text-2xl font-bold tabular-nums";
 
 /** 数を、右端が endCol になるように桁へ割り付ける。 */
 function digitsAt(value: number, endCol: number): Record<number, string> {
@@ -67,7 +72,7 @@ export function DivisionBoard({ plan, steps, stepIndex, input, wrong, onColumnTa
   return (
     <div
       className="mx-auto grid w-fit"
-      style={{ gridTemplateColumns: `auto repeat(${plan.digits.length}, 2.5rem)` }}
+      style={{ gridTemplateColumns: `auto repeat(${plan.digits.length}, 2.75rem)` }}
     >
       {/* 商の行 */}
       <Cell />

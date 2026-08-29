@@ -36,8 +36,18 @@ import {
 
 const CELL = 24;
 const PAD = 26;
-/** 辺を押すときの帯の太さ。指で押せる太さにする */
+/** 辺の帯の太さ（見た目） */
 const BAND = 16;
+/**
+ * 押せる範囲の太さ。**見た目より ずっと 太くする。**
+ *
+ * 16 のままだと画面上では 15〜18px にしかならない
+ * （viewBox は画面の幅に合わせて縮むので、書いた数字と画面の大きさは別）。
+ * 見た目の帯をこの太さにすると図形をのみこんで、どの辺なのか分からなくなる。
+ * そこで**透明な広い帯をかさねる。**
+ * 見た目がどこを押すかを教え、当たり判定が指のぶんのゆとりを持つ。
+ */
+const HIT = 34;
 
 const PRIMARY = "hsl(24 95% 58%)";
 const COPY = "hsl(200 70% 50%)";
@@ -148,20 +158,30 @@ export function FigureBoard({
           const y2 = PAD + s.to.y * CELL;
           const length = Math.hypot(x2 - x1, y2 - y1);
           const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+          const place = `translate(${(x1 + x2) / 2} ${(y1 + y2) / 2}) rotate(${angle})`;
           return (
-            <rect
-              key={s.name}
-              x={-length / 2}
-              y={-BAND / 2}
-              width={length}
-              height={BAND}
-              rx={BAND / 2}
-              transform={`translate(${(x1 + x2) / 2} ${(y1 + y2) / 2}) rotate(${angle})`}
-              fill={chosen ? "hsl(142 62% 40%)" : "hsl(24 20% 78%)"}
-              opacity={chosen ? 0.9 : 0.6}
-              className={cn(onPick && "cursor-pointer")}
-              onClick={() => onPick?.(s.name)}
-            />
+            <g key={s.name} transform={place}>
+              <rect
+                x={-length / 2}
+                y={-BAND / 2}
+                width={length}
+                height={BAND}
+                rx={BAND / 2}
+                fill={chosen ? "hsl(142 62% 40%)" : "hsl(24 20% 78%)"}
+                opacity={chosen ? 0.9 : 0.6}
+                pointerEvents="none"
+              />
+              {/* 押せる範囲。見た目には出さないが、ここが指のねらうところ */}
+              <rect
+                x={-length / 2}
+                y={-HIT / 2}
+                width={length}
+                height={HIT}
+                fill="transparent"
+                className={cn(onPick && "cursor-pointer")}
+                onClick={() => onPick?.(s.name)}
+              />
+            </g>
           );
         })}
 
