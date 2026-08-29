@@ -184,6 +184,17 @@ export const quizUnits: QuizUnit[] = [
     scale: "1セット10問・通分と約分",
   },
   {
+    slug: "multiples-factors",
+    title: "公倍数・公約数",
+    subject: "math",
+    grade: 5,
+    gradeLabel: "5年生",
+    kind: "figure",
+    description: "1〜24の盤にしるしを重ねて、重なりをさがす。見つけた数は通分と約分にそのまま使います。",
+    available: true,
+    scale: "1セット4問・通分と約分つき",
+  },
+  {
     slug: "triangle-area",
     title: "三角形・平行四辺形の面積",
     subject: "math",

@@ -24,6 +24,7 @@
 
 import { AREA_STORAGE_KEY } from "@/lib/area/generate";
 import { CLOCK_STORAGE_KEY } from "@/lib/clock/generate";
+import { FACTOR_STORAGE_KEY } from "@/lib/factors/generate";
 import { SAKURA_STORAGE_KEY } from "@/lib/sakura/generate";
 import { TENS_STORAGE_KEY } from "@/lib/tens/progress";
 import { TIMES_STORAGE_KEY } from "@/lib/times/generate";
@@ -113,6 +114,13 @@ export const storedItems: StoredItem[] = [
     key: TRI_STORAGE_KEY,
     slug: "triangle-area",
     label: "三角形・平行四辺形の面積",
+    kind: "practice",
+    what: "どの手順でつまずいたかと、取り組んだ回数",
+  },
+  {
+    key: FACTOR_STORAGE_KEY,
+    slug: "multiples-factors",
+    label: "公倍数・公約数",
     kind: "practice",
     what: "どの手順でつまずいたかと、取り組んだ回数",
   },

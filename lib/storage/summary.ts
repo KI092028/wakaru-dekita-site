@@ -24,6 +24,11 @@ import {
 } from "@/lib/percent/steps";
 import { AREA_ADVICE_PRIORITY, AREA_STEP_KINDS, AREA_STEP_LABEL } from "@/lib/area/steps";
 import { TRI_ADVICE_PRIORITY, TRI_STEP_KINDS, TRI_STEP_LABEL } from "@/lib/tri/steps";
+import {
+  FACTOR_ADVICE_PRIORITY,
+  FACTOR_STEP_KINDS,
+  FACTOR_STEP_LABEL,
+} from "@/lib/factors/steps";
 import { loadRecord, weakness } from "@/lib/practice/record";
 import {
   PROTRACTOR_ADVICE_PRIORITY,
@@ -81,6 +86,12 @@ const PRACTICE: Record<
     kinds: TRI_STEP_KINDS,
     label: TRI_STEP_LABEL,
     priority: TRI_ADVICE_PRIORITY,
+    showsPerfect: true,
+  },
+  "multiples-factors": {
+    kinds: FACTOR_STEP_KINDS,
+    label: FACTOR_STEP_LABEL,
+    priority: FACTOR_ADVICE_PRIORITY,
     showsPerfect: true,
   },
   "times-meaning": {
